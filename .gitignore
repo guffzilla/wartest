@@ -1,0 +1,26 @@
+# Games folder - contains Warcraft I and II files
+games/
+
+# Common files to ignore
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.temp
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Build artifacts
+build/
+dist/
+node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
