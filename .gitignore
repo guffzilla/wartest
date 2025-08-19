@@ -5,6 +5,14 @@ games/
 WC1Assets/
 WC1Assets_test/
 
+# Extracted WC2 assets - contains extracted game data and images
+WC2Assets/
+WC2Assets_test/
+WC2Assets_organized/
+
+# Organized asset folders
+WC1Assets_organized/
+
 # Common files to ignore
 .DS_Store
 Thumbs.db

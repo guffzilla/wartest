@@ -1,14 +1,13 @@
-use crate::file_parsers::{FileParser, grp_parser::GrpParser, json_parser::JsonParser};
-use anyhow::{Context, Result};
+use crate::file_parsers::{FileParser, grp_parser::GrpParser};
+use anyhow::Result;
 use bson::{doc, Document};
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
-/// WC1 Unit data structure for MongoDB
+/// WC2 Unit data structure for MongoDB
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct WC1Unit {
+pub struct WC2Unit {
     pub _id: String,                    // MongoDB ObjectId will be auto-generated
     pub name: String,
     pub display_name: String,
@@ -48,15 +47,15 @@ pub struct SpriteData {
     pub file_path: String,
 }
 
-/// WC1 Asset Extractor
-pub struct WC1Extractor {
+/// WC2 Asset Extractor
+pub struct WC2Extractor {
     game_path: PathBuf,
     output_path: PathBuf,
-    units: Vec<WC1Unit>,
+    units: Vec<WC2Unit>,
     images_extracted: Vec<String>,
 }
 
-impl WC1Extractor {
+impl WC2Extractor {
     pub fn new(game_path: &str, output_path: &str) -> Self {
         Self {
             game_path: PathBuf::from(game_path),
@@ -66,9 +65,9 @@ impl WC1Extractor {
         }
     }
 
-    /// Extract all WC1 assets
+    /// Extract all WC2 assets
     pub fn extract_all(&mut self) -> Result<()> {
-        println!("Starting WC1 asset extraction...");
+        println!("Starting WC2 asset extraction...");
         
         // Create output directories
         self.create_output_directories()?;
@@ -85,7 +84,7 @@ impl WC1Extractor {
         // Generate MongoDB documents
         self.generate_mongodb_documents()?;
         
-        println!("WC1 asset extraction complete!");
+        println!("WC2 asset extraction complete!");
         println!("Extracted {} units/buildings", self.units.len());
         println!("Extracted {} images", self.images_extracted.len());
         
@@ -116,45 +115,63 @@ impl WC1Extractor {
     fn extract_units_and_buildings(&mut self) -> Result<()> {
         println!("Extracting units and buildings...");
         
-        // Define known WC1 units and buildings
+        // Define known WC2 units and buildings (more extensive than WC1)
         let human_units = [
-            ("peasant", "Peasant", "unit", "human", 30, 1, 0, 1.0, 0, (60, 0, 1)),
-            ("footman", "Footman", "unit", "human", 60, 6, 2, 1.0, 0, (135, 0, 1)),
-            ("knight", "Knight", "unit", "human", 90, 10, 3, 1.0, 0, (400, 0, 2)),
-            ("archer", "Archer", "unit", "human", 30, 4, 0, 1.0, 0, (130, 0, 1)),
-            ("cleric", "Cleric", "unit", "human", 30, 2, 0, 1.0, 100, (160, 0, 1)),
-            ("conjurer", "Conjurer", "unit", "human", 40, 3, 0, 1.0, 200, (200, 0, 1)),
-            ("catapult", "Catapult", "unit", "human", 100, 40, 0, 0.5, 0, (800, 0, 4)),
+            ("peasant", "Peasant", "unit", "human", 60, 2, 0, 1.0, 0, (75, 0, 1)),
+            ("footman", "Footman", "unit", "human", 120, 12, 2, 1.0, 0, (135, 0, 1)),
+            ("knight", "Knight", "unit", "human", 180, 20, 6, 1.0, 0, (400, 0, 2)),
+            ("archer", "Archer", "unit", "human", 60, 8, 0, 1.0, 0, (130, 0, 1)),
+            ("ranger", "Ranger", "unit", "human", 90, 12, 0, 1.0, 0, (200, 0, 1)),
+            ("paladin", "Paladin", "unit", "human", 240, 25, 8, 1.0, 0, (800, 0, 3)),
+            ("cleric", "Cleric", "unit", "human", 60, 4, 0, 1.0, 200, (160, 0, 1)),
+            ("conjurer", "Conjurer", "unit", "human", 80, 6, 0, 1.0, 400, (200, 0, 1)),
+            ("wizard", "Wizard", "unit", "human", 100, 8, 0, 1.0, 600, (300, 0, 1)),
+            ("catapult", "Catapult", "unit", "human", 200, 80, 0, 0.5, 0, (800, 0, 4)),
+            ("ballista", "Ballista", "unit", "human", 150, 60, 0, 0.5, 0, (600, 0, 3)),
+            ("gryphon_rider", "Gryphon Rider", "unit", "human", 120, 16, 0, 1.5, 0, (500, 0, 2)),
         ];
 
         let human_buildings = [
-            ("townhall", "Town Hall", "building", "human", 1200, 0, 0, 0.0, 0, (400, 0, 0)),
-            ("farm", "Farm", "building", "human", 500, 0, 0, 0.0, 0, (75, 0, 0)),
-            ("barracks", "Barracks", "building", "human", 800, 0, 0, 0.0, 0, (180, 0, 0)),
-            ("lumbermill", "Lumber Mill", "building", "human", 600, 0, 0, 0.0, 0, (100, 0, 0)),
-            ("blacksmith", "Blacksmith", "building", "human", 700, 0, 0, 0.0, 0, (150, 0, 0)),
-            ("church", "Church", "building", "human", 600, 0, 0, 0.0, 0, (200, 0, 0)),
-            ("tower", "Guard Tower", "building", "human", 800, 0, 0, 0.0, 0, (120, 0, 0)),
+            ("townhall", "Town Hall", "building", "human", 2400, 0, 0, 0.0, 0, (400, 0, 0)),
+            ("farm", "Farm", "building", "human", 1000, 0, 0, 0.0, 0, (75, 0, 0)),
+            ("barracks", "Barracks", "building", "human", 1600, 0, 0, 0.0, 0, (180, 0, 0)),
+            ("lumbermill", "Lumber Mill", "building", "human", 1200, 0, 0, 0.0, 0, (100, 0, 0)),
+            ("blacksmith", "Blacksmith", "building", "human", 1400, 0, 0, 0.0, 0, (150, 0, 0)),
+            ("church", "Church", "building", "human", 1200, 0, 0, 0.0, 0, (200, 0, 0)),
+            ("tower", "Guard Tower", "building", "human", 1600, 0, 0, 0.0, 0, (120, 0, 0)),
+            ("cannon_tower", "Cannon Tower", "building", "human", 2000, 0, 0, 0.0, 0, (200, 0, 0)),
+            ("stables", "Stables", "building", "human", 1400, 0, 0, 0.0, 0, (200, 0, 0)),
+            ("workshop", "Workshop", "building", "human", 1600, 0, 0, 0.0, 0, (250, 0, 0)),
+            ("gryphon_aviary", "Gryphon Aviary", "building", "human", 1800, 0, 0, 0.0, 0, (300, 0, 0)),
         ];
 
         let orc_units = [
-            ("peon", "Peon", "unit", "orc", 30, 1, 0, 1.0, 0, (60, 0, 1)),
-            ("grunt", "Grunt", "unit", "orc", 70, 7, 1, 1.0, 0, (140, 0, 1)),
-            ("raider", "Raider", "unit", "orc", 90, 10, 2, 1.0, 0, (400, 0, 2)),
-            ("spearman", "Spearman", "unit", "orc", 40, 5, 0, 1.0, 0, (140, 0, 1)),
-            ("necrolyte", "Necrolyte", "unit", "orc", 30, 2, 0, 1.0, 100, (160, 0, 1)),
-            ("warlock", "Warlock", "unit", "orc", 40, 3, 0, 1.0, 200, (200, 0, 1)),
-            ("catapult", "Catapult", "unit", "orc", 100, 40, 0, 0.5, 0, (800, 0, 4)),
+            ("peon", "Peon", "unit", "orc", 60, 2, 0, 1.0, 0, (75, 0, 1)),
+            ("grunt", "Grunt", "unit", "orc", 140, 14, 2, 1.0, 0, (140, 0, 1)),
+            ("raider", "Raider", "unit", "orc", 180, 20, 4, 1.0, 0, (400, 0, 2)),
+            ("spearman", "Spearman", "unit", "orc", 80, 10, 0, 1.0, 0, (140, 0, 1)),
+            ("berserker", "Berserker", "unit", "orc", 120, 15, 0, 1.0, 0, (200, 0, 1)),
+            ("ogre", "Ogre", "unit", "orc", 300, 30, 8, 1.0, 0, (800, 0, 3)),
+            ("necrolyte", "Necrolyte", "unit", "orc", 60, 4, 0, 1.0, 200, (160, 0, 1)),
+            ("warlock", "Warlock", "unit", "orc", 80, 6, 0, 1.0, 400, (200, 0, 1)),
+            ("death_knight", "Death Knight", "unit", "orc", 100, 8, 0, 1.0, 600, (300, 0, 1)),
+            ("catapult", "Catapult", "unit", "orc", 200, 80, 0, 0.5, 0, (800, 0, 4)),
+            ("ballista", "Ballista", "unit", "orc", 150, 60, 0, 0.5, 0, (600, 0, 3)),
+            ("wyvern_rider", "Wyvern Rider", "unit", "orc", 120, 16, 0, 1.5, 0, (500, 0, 2)),
         ];
 
         let orc_buildings = [
-            ("greathall", "Great Hall", "building", "orc", 1200, 0, 0, 0.0, 0, (400, 0, 0)),
-            ("farm", "Farm", "building", "orc", 500, 0, 0, 0.0, 0, (75, 0, 0)),
-            ("barracks", "Barracks", "building", "orc", 800, 0, 0, 0.0, 0, (180, 0, 0)),
-            ("lumbermill", "Lumber Mill", "building", "orc", 600, 0, 0, 0.0, 0, (100, 0, 0)),
-            ("blacksmith", "Blacksmith", "building", "orc", 700, 0, 0, 0.0, 0, (150, 0, 0)),
-            ("temple", "Temple", "building", "orc", 600, 0, 0, 0.0, 0, (200, 0, 0)),
-            ("tower", "Guard Tower", "building", "orc", 800, 0, 0, 0.0, 0, (120, 0, 0)),
+            ("greathall", "Great Hall", "building", "orc", 2400, 0, 0, 0.0, 0, (400, 0, 0)),
+            ("farm", "Farm", "building", "orc", 1000, 0, 0, 0.0, 0, (75, 0, 0)),
+            ("barracks", "Barracks", "building", "orc", 1600, 0, 0, 0.0, 0, (180, 0, 0)),
+            ("lumbermill", "Lumber Mill", "building", "orc", 1200, 0, 0, 0.0, 0, (100, 0, 0)),
+            ("blacksmith", "Blacksmith", "building", "orc", 1400, 0, 0, 0.0, 0, (150, 0, 0)),
+            ("temple", "Temple", "building", "orc", 1200, 0, 0, 0.0, 0, (200, 0, 0)),
+            ("tower", "Guard Tower", "building", "orc", 1600, 0, 0, 0.0, 0, (120, 0, 0)),
+            ("cannon_tower", "Cannon Tower", "building", "orc", 2000, 0, 0, 0.0, 0, (200, 0, 0)),
+            ("kennels", "Kennels", "building", "orc", 1400, 0, 0, 0.0, 0, (200, 0, 0)),
+            ("workshop", "Workshop", "building", "orc", 1600, 0, 0, 0.0, 0, (250, 0, 0)),
+            ("wyvern_roost", "Wyvern Roost", "building", "orc", 1800, 0, 0, 0.0, 0, (300, 0, 0)),
         ];
 
         // Add all units and buildings
@@ -180,7 +197,7 @@ impl WC1Extractor {
     fn add_unit(&mut self, id: &str, name: &str, category: &str, unit_type: &str, 
                 health: u32, damage: u32, armor: u32, speed: f32, mana: u32, 
                 gold: u32, lumber: u32, food: u32) {
-        let unit = WC1Unit {
+        let unit = WC2Unit {
             _id: id.to_string(),
             name: id.to_string(),
             display_name: name.to_string(),
@@ -209,7 +226,7 @@ impl WC1Extractor {
     fn extract_spells_and_abilities(&mut self) -> Result<()> {
         println!("Extracting spells and abilities...");
         
-        // Define WC1 spells and abilities
+        // Define WC2 spells and abilities (more extensive than WC1)
         let spells = [
             ("heal", "Heal", "cleric", 6, "Restores health to a friendly unit"),
             ("holy_vision", "Holy Vision", "cleric", 2, "Reveals hidden areas of the map"),
@@ -217,16 +234,20 @@ impl WC1Extractor {
             ("fireball", "Fireball", "conjurer", 4, "Launches a fireball at enemies"),
             ("slow", "Slow", "conjurer", 3, "Reduces enemy movement speed"),
             ("invisibility", "Invisibility", "conjurer", 5, "Makes a unit invisible"),
+            ("polymorph", "Polymorph", "wizard", 6, "Transforms enemy into a sheep"),
+            ("blizzard", "Blizzard", "wizard", 8, "Area damage spell"),
             ("death_coil", "Death Coil", "necrolyte", 6, "Damages living units or heals undead"),
             ("raise_dead", "Raise Dead", "necrolyte", 4, "Raises fallen units as skeletons"),
             ("unholy_armor", "Unholy Armor", "necrolyte", 3, "Increases armor of undead units"),
             ("bloodlust", "Bloodlust", "warlock", 5, "Increases attack speed and damage"),
             ("eye_of_kilrogg", "Eye of Kilrogg", "warlock", 2, "Creates a flying eye for scouting"),
             ("death_and_decay", "Death and Decay", "warlock", 8, "Damages all units in an area"),
+            ("dark_ritual", "Dark Ritual", "death_knight", 7, "Sacrifices health for mana"),
+            ("death_pact", "Death Pact", "death_knight", 6, "Kills a unit to restore health"),
         ];
 
         // Add spells to appropriate units
-        for (spell_id, spell_name, unit_type, mana_cost, description) in spells.iter() {
+        for (_spell_id, spell_name, unit_type, _mana_cost, _description) in spells.iter() {
             for unit in &mut self.units {
                 if unit.unit_type == *unit_type && unit.category == "unit" {
                     unit.spells.push(spell_name.to_string());
@@ -458,9 +479,6 @@ impl WC1Extractor {
     }
 
     fn extract_hd_sprites(&mut self, hd_path: &Path) -> Result<()> {
-        use image::{ImageBuffer, Rgb, RgbImage};
-        use std::collections::HashMap;
-        
         let units_path = hd_path.join("units");
         if !units_path.exists() {
             println!("Warning: HD units directory not found");
@@ -494,7 +512,7 @@ impl WC1Extractor {
             if let Some(frames) = sprite_atlas["frames"].as_object() {
                 for (frame_name, frame_data) in frames {
                     if let Some(frame_obj) = frame_data.as_object() {
-                        if let (Some(frame), Some(source_size)) = (
+                        if let (Some(frame), Some(_source_size)) = (
                             frame_obj.get("frame"),
                             frame_obj.get("sourceSize")
                         ) {
@@ -550,7 +568,7 @@ impl WC1Extractor {
         }
         
         // Save as BSON file for MongoDB import
-        let bson_path = self.output_path.join("mongodb").join("wc1_units.bson");
+        let bson_path = self.output_path.join("mongodb").join("wc2_units.bson");
         let mut bson_data = Vec::new();
         for doc in &documents {
             bson_data.extend_from_slice(&bson::to_vec(doc)?);
@@ -558,7 +576,7 @@ impl WC1Extractor {
         std::fs::write(&bson_path, bson_data)?;
         
         // Also save as JSON for easy viewing
-        let json_path = self.output_path.join("mongodb").join("wc1_units.json");
+        let json_path = self.output_path.join("mongodb").join("wc2_units.json");
         let json_data = serde_json::to_string_pretty(&self.units)?;
         std::fs::write(&json_path, json_data)?;
         
@@ -569,7 +587,7 @@ impl WC1Extractor {
         Ok(())
     }
 
-    fn unit_to_bson(&self, unit: &WC1Unit) -> Result<Document> {
+    fn unit_to_bson(&self, unit: &WC2Unit) -> Result<Document> {
         let mut doc = doc! {
             "_id": &unit._id,
             "name": &unit.name,

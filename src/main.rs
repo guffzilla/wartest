@@ -3,6 +3,7 @@ mod asset_extractors;
 mod game_analysis;
 mod utils;
 pub mod wc1_extractor;
+pub mod wc2_extractor;
 
 use clap::{Parser, Subcommand};
 use anyhow::Result;
@@ -86,6 +87,28 @@ enum Commands {
         #[arg(short, long, default_value = "WC1Assets_test")]
         output: String,
     },
+    
+    /// Extract all WC2 assets for MongoDB
+    ExtractWC2 {
+        /// Path to WC2 game directory
+        #[arg(short, long)]
+        path: String,
+        
+        /// Output directory for extracted assets
+        #[arg(short, long, default_value = "WC2Assets")]
+        output: String,
+    },
+    
+    /// Test WC2 extraction (headless)
+    TestWC2 {
+        /// Path to WC2 game directory
+        #[arg(short, long)]
+        path: String,
+        
+        /// Output directory for extracted assets
+        #[arg(short, long, default_value = "WC2Assets_test")]
+        output: String,
+    },
 }
 
 fn main() -> Result<()> {
@@ -120,6 +143,14 @@ fn main() -> Result<()> {
         Commands::TestWC1 { path, output } => {
             println!("Testing WC1 extraction (headless)...");
             test_wc1_extraction(&path, &output)?;
+        }
+        Commands::ExtractWC2 { path, output } => {
+            info!("Extracting WC2 assets from: {}", path);
+            extract_wc2_assets(&path, &output)?;
+        }
+        Commands::TestWC2 { path, output } => {
+            println!("Testing WC2 extraction (headless)...");
+            test_wc2_extraction(&path, &output)?;
         }
     }
 
@@ -424,6 +455,58 @@ fn test_wc1_extraction(game_path: &str, output_path: &str) -> Result<()> {
         }
         Err(e) => {
             println!("❌ WC1 extraction failed: {}", e);
+            return Err(e);
+        }
+    }
+    
+    Ok(())
+}
+
+fn extract_wc2_assets(game_path: &str, output_path: &str) -> Result<()> {
+    use crate::wc2_extractor::WC2Extractor;
+    
+    let mut extractor = WC2Extractor::new(game_path, output_path);
+    extractor.extract_all()?;
+    
+    info!("WC2 asset extraction completed successfully!");
+    info!("Output directory: {}", output_path);
+    
+    Ok(())
+}
+
+fn test_wc2_extraction(game_path: &str, output_path: &str) -> Result<()> {
+    use crate::wc2_extractor::WC2Extractor;
+    
+    println!("Starting headless WC2 extraction test...");
+    println!("Game path: {}", game_path);
+    println!("Output path: {}", output_path);
+    
+    let mut extractor = WC2Extractor::new(game_path, output_path);
+    
+    match extractor.extract_all() {
+        Ok(()) => {
+            println!("✅ WC2 extraction completed successfully!");
+            println!("📁 Check output directory: {}", output_path);
+            
+            // List what was extracted
+            let output_dir = std::path::Path::new(output_path);
+            if output_dir.exists() {
+                println!("📂 Output directory contents:");
+                for entry in std::fs::read_dir(output_dir)? {
+                    let entry = entry?;
+                    let path = entry.path();
+                    if path.is_dir() {
+                        let count = std::fs::read_dir(&path)?.count();
+                        println!("  📁 {}: {} items", path.file_name().unwrap().to_string_lossy(), count);
+                    } else {
+                        let size = path.metadata()?.len();
+                        println!("  📄 {}: {} bytes", path.file_name().unwrap().to_string_lossy(), size);
+                    }
+                }
+            }
+        }
+        Err(e) => {
+            println!("❌ WC2 extraction failed: {}", e);
             return Err(e);
         }
     }
