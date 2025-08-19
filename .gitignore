@@ -1,6 +1,10 @@
 # Games folder - contains Warcraft I and II files
 games/
 
+# Extracted WC1 assets - contains extracted game data and images
+WC1Assets/
+WC1Assets_test/
+
 # Common files to ignore
 .DS_Store
 Thumbs.db

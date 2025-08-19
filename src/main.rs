@@ -2,6 +2,7 @@ mod file_parsers;
 mod asset_extractors;
 mod game_analysis;
 mod utils;
+pub mod wc1_extractor;
 
 use clap::{Parser, Subcommand};
 use anyhow::Result;
@@ -63,6 +64,28 @@ enum Commands {
         #[arg(short, long)]
         path: String,
     },
+    
+    /// Extract all WC1 assets for MongoDB
+    ExtractWC1 {
+        /// Path to WC1 game directory
+        #[arg(short, long)]
+        path: String,
+        
+        /// Output directory for extracted assets
+        #[arg(short, long, default_value = "WC1Assets")]
+        output: String,
+    },
+    
+    /// Test WC1 extraction (headless)
+    TestWC1 {
+        /// Path to WC1 game directory
+        #[arg(short, long)]
+        path: String,
+        
+        /// Output directory for extracted assets
+        #[arg(short, long, default_value = "WC1Assets_test")]
+        output: String,
+    },
 }
 
 fn main() -> Result<()> {
@@ -89,6 +112,14 @@ fn main() -> Result<()> {
         Commands::Scan { path } => {
             info!("Scanning directory: {}", path);
             scan_directory(&path)?;
+        }
+        Commands::ExtractWC1 { path, output } => {
+            info!("Extracting WC1 assets from: {}", path);
+            extract_wc1_assets(&path, &output)?;
+        }
+        Commands::TestWC1 { path, output } => {
+            println!("Testing WC1 extraction (headless)...");
+            test_wc1_extraction(&path, &output)?;
         }
     }
 
@@ -345,5 +376,57 @@ fn scan_directory(path: &str) -> Result<()> {
         }
     }
 
+    Ok(())
+}
+
+fn extract_wc1_assets(game_path: &str, output_path: &str) -> Result<()> {
+    use crate::wc1_extractor::WC1Extractor;
+    
+    let mut extractor = WC1Extractor::new(game_path, output_path);
+    extractor.extract_all()?;
+    
+    info!("WC1 asset extraction completed successfully!");
+    info!("Output directory: {}", output_path);
+    
+    Ok(())
+}
+
+fn test_wc1_extraction(game_path: &str, output_path: &str) -> Result<()> {
+    use crate::wc1_extractor::WC1Extractor;
+    
+    println!("Starting headless WC1 extraction test...");
+    println!("Game path: {}", game_path);
+    println!("Output path: {}", output_path);
+    
+    let mut extractor = WC1Extractor::new(game_path, output_path);
+    
+    match extractor.extract_all() {
+        Ok(()) => {
+            println!("✅ WC1 extraction completed successfully!");
+            println!("📁 Check output directory: {}", output_path);
+            
+            // List what was extracted
+            let output_dir = std::path::Path::new(output_path);
+            if output_dir.exists() {
+                println!("📂 Output directory contents:");
+                for entry in std::fs::read_dir(output_dir)? {
+                    let entry = entry?;
+                    let path = entry.path();
+                    if path.is_dir() {
+                        let count = std::fs::read_dir(&path)?.count();
+                        println!("  📁 {}: {} items", path.file_name().unwrap().to_string_lossy(), count);
+                    } else {
+                        let size = path.metadata()?.len();
+                        println!("  📄 {}: {} bytes", path.file_name().unwrap().to_string_lossy(), size);
+                    }
+                }
+            }
+        }
+        Err(e) => {
+            println!("❌ WC1 extraction failed: {}", e);
+            return Err(e);
+        }
+    }
+    
     Ok(())
 }
