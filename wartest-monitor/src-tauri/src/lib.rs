@@ -1,4 +1,4 @@
-// Wartest Monitor - Warcraft II Multiplayer Game Monitor
+// WCArena Monitor - Warcraft II Multiplayer Game Monitor
 // Tauri app for monitoring Warcraft II Remastered multiplayer games
 
 pub mod game_monitor;
@@ -13,8 +13,10 @@ use types::*;
 
 /// Application state
 pub struct AppState {
-    game_monitor: Mutex<Option<GameMonitor>>,
-    is_monitoring: Mutex<bool>,
+    pub game_monitor: Mutex<Option<GameMonitor>>,
+    pub is_monitoring: Mutex<bool>,
+    pub minimize_to_tray: Mutex<bool>,
+    pub show_main_window: Mutex<bool>, // Flag to show main window from tray
 }
 
 impl Default for AppState {
@@ -22,6 +24,8 @@ impl Default for AppState {
         Self {
             game_monitor: Mutex::new(None),
             is_monitoring: Mutex::new(false),
+            minimize_to_tray: Mutex::new(true), // Default to minimize to tray
+            show_main_window: Mutex::new(false), // Default to not show main window
         }
     }
 }

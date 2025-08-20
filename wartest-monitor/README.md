@@ -1,10 +1,10 @@
-# 🎮 Wartest Monitor
+# 🎮 WCArena Monitor
 
 A modern desktop application for monitoring Warcraft II Remastered multiplayer games and tracking game results.
 
 ## 📋 Overview
 
-Wartest Monitor is a Tauri-based desktop application that automatically detects and monitors Warcraft II Remastered multiplayer games. It captures detailed game information including:
+WCArena Monitor is a Tauri-based desktop application that automatically detects and monitors Warcraft II Remastered multiplayer games. It captures detailed game information including:
 
 - **Player statistics** (units trained, destroyed, resources gathered)
 - **Game outcomes** (victory/defeat, winning teams)
@@ -48,7 +48,7 @@ Wartest Monitor is a Tauri-based desktop application that automatically detects 
 ### Download
 1. Download the latest release from the [Releases page](https://github.com/guffzilla/wartest/releases)
 2. Extract the ZIP file
-3. Run `wartest-monitor.exe`
+3. Run `wcarena-monitor.exe`
 
 ### Development Setup
 ```bash
@@ -69,7 +69,7 @@ npm run tauri build
 ## 🎮 Usage
 
 ### First Time Setup
-1. **Launch the app** - Double-click `wartest-monitor.exe`
+1. **Launch the app** - Double-click `wcarena-monitor.exe`
 2. **Check compatibility** - The app will detect your platform and game installation
 3. **Configure server** (optional) - Enter your game server URL and API key
 4. **Start monitoring** - Click "Start Monitoring" to begin
@@ -180,7 +180,7 @@ Authorization: Bearer your-api-key
 
 ### Project Structure
 ```
-wartest-monitor/
+wcarena-monitor/
 ├── src-tauri/          # Rust backend
 │   ├── src/
 │   │   ├── lib.rs      # Main library
@@ -236,7 +236,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Issues** - [GitHub Issues](https://github.com/guffzilla/wartest/issues)
 - **Discussions** - [GitHub Discussions](https://github.com/guffzilla/wartest/discussions)
-- **Email** - [Contact](mailto:support@wartest.com)
+- **Email** - [Contact](mailto:support@wcarena.com)
 
 ---
 

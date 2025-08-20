@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wartest Monitor</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        
+        h1 {
+            margin: 0 0 20px 0;
+            font-size: 24px;
+            font-weight: 300;
+        }
+        
+        .status {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+        
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        button {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        
+        button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .primary {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border: none;
+        }
+        
+        .secondary {
+            background: linear-gradient(45deg, #2196F3, #1976D2);
+            border: none;
+        }
+        
+        .danger {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+            border: none;
+        }
+        
+        .version {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 Wartest Monitor</h1>
+        
+        <div class="status" id="status">
+            <strong>Status:</strong> Ready
+        </div>
+        
+        <div class="button-group">
+            <button class="primary" onclick="launchGame()">
+                🚀 Launch Warcraft II
+            </button>
+            
+            <button class="secondary" onclick="startMonitoring()" id="startBtn">
+                ▶️ Start Monitoring
+            </button>
+            
+            <button class="secondary" onclick="stopMonitoring()" id="stopBtn" style="display: none;">
+                ⏹️ Stop Monitoring
+            </button>
+            
+            <button onclick="showStatus()">
+                📊 Show Status
+            </button>
+            
+            <button onclick="showSettings()">
+                ⚙️ Settings
+            </button>
+            
+            <button class="danger" onclick="quitApp()">
+                ❌ Quit
+            </button>
+        </div>
+        
+        <div class="version">
+            Version 0.1.0
+        </div>
+    </div>
+
+    <script>
+        // Import Tauri APIs
+        const { invoke } = window.__TAURI__.tauri;
+        
+        let isMonitoring = false;
+        
+        async function launchGame() {
+            try {
+                updateStatus('Launching Warcraft II...');
+                const result = await invoke('launch_warcraft_ii');
+                updateStatus('Game launch command sent successfully');
+                console.log('Game launch result:', result);
+            } catch (error) {
+                updateStatus('Failed to launch game: ' + error);
+                console.error('Game launch error:', error);
+            }
+        }
+        
+        async function startMonitoring() {
+            try {
+                updateStatus('Starting monitoring...');
+                const result = await invoke('start_monitoring');
+                isMonitoring = true;
+                updateStatus('Monitoring active');
+                updateMonitoringButtons();
+                console.log('Monitoring start result:', result);
+            } catch (error) {
+                updateStatus('Failed to start monitoring: ' + error);
+                console.error('Monitoring start error:', error);
+            }
+        }
+        
+        async function stopMonitoring() {
+            try {
+                updateStatus('Stopping monitoring...');
+                const result = await invoke('stop_monitoring');
+                isMonitoring = false;
+                updateStatus('Monitoring stopped');
+                updateMonitoringButtons();
+                console.log('Monitoring stop result:', result);
+            } catch (error) {
+                updateStatus('Failed to stop monitoring: ' + error);
+                console.error('Monitoring stop error:', error);
+            }
+        }
+        
+        async function showStatus() {
+            try {
+                const result = await invoke('show_status');
+                console.log('Status window result:', result);
+            } catch (error) {
+                console.error('Status window error:', error);
+            }
+        }
+        
+        async function showSettings() {
+            try {
+                const result = await invoke('show_settings');
+                console.log('Settings window result:', result);
+            } catch (error) {
+                console.error('Settings window error:', error);
+            }
+        }
+        
+        async function quitApp() {
+            try {
+                await invoke('quit_app');
+            } catch (error) {
+                console.error('Quit error:', error);
+            }
+        }
+        
+        function updateStatus(message) {
+            const statusElement = document.getElementById('status');
+            statusElement.innerHTML = `<strong>Status:</strong> ${message}`;
+        }
+        
+        function updateMonitoringButtons() {
+            const startBtn = document.getElementById('startBtn');
+            const stopBtn = document.getElementById('stopBtn');
+            
+            if (isMonitoring) {
+                startBtn.style.display = 'none';
+                stopBtn.style.display = 'block';
+            } else {
+                startBtn.style.display = 'block';
+                stopBtn.style.display = 'none';
+            }
+        }
+        
+        // Initialize
+        updateStatus('Ready');
+        updateMonitoringButtons();
+    </script>
+</body>
+</html>
