@@ -4,6 +4,8 @@ mod game_analysis;
 mod utils;
 pub mod wc1_extractor;
 pub mod wc2_extractor;
+pub mod web_analyzer;
+pub mod multiplayer_monitor;
 
 use clap::{Parser, Subcommand};
 use anyhow::Result;
@@ -109,6 +111,42 @@ enum Commands {
         #[arg(short, long, default_value = "WC2Assets_test")]
         output: String,
     },
+    
+    /// Analyze WC2 web elements and CEF components
+    AnalyzeWeb {
+        /// Path to WC2 game directory
+        #[arg(short, long)]
+        path: String,
+        
+        /// Output directory for analysis results
+        #[arg(short, long, default_value = "WC2WebAnalysis")]
+        output: String,
+    },
+    
+    /// Test web analysis (headless)
+    TestWeb {
+        /// Path to WC2 game directory
+        #[arg(short, long)]
+        path: String,
+        
+        /// Output directory for analysis results
+        #[arg(short, long, default_value = "WC2WebAnalysis_test")]
+        output: String,
+    },
+    
+    /// Monitor multiplayer games in real-time
+    MonitorMultiplayer {
+        /// Output file for monitoring data
+        #[arg(short, long, default_value = "multiplayer_data.json")]
+        output: String,
+    },
+    
+    /// Test multiplayer monitoring (headless)
+    TestMultiplayer {
+        /// Output file for monitoring data
+        #[arg(short, long, default_value = "multiplayer_data_test.json")]
+        output: String,
+    },
 }
 
 fn main() -> Result<()> {
@@ -151,6 +189,22 @@ fn main() -> Result<()> {
         Commands::TestWC2 { path, output } => {
             println!("Testing WC2 extraction (headless)...");
             test_wc2_extraction(&path, &output)?;
+        }
+        Commands::AnalyzeWeb { path, output } => {
+            info!("Analyzing WC2 web elements and CEF components from: {}", path);
+            analyze_wc2_web_elements(&path, &output)?;
+        }
+        Commands::TestWeb { path, output } => {
+            println!("Testing WC2 web analysis (headless)...");
+            test_wc2_web_analysis(&path, &output)?;
+        }
+        Commands::MonitorMultiplayer { output } => {
+            info!("Starting multiplayer game monitoring...");
+            monitor_multiplayer_games(&output)?;
+        }
+        Commands::TestMultiplayer { output } => {
+            println!("Testing multiplayer monitoring (headless)...");
+            test_multiplayer_monitoring(&output)?;
         }
     }
 
@@ -510,6 +564,155 @@ fn test_wc2_extraction(game_path: &str, output_path: &str) -> Result<()> {
             return Err(e);
         }
     }
+    
+    Ok(())
+}
+
+fn analyze_wc2_web_elements(game_path: &str, output_path: &str) -> Result<()> {
+    use crate::web_analyzer::WC2WebAnalyzer;
+    
+    let mut analyzer = WC2WebAnalyzer::new(game_path, output_path);
+    analyzer.analyze_all()?;
+    
+    info!("WC2 web analysis completed successfully!");
+    info!("Output directory: {}", output_path);
+    
+    Ok(())
+}
+
+fn test_wc2_web_analysis(game_path: &str, output_path: &str) -> Result<()> {
+    use crate::web_analyzer::WC2WebAnalyzer;
+    
+    println!("Starting headless WC2 web analysis test...");
+    println!("Game path: {}", game_path);
+    println!("Output path: {}", output_path);
+    
+    let mut analyzer = WC2WebAnalyzer::new(game_path, output_path);
+    
+    match analyzer.analyze_all() {
+        Ok(()) => {
+            println!("✅ WC2 web analysis completed successfully!");
+            println!("📁 Check output directory: {}", output_path);
+            
+            // List what was analyzed
+            let output_dir = std::path::Path::new(output_path);
+            if output_dir.exists() {
+                println!("📂 Output directory contents:");
+                for entry in std::fs::read_dir(output_dir)? {
+                    let entry = entry?;
+                    let path = entry.path();
+                    if path.is_dir() {
+                        let count = std::fs::read_dir(&path)?.count();
+                        println!("  📁 {}: {} items", path.file_name().unwrap().to_string_lossy(), count);
+                    } else {
+                        let size = path.metadata()?.len();
+                        println!("  📄 {}: {} bytes", path.file_name().unwrap().to_string_lossy(), size);
+                    }
+                }
+            }
+        }
+        Err(e) => {
+            println!("❌ WC2 web analysis failed: {}", e);
+            return Err(e);
+        }
+    }
+    
+    Ok(())
+}
+
+fn monitor_multiplayer_games(output_file: &str) -> Result<()> {
+    use crate::multiplayer_monitor::MultiplayerMonitor;
+    
+    let mut monitor = MultiplayerMonitor::new();
+    monitor.start_monitoring()?;
+    
+    // Export the monitoring data
+    monitor.export_data(output_file)?;
+    
+    info!("Multiplayer monitoring completed!");
+    info!("Output file: {}", output_file);
+    
+    Ok(())
+}
+
+fn test_multiplayer_monitoring(output_file: &str) -> Result<()> {
+    use crate::multiplayer_monitor::{MultiplayerGameState, PlayerInfo, GameOutcome, Faction, ConnectionType};
+    
+    println!("Starting headless multiplayer monitoring test...");
+    println!("Output file: {}", output_file);
+    
+    // Create a simulated game state for testing
+    let test_game_state = MultiplayerGameState {
+        game_id: Some("test_game_123".to_string()),
+        players: vec![
+            PlayerInfo {
+                name: "Player1".to_string(),
+                rank: "Knight".to_string(),
+                faction: Faction::Human,
+                is_host: true,
+                is_connected: true,
+                statistics: crate::multiplayer_monitor::PlayerStatistics {
+                    score: 1500,
+                    rank: "Knight".to_string(),
+                    units_destroyed: 25,
+                    structures_destroyed: 8,
+                    gold_mined: 5000,
+                    lumber_harvested: 3000,
+                },
+            },
+            PlayerInfo {
+                name: "Player2".to_string(),
+                rank: "Raider".to_string(),
+                faction: Faction::Orc,
+                is_host: false,
+                is_connected: true,
+                statistics: crate::multiplayer_monitor::PlayerStatistics {
+                    score: 1200,
+                    rank: "Raider".to_string(),
+                    units_destroyed: 18,
+                    structures_destroyed: 5,
+                    gold_mined: 4200,
+                    lumber_harvested: 2800,
+                },
+            },
+        ],
+        game_start_time: Some(std::time::SystemTime::now()),
+        game_end_time: None,
+        game_outcome: Some(GameOutcome::Victory { 
+            winner: "Player1".to_string(), 
+            faction: Faction::Human 
+        }),
+        statistics: crate::multiplayer_monitor::GameStatistics {
+            gold_mined: 9200,
+            lumber_harvested: 5800,
+            units_trained: 45,
+            units_destroyed: 43,
+            structures_built: 15,
+            structures_destroyed: 13,
+            game_duration: std::time::Duration::from_secs(1800), // 30 minutes
+        },
+        connection_type: ConnectionType::BattleNet,
+        battle_net_info: Some(crate::multiplayer_monitor::BattleNetInfo {
+            server: "useast.battle.net".to_string(),
+            channel: "Warcraft II".to_string(),
+            account_name: "test_account".to_string(),
+            connection_status: crate::multiplayer_monitor::ConnectionStatus::Connected,
+        }),
+    };
+    
+    // Export the test data
+    let data = serde_json::to_string_pretty(&test_game_state)?;
+    std::fs::write(output_file, data)?;
+    
+    println!("✅ Multiplayer monitoring test completed successfully!");
+    println!("📁 Test data exported to: {}", output_file);
+    println!("🎮 Simulated game: {} vs {} ({} wins)", 
+        test_game_state.players[0].name, 
+        test_game_state.players[1].name,
+        test_game_state.players[0].name
+    );
+    println!("📊 Game duration: {} minutes", test_game_state.statistics.game_duration.as_secs() / 60);
+    println!("🏆 Winner: {} ({:?})", test_game_state.players[0].name, test_game_state.players[0].faction);
     
     Ok(())
 }

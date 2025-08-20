@@ -32,7 +32,7 @@ tracing = "0.1"
 tracing-subscriber = "0.3"
 
 # Windows API (for memory reading if needed)
-winapi = { version = "0.3", features = ["winuser", "processthreadsapi", "memoryapi", "handleapi", "errhandlingapi"] }
+winapi = { version = "0.3", features = ["winuser", "processthreadsapi", "memoryapi", "handleapi", "errhandlingapi", "psapi"] }
 
 # File system operations
 walkdir = "2.3"

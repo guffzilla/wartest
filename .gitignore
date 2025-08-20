@@ -13,6 +13,10 @@ WC2Assets_organized/
 # Organized asset folders
 WC1Assets_organized/
 
+# Web analysis folders
+WC2WebAnalysis/
+WC2WebAnalysis_test/
+
 # Common files to ignore
 .DS_Store
 Thumbs.db

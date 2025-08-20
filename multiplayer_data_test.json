@@ -1,0 +1,62 @@
+{
+  "game_id": "test_game_123",
+  "players": [
+    {
+      "name": "Player1",
+      "rank": "Knight",
+      "faction": "Human",
+      "is_host": true,
+      "is_connected": true,
+      "statistics": {
+        "score": 1500,
+        "rank": "Knight",
+        "units_destroyed": 25,
+        "structures_destroyed": 8,
+        "gold_mined": 5000,
+        "lumber_harvested": 3000
+      }
+    },
+    {
+      "name": "Player2",
+      "rank": "Raider",
+      "faction": "Orc",
+      "is_host": false,
+      "is_connected": true,
+      "statistics": {
+        "score": 1200,
+        "rank": "Raider",
+        "units_destroyed": 18,
+        "structures_destroyed": 5,
+        "gold_mined": 4200,
+        "lumber_harvested": 2800
+      }
+    }
+  ],
+  "game_start_time": 1755663329,
+  "game_end_time": null,
+  "game_outcome": {
+    "Victory": {
+      "winner": "Player1",
+      "faction": "Human"
+    }
+  },
+  "statistics": {
+    "gold_mined": 9200,
+    "lumber_harvested": 5800,
+    "units_trained": 45,
+    "units_destroyed": 43,
+    "structures_built": 15,
+    "structures_destroyed": 13,
+    "game_duration": {
+      "secs": 1800,
+      "nanos": 0
+    }
+  },
+  "connection_type": "BattleNet",
+  "battle_net_info": {
+    "server": "useast.battle.net",
+    "channel": "Warcraft II",
+    "account_name": "test_account",
+    "connection_status": "Connected"
+  }
+}
