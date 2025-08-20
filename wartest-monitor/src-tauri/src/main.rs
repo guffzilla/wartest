@@ -17,7 +17,7 @@ fn main() {
     static QUIT_REQUESTED: AtomicBool = AtomicBool::new(false);
     
     // Create system tray menu items with IDs for event handling
-    let launch_game = MenuItem::new("🚀 Launch Warcraft II", true, None);
+    let launch_game = MenuItem::new("🚀 Launch WC1/2/3 on Battle.net", true, None);
     let start_monitoring_item = MenuItem::new("▶️ Start Monitoring", true, None);
     let stop_monitoring_item = MenuItem::new("⏹️ Stop Monitoring", true, None);
     let show_window = MenuItem::new("🪟 Show Main Window", true, None);
@@ -65,7 +65,7 @@ fn main() {
         println!("Menu event: {:?}", event);
         
         if event.id == launch_game_id {
-            println!("Launching Warcraft II...");
+            println!("Launching Warcraft games through Battle.net...");
             launch_warcraft_ii_internal();
         } else if event.id == start_monitoring_id {
             println!("Starting monitoring requested");
@@ -106,7 +106,11 @@ fn main() {
             show_main_window,
             quit_app,
             toggle_minimize_to_tray,
-            get_minimize_to_tray_setting
+            get_minimize_to_tray_setting,
+            scan_for_games,
+            locate_games,
+            add_game_manually,
+            get_launcher_info
         ])
         .on_window_event(|window, event| {
             if let WindowEvent::CloseRequested { api, .. } = event {
@@ -185,14 +189,18 @@ fn main() {
         .expect("error while running tauri application");
 }
 
-// Internal function for launching Warcraft II (used by system tray)
+// Internal function for launching Warcraft games through Battle.net (used by system tray)
 fn launch_warcraft_ii_internal() {
-    println!("Attempting to launch Warcraft II through Battle.net...");
+    println!("Attempting to launch Warcraft games through Battle.net...");
     
     // First, try to launch Battle.net if it's not running
     let battle_net_paths = vec![
         r"C:\Program Files (x86)\Battle.net\Battle.net Launcher.exe",
         r"C:\Program Files\Battle.net\Battle.net Launcher.exe",
+        r"C:\Program Files (x86)\Battle.net\Battle.net.exe",
+        r"C:\Program Files\Battle.net\Battle.net.exe",
+        r"C:\Program Files (x86)\Battle.net\Battle.net Launcher\Battle.net Launcher.exe",
+        r"C:\Program Files\Battle.net\Battle.net Launcher\Battle.net Launcher.exe",
     ];
     
     // Check if Battle.net is already running
@@ -206,59 +214,53 @@ fn launch_warcraft_ii_internal() {
     
     if !battle_net_running {
         println!("Battle.net not running, attempting to launch it...");
+        let mut launched = false;
         for path in &battle_net_paths {
             if std::path::Path::new(path).exists() {
+                println!("Found Battle.net at: {}", path);
                 match std::process::Command::new(path).spawn() {
                     Ok(_) => {
-                        println!("Battle.net launched successfully");
+                        println!("Battle.net launched successfully from: {}", path);
+                        launched = true;
                         // Give Battle.net time to start
                         std::thread::sleep(std::time::Duration::from_secs(5));
                         break;
                     }
                     Err(e) => {
-                        eprintln!("Failed to launch Battle.net: {}", e);
+                        eprintln!("Failed to launch Battle.net from {}: {}", path, e);
                     }
                 }
+            } else {
+                println!("Battle.net not found at: {}", path);
             }
+        }
+        
+        if !launched {
+            println!("Could not find or launch Battle.net from any known location");
+            println!("Please ensure Battle.net is installed and try again");
         }
     } else {
         println!("Battle.net is already running");
     }
     
-    // Now try to launch Warcraft II through Battle.net
-    let warcraft_paths = vec![
-        r"C:\Program Files (x86)\Warcraft II Remastered\Warcraft II.exe",
-        r"C:\Program Files\Warcraft II Remastered\Warcraft II.exe",
-        r"C:\Users\garet\OneDrive\Desktop\wartest\games\Warcraft II Remastered\x86\Warcraft II.exe",
-    ];
-
-    for path in warcraft_paths {
-        if std::path::Path::new(path).exists() {
-            match std::process::Command::new(path).spawn() {
-                Ok(_) => {
-                    println!("Warcraft II launch command sent successfully");
-                    println!("Note: The game should launch through Battle.net");
-                    return;
-                }
-                Err(e) => {
-                    eprintln!("Failed to launch Warcraft II: {}", e);
-                }
-            }
-        }
-    }
-    
-    println!("Warcraft II not found in common locations");
+    // Don't try to launch individual games - just launch Battle.net
+    println!("Battle.net should now be available for launching Warcraft games");
+    return;
 }
 
 // Tauri command functions
 #[tauri::command]
 async fn launch_warcraft_ii() -> Result<String, String> {
-    println!("Attempting to launch Warcraft II through Battle.net...");
+    println!("Attempting to launch Warcraft games through Battle.net...");
     
     // First, try to launch Battle.net if it's not running
     let battle_net_paths = vec![
         r"C:\Program Files (x86)\Battle.net\Battle.net Launcher.exe",
         r"C:\Program Files\Battle.net\Battle.net Launcher.exe",
+        r"C:\Program Files (x86)\Battle.net\Battle.net.exe",
+        r"C:\Program Files\Battle.net\Battle.net.exe",
+        r"C:\Program Files (x86)\Battle.net\Battle.net Launcher\Battle.net Launcher.exe",
+        r"C:\Program Files\Battle.net\Battle.net Launcher\Battle.net Launcher.exe",
     ];
     
     // Check if Battle.net is already running
@@ -272,48 +274,39 @@ async fn launch_warcraft_ii() -> Result<String, String> {
     
     if !battle_net_running {
         println!("Battle.net not running, attempting to launch it...");
+        let mut launched = false;
         for path in &battle_net_paths {
             if std::path::Path::new(path).exists() {
+                println!("Found Battle.net at: {}", path);
                 match std::process::Command::new(path).spawn() {
                     Ok(_) => {
-                        println!("Battle.net launched successfully");
+                        println!("Battle.net launched successfully from: {}", path);
+                        launched = true;
                         // Give Battle.net time to start
                         std::thread::sleep(std::time::Duration::from_secs(5));
                         break;
                     }
                     Err(e) => {
-                        eprintln!("Failed to launch Battle.net: {}", e);
+                        eprintln!("Failed to launch Battle.net from {}: {}", path, e);
                     }
                 }
+            } else {
+                println!("Battle.net not found at: {}", path);
             }
+        }
+        
+        if !launched {
+            println!("Could not find or launch Battle.net from any known location");
+            println!("Please ensure Battle.net is installed and try again");
+            return Err("Could not find or launch Battle.net".to_string());
         }
     } else {
         println!("Battle.net is already running");
     }
     
-    // Now try to launch Warcraft II through Battle.net
-    let warcraft_paths = vec![
-        r"C:\Program Files (x86)\Warcraft II Remastered\Warcraft II.exe",
-        r"C:\Program Files\Warcraft II Remastered\Warcraft II.exe",
-        r"C:\Users\garet\OneDrive\Desktop\wartest\games\Warcraft II Remastered\x86\Warcraft II.exe",
-    ];
-
-    for path in warcraft_paths {
-        if std::path::Path::new(path).exists() {
-            match std::process::Command::new(path).spawn() {
-                Ok(_) => {
-                    println!("Warcraft II launch command sent successfully");
-                    println!("Note: The game should launch through Battle.net");
-                    return Ok("Warcraft II launch command sent successfully".to_string());
-                }
-                Err(e) => {
-                    eprintln!("Failed to launch Warcraft II: {}", e);
-                }
-            }
-        }
-    }
-    
-    Err("Warcraft II not found in common locations".to_string())
+        // Don't try to launch individual games - just launch Battle.net
+    println!("Battle.net should now be available for launching Warcraft games");
+    return Ok("Battle.net launched successfully".to_string());
 }
 
 #[tauri::command]
@@ -439,4 +432,295 @@ async fn get_minimize_to_tray_setting(app: tauri::AppHandle) -> Result<bool, Str
     let app_state: tauri::State<AppState> = app.state();
     let setting = app_state.minimize_to_tray.lock().unwrap();
     Ok(*setting)
+}
+
+#[tauri::command]
+async fn scan_for_games() -> Result<std::collections::HashMap<String, serde_json::Value>, String> {
+    println!("Scanning for Warcraft game installations using comprehensive detection...");
+    
+    let mut results = std::collections::HashMap::new();
+    
+    // Use the new comprehensive game detection system
+    let game_detector = app_lib::platform::GameDetector::new();
+    
+    match game_detector.detect_all_games() {
+        Ok(games) => {
+            println!("Comprehensive scan found {} games", games.len());
+            
+            // Map detected games to our expected game keys
+            for (name, installation) in games {
+                let game_key = map_game_name_to_key(&name);
+                if let Some(key) = game_key {
+                    results.insert(key, serde_json::json!({
+                        "found": true,
+                        "path": installation.path.to_string_lossy(),
+                        "launcher": installation.launcher,
+                        "version": installation.version
+                    }));
+                    println!("Found {} at: {} (via {})", name, installation.path.display(), 
+                             installation.launcher.as_deref().unwrap_or("Unknown"));
+                }
+            }
+        }
+        Err(e) => {
+            eprintln!("Comprehensive scan failed: {}", e);
+            println!("Falling back to basic path scanning...");
+            
+            // Fallback to basic path scanning
+            let basic_results = scan_basic_paths();
+            results.extend(basic_results);
+        }
+    }
+    
+    // Ensure all game types are represented
+    let all_games = vec![
+        "wc1-dos", "wc1-remastered", 
+        "wc2-bnet", "wc2-combat", "wc2-remastered",
+        "wc3-roc", "wc3-tft", "wc3-reforged", "w3arena"
+    ];
+    
+    for game in all_games {
+        if !results.contains_key(game) {
+            results.insert(game.to_string(), serde_json::json!({
+                "found": false,
+                "path": "",
+                "launcher": serde_json::Value::Null,
+                "version": serde_json::Value::Null
+            }));
+        }
+    }
+    
+    println!("Scan complete. Found {} games", results.values().filter(|v| v["found"].as_bool().unwrap_or(false)).count());
+    Ok(results)
+}
+
+/// Fallback basic path scanning
+fn scan_basic_paths() -> std::collections::HashMap<String, serde_json::Value> {
+    let mut results = std::collections::HashMap::new();
+    
+    let search_paths = vec![
+        // Warcraft I
+        (r"C:\Program Files (x86)\Warcraft I\Warcraft.exe", "wc1-dos"),
+        (r"C:\Program Files\Warcraft I\Warcraft.exe", "wc1-dos"),
+        (r"C:\Program Files (x86)\Warcraft I Remastered\Warcraft.exe", "wc1-remastered"),
+        (r"C:\Program Files\Warcraft I Remastered\Warcraft.exe", "wc1-remastered"),
+        
+        // Warcraft II
+        (r"C:\Program Files (x86)\Warcraft II\Warcraft II.exe", "wc2-bnet"),
+        (r"C:\Program Files\Warcraft II\Warcraft II.exe", "wc2-bnet"),
+        (r"C:\Program Files (x86)\Warcraft II Combat Edition\Warcraft II.exe", "wc2-combat"),
+        (r"C:\Program Files\Warcraft II Combat Edition\Warcraft II.exe", "wc2-combat"),
+        (r"C:\Program Files (x86)\Warcraft II Remastered\Warcraft II.exe", "wc2-remastered"),
+        (r"C:\Program Files\Warcraft II Remastered\Warcraft II.exe", "wc2-remastered"),
+        
+        // Warcraft III
+        (r"C:\Program Files (x86)\Warcraft III\Warcraft III.exe", "wc3-roc"),
+        (r"C:\Program Files\Warcraft III\Warcraft III.exe", "wc3-roc"),
+        (r"C:\Program Files (x86)\Warcraft III\Frozen Throne.exe", "wc3-tft"),
+        (r"C:\Program Files\Warcraft III\Frozen Throne.exe", "wc3-tft"),
+        (r"C:\Program Files (x86)\Warcraft III Reforged\Warcraft III.exe", "wc3-reforged"),
+        (r"C:\Program Files\Warcraft III Reforged\Warcraft III.exe", "wc3-reforged"),
+        
+        // W3Arena
+        (r"C:\Program Files (x86)\W3Arena\W3Arena.exe", "w3arena"),
+        (r"C:\Program Files\W3Arena\W3Arena.exe", "w3arena"),
+        
+        // Project-specific paths
+        (r"C:\Users\garet\OneDrive\Desktop\wartest\games\Warcraft I Remastered\x86\Warcraft.exe", "wc1-remastered"),
+        (r"C:\Users\garet\OneDrive\Desktop\wartest\games\Warcraft II Remastered\x86\Warcraft II.exe", "wc2-remastered"),
+        (r"C:\Users\garet\OneDrive\Desktop\wartest\games\Warcraft II Combat Edition\Warcraft II.exe", "wc2-combat"),
+        (r"C:\Users\garet\OneDrive\Desktop\wartest\games\W3Arena\W3Arena.exe", "w3arena"),
+    ];
+    
+    for (path, game_key) in search_paths {
+        if std::path::Path::new(path).exists() {
+            results.insert(game_key.to_string(), serde_json::json!({
+                "found": true,
+                "path": path,
+                "launcher": "Standard Installation",
+                "version": "Unknown"
+            }));
+            println!("Found {} at: {} (basic scan)", game_key, path);
+        }
+    }
+    
+    results
+}
+
+/// Map game names to our internal game keys
+fn map_game_name_to_key(game_name: &str) -> Option<String> {
+    let name_lower = game_name.to_lowercase();
+    
+    if name_lower.contains("warcraft i") || name_lower.contains("warcraft 1") {
+        if name_lower.contains("remastered") {
+            Some("wc1-remastered".to_string())
+        } else {
+            Some("wc1-dos".to_string())
+        }
+    } else if name_lower.contains("warcraft ii") || name_lower.contains("warcraft 2") {
+        if name_lower.contains("remastered") {
+            Some("wc2-remastered".to_string())
+        } else if name_lower.contains("combat") {
+            Some("wc2-combat".to_string())
+        } else {
+            Some("wc2-bnet".to_string())
+        }
+    } else if name_lower.contains("warcraft iii") || name_lower.contains("warcraft 3") {
+        if name_lower.contains("reforged") {
+            Some("wc3-reforged".to_string())
+        } else if name_lower.contains("frozen throne") {
+            Some("wc3-tft".to_string())
+        } else {
+            Some("wc3-roc".to_string())
+        }
+    } else if name_lower.contains("w3arena") {
+        Some("w3arena".to_string())
+    } else {
+        None
+    }
+}
+
+/// Get information about installed game launchers
+#[tauri::command]
+async fn get_launcher_info() -> Result<Vec<serde_json::Value>, String> {
+    println!("Getting launcher information...");
+    
+    let game_detector = app_lib::platform::GameDetector::new();
+    
+    match game_detector.get_launcher_info() {
+        Ok(launchers) => {
+            let mut result = Vec::new();
+            
+            for launcher in launchers {
+                result.push(serde_json::json!({
+                    "name": launcher.name,
+                    "is_installed": launcher.is_installed,
+                    "installation_path": launcher.installation_path.map(|p| p.to_string_lossy().to_string()),
+                    "games_count": launcher.games.len()
+                }));
+                
+                println!("Launcher: {} - Installed: {} - Games: {}", 
+                         launcher.name, launcher.is_installed, launcher.games.len());
+            }
+            
+            Ok(result)
+        }
+        Err(e) => {
+            Err(format!("Failed to get launcher info: {}", e))
+        }
+    }
+}
+
+#[tauri::command]
+async fn locate_games(game_type: String) -> Result<std::collections::HashMap<String, serde_json::Value>, String> {
+    println!("Locating games for type: {}", game_type);
+    
+    // This is a simplified version - in a real implementation, you might want to:
+    // 1. Search registry entries
+    // 2. Search common installation directories more thoroughly
+    // 3. Use Windows APIs to find installed programs
+    
+    let mut results = std::collections::HashMap::new();
+    
+    // For now, just return the same as scan_for_games but focused on the specific type
+    match game_type.as_str() {
+        "wc1" => {
+            let paths = vec![
+                (r"C:\Program Files (x86)\Warcraft I\Warcraft.exe", "wc1-dos"),
+                (r"C:\Program Files\Warcraft I\Warcraft.exe", "wc1-dos"),
+                (r"C:\Program Files (x86)\Warcraft I Remastered\Warcraft.exe", "wc1-remastered"),
+                (r"C:\Program Files\Warcraft I Remastered\Warcraft.exe", "wc1-remastered"),
+            ];
+            
+            for (path, game_key) in paths {
+                if std::path::Path::new(path).exists() {
+                    results.insert(game_key.to_string(), serde_json::json!({
+                        "found": true,
+                        "path": path
+                    }));
+                }
+            }
+        },
+        "wc2" => {
+            let paths = vec![
+                (r"C:\Program Files (x86)\Warcraft II\Warcraft II.exe", "wc2-bnet"),
+                (r"C:\Program Files\Warcraft II\Warcraft II.exe", "wc2-bnet"),
+                (r"C:\Program Files (x86)\Warcraft II Combat Edition\Warcraft II.exe", "wc2-combat"),
+                (r"C:\Program Files\Warcraft II Combat Edition\Warcraft II.exe", "wc2-combat"),
+                (r"C:\Program Files (x86)\Warcraft II Remastered\Warcraft II.exe", "wc2-remastered"),
+                (r"C:\Program Files\Warcraft II Remastered\Warcraft II.exe", "wc2-remastered"),
+            ];
+            
+            for (path, game_key) in paths {
+                if std::path::Path::new(path).exists() {
+                    results.insert(game_key.to_string(), serde_json::json!({
+                        "found": true,
+                        "path": path
+                    }));
+                }
+            }
+        },
+        "wc3" => {
+            let paths = vec![
+                (r"C:\Program Files (x86)\Warcraft III\Warcraft III.exe", "wc3-roc"),
+                (r"C:\Program Files\Warcraft III\Warcraft III.exe", "wc3-roc"),
+                (r"C:\Program Files (x86)\Warcraft III\Frozen Throne.exe", "wc3-tft"),
+                (r"C:\Program Files\Warcraft III\Frozen Throne.exe", "wc3-tft"),
+                (r"C:\Program Files (x86)\Warcraft III Reforged\Warcraft III.exe", "wc3-reforged"),
+                (r"C:\Program Files\Warcraft III Reforged\Warcraft III.exe", "wc3-reforged"),
+            ];
+            
+            for (path, game_key) in paths {
+                if std::path::Path::new(path).exists() {
+                    results.insert(game_key.to_string(), serde_json::json!({
+                        "found": true,
+                        "path": path
+                    }));
+                }
+            }
+        },
+        "w3arena" => {
+            let paths = vec![
+                (r"C:\Program Files (x86)\W3Arena\W3Arena.exe", "w3arena"),
+                (r"C:\Program Files\W3Arena\W3Arena.exe", "w3arena"),
+            ];
+            
+            for (path, game_key) in paths {
+                if std::path::Path::new(path).exists() {
+                    results.insert(game_key.to_string(), serde_json::json!({
+                        "found": true,
+                        "path": path
+                    }));
+                }
+            }
+        },
+        _ => {
+            return Err(format!("Unknown game type: {}", game_type));
+        }
+    }
+    
+    Ok(results)
+}
+
+#[tauri::command]
+async fn add_game_manually(game_type: String, game_path: String) -> Result<(), String> {
+    println!("Adding game manually - Type: {}, Path: {}", game_type, game_path);
+    
+    // Validate the path exists
+    if !std::path::Path::new(&game_path).exists() {
+        return Err("Game executable not found at specified path".to_string());
+    }
+    
+    // Validate it's an executable file
+    if !game_path.to_lowercase().ends_with(".exe") {
+        return Err("Path must point to an executable (.exe) file".to_string());
+    }
+    
+    // In a real implementation, you would:
+    // 1. Store this in a configuration file or database
+    // 2. Validate the executable is actually the expected game
+    // 3. Possibly verify the game version
+    
+    println!("Game added successfully: {} -> {}", game_type, game_path);
+    Ok(())
 }

@@ -1,5 +1,5 @@
 use crate::types::*;
-use crate::platform::{Platform, ProcessMonitor};
+use crate::platform::Platform;
 use crate::types::ProcessInfo;
 use crate::server_client::ServerClient;
 use anyhow::Result;
@@ -147,8 +147,8 @@ impl GameMonitor {
     
     /// Check for new Warcraft II processes
     fn check_for_game_processes(&mut self) -> Result<()> {
-        let process_monitor = ProcessMonitor::new();
-        let processes = process_monitor.find_game_processes()?;
+        // Simple process detection using platform-specific commands
+        let processes = self.find_warcraft_processes()?;
         
         for process in processes {
             if self.is_warcraft_process(&process) {
@@ -169,6 +169,92 @@ impl GameMonitor {
         }
         
         Ok(())
+    }
+
+    /// Find Warcraft processes using platform-specific methods
+    fn find_warcraft_processes(&self) -> Result<Vec<ProcessInfo>> {
+        match self.platform {
+            Platform::Windows => self.find_windows_warcraft_processes(),
+            Platform::macOS | Platform::Linux => self.find_unix_warcraft_processes(),
+        }
+    }
+
+    /// Find Warcraft processes on Windows
+    fn find_windows_warcraft_processes(&self) -> Result<Vec<ProcessInfo>> {
+        use std::process::Command;
+        
+        let output = Command::new("tasklist")
+            .args(&["/FO", "CSV", "/NH"])
+            .output()?;
+        
+        let output_str = String::from_utf8_lossy(&output.stdout);
+        let mut processes = Vec::new();
+        
+        for line in output_str.lines() {
+            if line.to_lowercase().contains("warcraft") {
+                if let Some(process) = self.parse_windows_process_line(line) {
+                    processes.push(process);
+                }
+            }
+        }
+        
+        Ok(processes)
+    }
+
+    /// Find Warcraft processes on Unix-like systems
+    fn find_unix_warcraft_processes(&self) -> Result<Vec<ProcessInfo>> {
+        use std::process::Command;
+        
+        let output = Command::new("ps")
+            .args(&["-ax", "-o", "pid,comm"])
+            .output()?;
+        
+        let output_str = String::from_utf8_lossy(&output.stdout);
+        let mut processes = Vec::new();
+        
+        for line in output_str.lines() {
+            if line.to_lowercase().contains("warcraft") {
+                if let Some(process) = self.parse_unix_process_line(line) {
+                    processes.push(process);
+                }
+            }
+        }
+        
+        Ok(processes)
+    }
+
+    /// Parse Windows process line
+    fn parse_windows_process_line(&self, line: &str) -> Option<ProcessInfo> {
+        // Windows CSV format: "Image Name","PID","Session Name","Session#","Mem Usage"
+        let parts: Vec<&str> = line.split(',').collect();
+        if parts.len() >= 2 {
+            let name = parts[0].trim_matches('"');
+            if let Ok(pid) = parts[1].trim_matches('"').parse::<u32>() {
+                return Some(ProcessInfo {
+                    pid,
+                    name: name.to_string(),
+                    executable_path: None,
+                    wine_pid: None,
+                });
+            }
+        }
+        None
+    }
+
+    /// Parse Unix process line
+    fn parse_unix_process_line(&self, line: &str) -> Option<ProcessInfo> {
+        let parts: Vec<&str> = line.split_whitespace().collect();
+        if parts.len() >= 2 {
+            if let Ok(pid) = parts[0].parse::<u32>() {
+                return Some(ProcessInfo {
+                    pid,
+                    name: parts[1].to_string(),
+                    executable_path: None,
+                    wine_pid: None,
+                });
+            }
+        }
+        None
     }
     
     /// Determine if a process is Warcraft II

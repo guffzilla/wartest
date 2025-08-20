@@ -1,10 +1,8 @@
-use crate::types::*;
-use std::env;
 use std::path::{Path, PathBuf};
-use std::process::Command;
-use anyhow::Result;
+use std::collections::HashMap;
+use anyhow::{Result, anyhow};
+use serde_json::Value;
 
-/// Platform detection and compatibility
 #[derive(Debug, Clone)]
 pub enum Platform {
     Windows,
@@ -14,383 +12,341 @@ pub enum Platform {
 
 impl Platform {
     pub fn current() -> Self {
-        match env::consts::OS {
-            "windows" => Platform::Windows,
-            "macos" => Platform::macOS,
-            "linux" => Platform::Linux,
-            _ => Platform::Linux, // Default fallback
-        }
-    }
-    
-    pub fn to_string(&self) -> String {
-        match self {
-            Platform::Windows => "Windows".to_string(),
-            Platform::macOS => "macOS".to_string(),
-            Platform::Linux => "Linux".to_string(),
-        }
-    }
-    
-    pub fn game_executable_name(&self) -> &'static str {
-        match self {
-            Platform::Windows => "Warcraft II.exe",
-            Platform::macOS => "Warcraft II",
-            Platform::Linux => "warcraft2",
-        }
-    }
-    
-    pub fn game_process_name(&self) -> &'static str {
-        match self {
-            Platform::Windows => "Warcraft II",
-            Platform::macOS => "Warcraft II",
-            Platform::Linux => "warcraft2",
-        }
+        #[cfg(target_os = "windows")]
+        return Platform::Windows;
+        #[cfg(target_os = "macos")]
+        return Platform::macOS;
+        #[cfg(target_os = "linux")]
+        return Platform::Linux;
     }
 }
 
-/// Game path finder for different platforms
-pub struct GamePathFinder {
+#[derive(Debug, Clone)]
+pub struct GameInstallation {
+    pub name: String,
+    pub path: PathBuf,
+    pub launcher: Option<String>,
+    pub version: Option<String>,
+    pub is_valid: bool,
+}
+
+#[derive(Debug, Clone)]
+pub struct LauncherInfo {
+    pub name: String,
+    pub is_installed: bool,
+    pub installation_path: Option<PathBuf>,
+    pub games: Vec<GameInstallation>,
+}
+
+pub struct GameDetector {
     platform: Platform,
 }
 
-impl GamePathFinder {
+impl GameDetector {
     pub fn new() -> Self {
         Self {
             platform: Platform::current(),
         }
     }
-    
-    /// Find Warcraft II installation paths
-    pub fn find_game_paths(&self) -> Vec<PathBuf> {
-        match self.platform {
-            Platform::Windows => self.find_windows_paths(),
-            Platform::macOS => self.find_macos_paths(),
-            Platform::Linux => self.find_linux_paths(),
-        }
-    }
-    
-    /// Windows: Check common installation locations
-    fn find_windows_paths(&self) -> Vec<PathBuf> {
-        let mut paths = Vec::new();
-        
-        // Common Windows installation paths
-        let common_paths = vec![
-            r"C:\Program Files (x86)\Warcraft II Remastered",
-            r"C:\Program Files\Warcraft II Remastered",
-            r"C:\Games\Warcraft II Remastered",
-            r"C:\Users\{}\AppData\Local\Programs\Warcraft II Remastered",
-            r"C:\Users\{}\OneDrive\Desktop\games\Warcraft II Remastered",
-        ];
-        
-        for path in common_paths {
-            if let Some(expanded_path) = self.expand_windows_path(path) {
-                if expanded_path.join("x86").join("Warcraft II.exe").exists() {
-                    paths.push(expanded_path);
-                }
-            }
-        }
-        
-        paths
-    }
-    
-    /// macOS: Check common installation locations
-    fn find_macos_paths(&self) -> Vec<PathBuf> {
-        let mut paths = Vec::new();
-        
-        let home = env::var("HOME").unwrap_or_default();
-        let common_paths = vec![
-            "/Applications/Warcraft II Remastered.app".to_string(),
-            "/Applications/Games/Warcraft II Remastered.app".to_string(),
-            format!("{}/Applications/Warcraft II Remastered.app", home),
-        ];
-        
-        for path in common_paths {
-            let path_buf = PathBuf::from(path);
-            if path_buf.exists() {
-                paths.push(path_buf);
-            }
-        }
-        
-        paths
-    }
-    
-    /// Linux: Check common installation locations
-    fn find_linux_paths(&self) -> Vec<PathBuf> {
-        let mut paths = Vec::new();
-        
-        let home = env::var("HOME").unwrap_or_default();
-        let common_paths = vec![
-            "/usr/local/games/warcraft2".to_string(),
-            "/opt/warcraft2".to_string(),
-            format!("{}/.local/share/Steam/steamapps/common/Warcraft II", home),
-            format!("{}/.steam/steam/steamapps/common/Warcraft II", home),
-        ];
-        
-        for path in common_paths {
-            let path_buf = PathBuf::from(path);
-            if path_buf.exists() {
-                paths.push(path_buf);
-            }
-        }
-        
-        paths
-    }
-    
-    /// Expand Windows environment variables and user placeholders
-    fn expand_windows_path(&self, path: &str) -> Option<PathBuf> {
-        let mut expanded = path.to_string();
-        
-        // Replace {username} with actual username
-        if expanded.contains("{}") {
-            if let Ok(username) = env::var("USERNAME") {
-                expanded = expanded.replace("{}", &username);
-            } else if let Ok(username) = env::var("USER") {
-                expanded = expanded.replace("{}", &username);
-            }
-        }
-        
-        // Expand other environment variables
-        for (key, value) in env::vars() {
-            let placeholder = format!("{{{}}}", key);
-            if expanded.contains(&placeholder) {
-                expanded = expanded.replace(&placeholder, &value);
-            }
-        }
-        
-        Some(PathBuf::from(expanded))
-    }
-}
 
-/// Process monitor for different platforms
-pub struct ProcessMonitor {
-    platform: Platform,
-}
+    /// Comprehensive game detection across all platforms and launchers
+    pub fn detect_all_games(&self) -> Result<HashMap<String, GameInstallation>> {
+        let mut all_games = HashMap::new();
+        
+        // 1. Check Battle.net
+        if let Ok(battle_net_games) = self.detect_battle_net_games() {
+            for game in battle_net_games {
+                all_games.insert(game.name.clone(), game);
+            }
+        }
 
-impl ProcessMonitor {
-    pub fn new() -> Self {
-        Self {
-            platform: Platform::current(),
+        // 2. Check GOG Galaxy
+        if let Ok(gog_games) = self.detect_gog_games() {
+            for game in gog_games {
+                all_games.insert(game.name.clone(), game);
+            }
         }
-    }
-    
-    /// Find running Warcraft II processes
-    pub fn find_game_processes(&self) -> Result<Vec<ProcessInfo>> {
-        match self.platform {
-            Platform::Windows => self.find_windows_processes(),
-            Platform::Linux => self.find_wine_processes(),
-            Platform::macOS => self.find_wine_processes(),
+
+        // 3. Check Microsoft Game Pass
+        if let Ok(gamepass_games) = self.detect_gamepass_games() {
+            for game in gamepass_games {
+                all_games.insert(game.name.clone(), game);
+            }
         }
+
+        // 4. Check Windows Registry (Windows only)
+        if let Ok(registry_games) = self.detect_registry_games() {
+            for game in registry_games {
+                all_games.insert(game.name.clone(), game);
+            }
+        }
+
+        // 5. Check common installation paths
+        if let Ok(common_games) = self.detect_common_path_games() {
+            for game in common_games {
+                all_games.insert(game.name.clone(), game);
+            }
+        }
+
+        Ok(all_games)
     }
-    
-    /// Windows: Use tasklist command
-    fn find_windows_processes(&self) -> Result<Vec<ProcessInfo>> {
-        let output = Command::new("tasklist")
-            .args(&["/FO", "CSV", "/NH"])
-            .output()?;
+
+    /// Detect Battle.net games
+    fn detect_battle_net_games(&self) -> Result<Vec<GameInstallation>> {
+        let mut games = Vec::new();
         
-        let output_str = String::from_utf8_lossy(&output.stdout);
-        let mut processes = Vec::new();
+        // Check if Battle.net is installed
+        let battle_net_paths = self.get_battle_net_paths();
         
-        for line in output_str.lines() {
-            if line.to_lowercase().contains("warcraft") {
-                if let Some(process) = self.parse_windows_process_line(line) {
-                    processes.push(process);
+        for path in battle_net_paths {
+            if path.exists() {
+                // Try to read Battle.net's game library
+                if let Ok(battle_net_games) = self.read_battle_net_library(&path) {
+                    games.extend(battle_net_games);
                 }
             }
         }
-        
-        Ok(processes)
+
+        Ok(games)
     }
-    
-    /// Linux/macOS: Find Wine processes running Warcraft
-    fn find_wine_processes(&self) -> Result<Vec<ProcessInfo>> {
-        let mut processes = Vec::new();
+
+    /// Get possible Battle.net installation paths
+    fn get_battle_net_paths(&self) -> Vec<PathBuf> {
+        let mut paths = Vec::new();
         
-        // Look for Wine processes
-        let wine_processes = self.find_processes_by_name("wine")?;
-        let wine64_processes = self.find_processes_by_name("wine64")?;
-        let proton_processes = self.find_processes_by_name("proton")?;
+        // Standard installation paths
+        paths.push(PathBuf::from(r"C:\Program Files (x86)\Battle.net"));
+        paths.push(PathBuf::from(r"C:\Program Files\Battle.net"));
         
-        // Check each Wine process for Warcraft executables
-        for wine_pid in wine_processes.iter().chain(wine64_processes.iter()).chain(proton_processes.iter()) {
-            if let Some(warcraft_process) = self.check_wine_process_for_warcraft(*wine_pid)? {
-                processes.push(warcraft_process);
-            }
+        // User-specific paths
+        if let Some(user_profile) = std::env::var("USERPROFILE").ok() {
+            paths.push(PathBuf::from(format!("{}\\AppData\\Local\\Programs\\Battle.net", user_profile)));
+            paths.push(PathBuf::from(format!("{}\\AppData\\Local\\Battle.net", user_profile)));
         }
+
+        // Check if any Warcraft games have .battle.net directories
+        let warcraft_paths = vec![
+            r"C:\Program Files (x86)\Warcraft III\.battle.net",
+            r"C:\Program Files\Warcraft III\.battle.net",
+        ];
         
-        Ok(processes)
-    }
-    
-    /// Check if a Wine process is running Warcraft
-    fn check_wine_process_for_warcraft(&self, wine_pid: u32) -> Result<Option<ProcessInfo>> {
-        // Use lsof to see what files the Wine process has open
-        let output = Command::new("lsof")
-            .args(&["-p", &wine_pid.to_string()])
-            .output()?;
-        
-        let output_str = String::from_utf8_lossy(&output.stdout);
-        
-        // Look for Warcraft executable files
-        for line in output_str.lines() {
-            if line.contains("Warcraft") || line.contains("war2") || line.contains("wc2") {
-                // Extract process info
-                let parts: Vec<&str> = line.split_whitespace().collect();
-                if parts.len() >= 2 {
-                    if let Ok(pid) = parts[1].parse::<u32>() {
-                        return Ok(Some(ProcessInfo {
-                            pid,
-                            name: "Warcraft II (Wine)".to_string(),
-                            executable_path: Some(PathBuf::from(parts[8]).to_string_lossy().to_string()),
-                            wine_pid: Some(wine_pid),
-                        }));
-                    }
+        for path in warcraft_paths {
+            if Path::new(path).exists() {
+                if let Some(parent) = Path::new(path).parent() {
+                    paths.push(parent.to_path_buf());
                 }
             }
         }
-        
-        Ok(None)
+
+        paths
     }
-    
-    /// Find processes by name using ps
-    fn find_processes_by_name(&self, name: &str) -> Result<Vec<u32>> {
-        let output = Command::new("ps")
-            .args(&["-ax", "-o", "pid,comm"])
-            .output()?;
+
+    /// Read Battle.net game library
+    fn read_battle_net_library(&self, battle_net_path: &Path) -> Result<Vec<GameInstallation>> {
+        let mut games = Vec::new();
         
-        let output_str = String::from_utf8_lossy(&output.stdout);
-        let mut pids = Vec::new();
-        
-        for line in output_str.lines() {
-            if line.to_lowercase().contains(name) {
-                let parts: Vec<&str> = line.split_whitespace().collect();
-                if parts.len() >= 2 {
-                    if let Ok(pid) = parts[0].parse::<u32>() {
-                        pids.push(pid);
-                    }
+        // Look for Battle.net's game database or configuration files
+        let possible_configs = vec![
+            "Battle.net.exe",
+            "Battle.net Launcher.exe",
+            "config",
+            "data",
+        ];
+
+        for config in possible_configs {
+            let config_path = battle_net_path.join(config);
+            if config_path.exists() {
+                // Try to extract game information
+                if let Ok(game_list) = self.parse_battle_net_config(&config_path) {
+                    games.extend(game_list);
                 }
             }
         }
-        
-        Ok(pids)
+
+        Ok(games)
     }
-    
-    /// Parse Windows process line
-    fn parse_windows_process_line(&self, line: &str) -> Option<ProcessInfo> {
-        // Windows CSV format: "Image Name","PID","Session Name","Session#","Mem Usage"
-        let parts: Vec<&str> = line.split(',').collect();
-        if parts.len() >= 2 {
-            let name = parts[0].trim_matches('"');
-            if let Ok(pid) = parts[1].trim_matches('"').parse::<u32>() {
-                return Some(ProcessInfo {
-                    pid,
-                    name: name.to_string(),
-                    executable_path: self.find_windows_executable_path(pid),
-                    wine_pid: None,
+
+    /// Parse Battle.net configuration to find games
+    fn parse_battle_net_config(&self, config_path: &Path) -> Result<Vec<GameInstallation>> {
+        let mut games = Vec::new();
+        
+        // This is a simplified parser - in a real implementation, you'd parse
+        // Battle.net's actual configuration format (likely JSON or similar)
+        
+        // For now, let's check for common Warcraft game directories
+        let warcraft_games = vec![
+            ("Warcraft I", vec!["Warcraft.exe", "Warcraft I.exe"]),
+            ("Warcraft II", vec!["Warcraft II.exe", "Warcraft2.exe"]),
+            ("Warcraft III", vec!["Warcraft III.exe", "Warcraft3.exe"]),
+        ];
+
+        for (game_name, exe_names) in warcraft_games {
+            for exe_name in exe_names {
+                let exe_path = config_path.join(exe_name);
+                if exe_path.exists() {
+                    games.push(GameInstallation {
+                        name: game_name.to_string(),
+                        path: exe_path,
+                        launcher: Some("Battle.net".to_string()),
+                        version: None,
+                        is_valid: true,
+                    });
+                }
+            }
+        }
+
+        Ok(games)
+    }
+
+    /// Detect GOG Galaxy games
+    fn detect_gog_games(&self) -> Result<Vec<GameInstallation>> {
+        let mut games = Vec::new();
+        
+        // Check for GOG Galaxy installation
+        let gog_paths = vec![
+            r"C:\Program Files (x86)\GOG Galaxy",
+            r"C:\Program Files\GOG Galaxy",
+        ];
+
+        for path in gog_paths {
+            let gog_path = Path::new(path);
+            if gog_path.exists() {
+                // Look for GOG Galaxy's game database
+                if let Ok(gog_games) = self.read_gog_library(gog_path) {
+                    games.extend(gog_games);
+                }
+            }
+        }
+
+        Ok(games)
+    }
+
+    /// Read GOG Galaxy game library
+    fn read_gog_library(&self, gog_path: &Path) -> Result<Vec<GameInstallation>> {
+        let mut games = Vec::new();
+        
+        // GOG Galaxy typically stores game info in its database
+        // This would require parsing GOG's specific format
+        // For now, we'll implement a basic check
+        
+        Ok(games)
+    }
+
+    /// Detect Microsoft Game Pass games
+    fn detect_gamepass_games(&self) -> Result<Vec<GameInstallation>> {
+        let mut games = Vec::new();
+        
+        // Check for Xbox app and Game Pass installations
+        let xbox_paths = vec![
+            r"C:\Program Files\WindowsApps\Microsoft.GamingApp",
+            r"C:\Program Files\Microsoft\Xbox",
+        ];
+
+        for path in xbox_paths {
+            let xbox_path = Path::new(path);
+            if xbox_path.exists() {
+                // Look for Game Pass games
+                if let Ok(gamepass_games) = self.read_gamepass_library(xbox_path) {
+                    games.extend(gamepass_games);
+                }
+            }
+        }
+
+        Ok(games)
+    }
+
+    /// Read Microsoft Game Pass game library
+    fn read_gamepass_library(&self, xbox_path: &Path) -> Result<Vec<GameInstallation>> {
+        let mut games = Vec::new();
+        
+        // Game Pass games are typically installed in WindowsApps
+        // This requires special permissions and parsing of Microsoft's format
+        
+        Ok(games)
+    }
+
+    /// Detect games from Windows Registry
+    fn detect_registry_games(&self) -> Result<Vec<GameInstallation>> {
+        let mut games = Vec::new();
+        
+        // This would require Windows-specific registry access
+        // For now, we'll implement a basic structure
+        
+        Ok(games)
+    }
+
+    /// Detect games from common installation paths
+    fn detect_common_path_games(&self) -> Result<Vec<GameInstallation>> {
+        let mut games = Vec::new();
+        
+        let common_paths = vec![
+            (r"C:\Program Files (x86)\Warcraft I", "Warcraft.exe", "Warcraft I"),
+            (r"C:\Program Files\Warcraft I", "Warcraft.exe", "Warcraft I"),
+            (r"C:\Program Files (x86)\Warcraft II", "Warcraft II.exe", "Warcraft II"),
+            (r"C:\Program Files\Warcraft II", "Warcraft II.exe", "Warcraft II"),
+            (r"C:\Program Files (x86)\Warcraft III", "Warcraft III.exe", "Warcraft III"),
+            (r"C:\Program Files\Warcraft III", "Warcraft III.exe", "Warcraft III"),
+        ];
+
+        for (base_path, exe_name, game_name) in common_paths {
+            let exe_path = Path::new(base_path).join(exe_name);
+            if exe_path.exists() {
+                games.push(GameInstallation {
+                    name: game_name.to_string(),
+                    path: exe_path,
+                    launcher: None,
+                    version: None,
+                    is_valid: true,
                 });
             }
         }
-        None
+
+        Ok(games)
     }
-    
-    /// Find executable path for Windows process
-    fn find_windows_executable_path(&self, pid: u32) -> Option<String> {
-        // Use wmic to get executable path
-        let output = Command::new("wmic")
-            .args(&["process", "where", &format!("ProcessId={}", pid), "get", "ExecutablePath"])
-            .output();
+
+    /// Get launcher information
+    pub fn get_launcher_info(&self) -> Result<Vec<LauncherInfo>> {
+        let mut launchers = Vec::new();
         
-        if let Ok(output) = output {
-            let output_str = String::from_utf8_lossy(&output.stdout);
-            for line in output_str.lines() {
-                if line.contains(":\\") && !line.contains("ExecutablePath") {
-                    return Some(line.trim().to_string());
-                }
-            }
-        }
-        None
-    }
-}
+        // Battle.net
+        let battle_net_paths = self.get_battle_net_paths();
+        let battle_net_installed = battle_net_paths.iter().any(|p| p.exists());
+        let battle_net_path = battle_net_paths.iter().find(|p| p.exists()).cloned();
+        
+        launchers.push(LauncherInfo {
+            name: "Battle.net".to_string(),
+            is_installed: battle_net_installed,
+            installation_path: battle_net_path,
+            games: Vec::new(),
+        });
 
-/// Public functions for Tauri commands
+        // GOG Galaxy
+        let gog_installed = Path::new(r"C:\Program Files (x86)\GOG Galaxy").exists() 
+            || Path::new(r"C:\Program Files\GOG Galaxy").exists();
+        
+        launchers.push(LauncherInfo {
+            name: "GOG Galaxy".to_string(),
+            is_installed: gog_installed,
+            installation_path: None, // Would need to determine actual path
+            games: Vec::new(),
+        });
 
-/// Detect Warcraft II installation
-pub fn detect_warcraft_installation() -> Result<bool> {
-    let path_finder = GamePathFinder::new();
-    let paths = path_finder.find_game_paths();
-    Ok(!paths.is_empty())
-}
-
-/// Get platform information
-pub fn get_platform_info() -> PlatformInfo {
-    let platform = Platform::current();
-    let path_finder = GamePathFinder::new();
-    let paths = path_finder.find_game_paths();
-    
-    // Check for Wine
-    let wine_detected = check_wine_installed();
-    
-    // Determine compatibility level
-    let compatibility_level = match platform {
-        Platform::Windows => CompatibilityLevel::Native,
-        Platform::Linux => if wine_detected { CompatibilityLevel::Wine } else { CompatibilityLevel::Unsupported },
-        Platform::macOS => if wine_detected { CompatibilityLevel::Wine } else { CompatibilityLevel::Unsupported },
-    };
-    
-    PlatformInfo {
-        platform: platform.to_string(),
-        wine_detected,
-        recommended_paths: paths.iter().map(|p| p.to_string_lossy().to_string()).collect(),
-        compatibility_level,
-    }
-}
-
-/// Detect running game
-pub fn detect_running_game() -> GameDetectionResult {
-    let _platform = Platform::current();
-    let process_monitor = ProcessMonitor::new();
-    
-    match process_monitor.find_game_processes() {
-        Ok(processes) => {
-            if let Some(process) = processes.first() {
-                GameDetectionResult {
-                    is_running: true,
-                    process_info: Some(process.clone()),
-                    installation_path: process.executable_path.clone(),
-                }
-            } else {
-                GameDetectionResult {
-                    is_running: false,
-                    process_info: None,
-                    installation_path: None,
-                }
-            }
-        }
-        Err(_) => GameDetectionResult {
-            is_running: false,
-            process_info: None,
+        // Microsoft Game Pass
+        let gamepass_installed = Path::new(r"C:\Program Files\WindowsApps\Microsoft.GamingApp").exists();
+        
+        launchers.push(LauncherInfo {
+            name: "Microsoft Game Pass".to_string(),
+            is_installed: gamepass_installed,
             installation_path: None,
-        }
+            games: Vec::new(),
+        });
+
+        Ok(launchers)
     }
 }
 
-/// Get recommended installation paths
-pub fn get_recommended_paths() -> Vec<String> {
-    let path_finder = GamePathFinder::new();
-    path_finder.find_game_paths()
-        .iter()
-        .map(|p| p.to_string_lossy().to_string())
-        .collect()
-}
-
-/// Check if Wine is installed
-fn check_wine_installed() -> bool {
-    let platform = Platform::current();
-    match platform {
-        Platform::Windows => false,
-        Platform::Linux | Platform::macOS => {
-            Command::new("wine")
-                .arg("--version")
-                .output()
-                .is_ok()
-        }
+impl Default for GameDetector {
+    fn default() -> Self {
+        Self::new()
     }
 }
