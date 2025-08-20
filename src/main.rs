@@ -6,6 +6,7 @@ pub mod wc1_extractor;
 pub mod wc2_extractor;
 pub mod web_analyzer;
 pub mod multiplayer_monitor;
+pub mod game_result_monitor;
 
 use clap::{Parser, Subcommand};
 use anyhow::Result;
@@ -147,6 +148,20 @@ enum Commands {
         #[arg(short, long, default_value = "multiplayer_data_test.json")]
         output: String,
     },
+    
+    /// Monitor game results for website display
+    MonitorResults {
+        /// JSON log file for game results
+        #[arg(short, long, default_value = "game_results.json")]
+        log_file: String,
+    },
+    
+    /// Test game result monitoring (headless)
+    TestResults {
+        /// JSON log file for game results
+        #[arg(short, long, default_value = "game_results_test.json")]
+        log_file: String,
+    },
 }
 
 fn main() -> Result<()> {
@@ -205,6 +220,14 @@ fn main() -> Result<()> {
         Commands::TestMultiplayer { output } => {
             println!("Testing multiplayer monitoring (headless)...");
             test_multiplayer_monitoring(&output)?;
+        }
+        Commands::MonitorResults { log_file } => {
+            info!("Starting game result monitoring for website...");
+            monitor_game_results(&log_file)?;
+        }
+        Commands::TestResults { log_file } => {
+            println!("Testing game result monitoring (headless)...");
+            test_game_result_monitoring(&log_file)?;
         }
     }
 
@@ -713,6 +736,210 @@ fn test_multiplayer_monitoring(output_file: &str) -> Result<()> {
     );
     println!("📊 Game duration: {} minutes", test_game_state.statistics.game_duration.as_secs() / 60);
     println!("🏆 Winner: {} ({:?})", test_game_state.players[0].name, test_game_state.players[0].faction);
+    
+    Ok(())
+}
+
+fn monitor_game_results(log_file: &str) -> Result<()> {
+    use crate::game_result_monitor::GameResultMonitor;
+    
+    let mut monitor = GameResultMonitor::new(log_file.to_string());
+    monitor.start_monitoring()?;
+    
+    info!("Game result monitoring completed!");
+    info!("Log file: {}", log_file);
+    
+    Ok(())
+}
+
+fn test_game_result_monitoring(log_file: &str) -> Result<()> {
+    use crate::game_result_monitor::{GameResultMonitor, GameResult, MapInfo, StartingResources, GameSettings, PlayerResult, Faction, PlayerStatistics, PlayerOutcome, GameOutcome, GameStatistics};
+    
+    println!("Starting headless game result monitoring test...");
+    println!("Log file: {}", log_file);
+    
+    // Create a sample game result
+    let sample_game = GameResult {
+        game_id: "test_game_456".to_string(),
+        timestamp: std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs(),
+        map_info: MapInfo {
+            name: "Forest of Shadows".to_string(),
+            size: "256x256".to_string(),
+            terrain_type: "Forest".to_string(),
+            starting_resources: StartingResources {
+                starting_gold: 1000,
+                starting_lumber: 500,
+                starting_oil: 0,
+                gold_mines: 8,
+                oil_wells: 0,
+            },
+            victory_conditions: vec!["Destroy all enemies".to_string(), "Control all resources".to_string()],
+        },
+        game_settings: GameSettings {
+            game_type: "2v2".to_string(),
+            speed: "Fast".to_string(),
+            starting_age: "Dark Age".to_string(),
+            resources: "High".to_string(),
+            population_limit: 200,
+            reveal_map: "Normal".to_string(),
+            starting_units: "No".to_string(),
+            lock_teams: true,
+            lock_speed: true,
+        },
+        players: vec![
+            PlayerResult {
+                name: "HumanPlayer1".to_string(),
+                faction: Faction::Human,
+                team: 1,
+                rank: "Knight".to_string(),
+                is_host: true,
+                final_score: 1850,
+                rank_score: 1850,
+                statistics: PlayerStatistics {
+                    units_trained: 67,
+                    units_destroyed: 42,
+                    structures_built: 23,
+                    structures_destroyed: 12,
+                    gold_mined: 8500,
+                    lumber_harvested: 6200,
+                    oil_collected: 0,
+                    units_lost: 28,
+                    structures_lost: 8,
+                    military_score: 800,
+                    economy_score: 950,
+                    technology_score: 700,
+                },
+                outcome: PlayerOutcome::Victory,
+            },
+            PlayerResult {
+                name: "HumanPlayer2".to_string(),
+                faction: Faction::Human,
+                team: 1,
+                rank: "Sergeant".to_string(),
+                is_host: false,
+                final_score: 1650,
+                rank_score: 1650,
+                statistics: PlayerStatistics {
+                    units_trained: 54,
+                    units_destroyed: 38,
+                    structures_built: 19,
+                    structures_destroyed: 9,
+                    gold_mined: 7200,
+                    lumber_harvested: 5800,
+                    oil_collected: 0,
+                    units_lost: 35,
+                    structures_lost: 12,
+                    military_score: 980,
+                    economy_score: 820,
+                    technology_score: 650,
+                },
+                outcome: PlayerOutcome::Victory,
+            },
+            PlayerResult {
+                name: "OrcPlayer1".to_string(),
+                faction: Faction::Orc,
+                team: 2,
+                rank: "Raider".to_string(),
+                is_host: false,
+                final_score: 1420,
+                rank_score: 1420,
+                statistics: PlayerStatistics {
+                    units_trained: 48,
+                    units_destroyed: 31,
+                    structures_built: 16,
+                    structures_destroyed: 7,
+                    gold_mined: 6800,
+                    lumber_harvested: 5100,
+                    oil_collected: 0,
+                    units_lost: 42,
+                    structures_lost: 15,
+                    military_score: 850,
+                    economy_score: 720,
+                    technology_score: 580,
+                },
+                outcome: PlayerOutcome::Defeat,
+            },
+            PlayerResult {
+                name: "OrcPlayer2".to_string(),
+                faction: Faction::Orc,
+                team: 2,
+                rank: "Grunt".to_string(),
+                is_host: false,
+                final_score: 1280,
+                rank_score: 1280,
+                statistics: PlayerStatistics {
+                    units_trained: 41,
+                    units_destroyed: 25,
+                    structures_built: 14,
+                    structures_destroyed: 6,
+                    gold_mined: 5900,
+                    lumber_harvested: 4400,
+                    oil_collected: 0,
+                    units_lost: 38,
+                    structures_lost: 18,
+                    military_score: 720,
+                    economy_score: 650,
+                    technology_score: 520,
+                },
+                outcome: PlayerOutcome::Defeat,
+            },
+        ],
+        teams: Vec::new(), // Will be populated by the monitor
+        game_outcome: GameOutcome::Victory { winning_team: 1, winner_names: vec!["HumanPlayer1".to_string(), "HumanPlayer2".to_string()] },
+        game_duration: 1800, // 30 minutes
+        total_statistics: GameStatistics {
+            total_units_trained: 210,
+            total_units_destroyed: 136,
+            total_structures_built: 72,
+            total_structures_destroyed: 34,
+            total_gold_mined: 28400,
+            total_lumber_harvested: 21500,
+            total_oil_collected: 0,
+            game_duration_minutes: 30,
+        },
+    };
+    
+    // Manually log the sample game result
+    let mut game_results = vec![sample_game.clone()];
+    
+    // Write to log file
+    let path = std::path::Path::new(log_file);
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent)?;
+    }
+    
+    let file = std::fs::OpenOptions::new()
+        .write(true)
+        .create(true)
+        .truncate(true)
+        .open(path)?;
+    
+    let writer = std::io::BufWriter::new(file);
+    serde_json::to_writer_pretty(writer, &game_results)?;
+    
+    println!("✅ Game result monitoring test completed successfully!");
+    println!("📁 Sample game result logged to: {}", log_file);
+    println!("🎮 Test game: {} vs {} (Team {} wins)", 
+        sample_game.players[0].name, 
+        sample_game.players[2].name,
+        match &sample_game.game_outcome {
+            GameOutcome::Victory { winning_team, .. } => *winning_team,
+            _ => 0,
+        }
+    );
+    println!("🗺️ Map: {} ({})", sample_game.map_info.name, sample_game.map_info.size);
+    println!("⚙️ Settings: {} - {} - {}", 
+        sample_game.game_settings.game_type, 
+        sample_game.game_settings.speed, 
+        sample_game.game_settings.resources
+    );
+    println!("⏱️ Duration: {} minutes", sample_game.total_statistics.game_duration_minutes);
+    println!("🏆 Winners: {}", 
+        match &sample_game.game_outcome {
+            GameOutcome::Victory { winner_names, .. } => winner_names.join(", "),
+            _ => "None".to_string(),
+        }
+    );
     
     Ok(())
 }

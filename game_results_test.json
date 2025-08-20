@@ -1,0 +1,152 @@
+[
+  {
+    "game_id": "test_game_456",
+    "timestamp": 1755665988,
+    "map_info": {
+      "name": "Forest of Shadows",
+      "size": "256x256",
+      "terrain_type": "Forest",
+      "starting_resources": {
+        "starting_gold": 1000,
+        "starting_lumber": 500,
+        "starting_oil": 0,
+        "gold_mines": 8,
+        "oil_wells": 0
+      },
+      "victory_conditions": [
+        "Destroy all enemies",
+        "Control all resources"
+      ]
+    },
+    "game_settings": {
+      "game_type": "2v2",
+      "speed": "Fast",
+      "starting_age": "Dark Age",
+      "resources": "High",
+      "population_limit": 200,
+      "reveal_map": "Normal",
+      "starting_units": "No",
+      "lock_teams": true,
+      "lock_speed": true
+    },
+    "players": [
+      {
+        "name": "HumanPlayer1",
+        "faction": "Human",
+        "team": 1,
+        "rank": "Knight",
+        "is_host": true,
+        "final_score": 1850,
+        "rank_score": 1850,
+        "statistics": {
+          "units_trained": 67,
+          "units_destroyed": 42,
+          "structures_built": 23,
+          "structures_destroyed": 12,
+          "gold_mined": 8500,
+          "lumber_harvested": 6200,
+          "oil_collected": 0,
+          "units_lost": 28,
+          "structures_lost": 8,
+          "military_score": 800,
+          "economy_score": 950,
+          "technology_score": 700
+        },
+        "outcome": "Victory"
+      },
+      {
+        "name": "HumanPlayer2",
+        "faction": "Human",
+        "team": 1,
+        "rank": "Sergeant",
+        "is_host": false,
+        "final_score": 1650,
+        "rank_score": 1650,
+        "statistics": {
+          "units_trained": 54,
+          "units_destroyed": 38,
+          "structures_built": 19,
+          "structures_destroyed": 9,
+          "gold_mined": 7200,
+          "lumber_harvested": 5800,
+          "oil_collected": 0,
+          "units_lost": 35,
+          "structures_lost": 12,
+          "military_score": 980,
+          "economy_score": 820,
+          "technology_score": 650
+        },
+        "outcome": "Victory"
+      },
+      {
+        "name": "OrcPlayer1",
+        "faction": "Orc",
+        "team": 2,
+        "rank": "Raider",
+        "is_host": false,
+        "final_score": 1420,
+        "rank_score": 1420,
+        "statistics": {
+          "units_trained": 48,
+          "units_destroyed": 31,
+          "structures_built": 16,
+          "structures_destroyed": 7,
+          "gold_mined": 6800,
+          "lumber_harvested": 5100,
+          "oil_collected": 0,
+          "units_lost": 42,
+          "structures_lost": 15,
+          "military_score": 850,
+          "economy_score": 720,
+          "technology_score": 580
+        },
+        "outcome": "Defeat"
+      },
+      {
+        "name": "OrcPlayer2",
+        "faction": "Orc",
+        "team": 2,
+        "rank": "Grunt",
+        "is_host": false,
+        "final_score": 1280,
+        "rank_score": 1280,
+        "statistics": {
+          "units_trained": 41,
+          "units_destroyed": 25,
+          "structures_built": 14,
+          "structures_destroyed": 6,
+          "gold_mined": 5900,
+          "lumber_harvested": 4400,
+          "oil_collected": 0,
+          "units_lost": 38,
+          "structures_lost": 18,
+          "military_score": 720,
+          "economy_score": 650,
+          "technology_score": 520
+        },
+        "outcome": "Defeat"
+      }
+    ],
+    "teams": [],
+    "game_outcome": {
+      "Victory": {
+        "winning_team": 1,
+        "winner_names": [
+          "HumanPlayer1",
+          "HumanPlayer2"
+        ]
+      }
+    },
+    "game_duration": 1800,
+    "total_statistics": {
+      "total_units_trained": 210,
+      "total_units_destroyed": 136,
+      "total_structures_built": 72,
+      "total_structures_destroyed": 34,
+      "total_gold_mined": 28400,
+      "total_lumber_harvested": 21500,
+      "total_oil_collected": 0,
+      "game_duration_minutes": 30
+    }
+  }
+]
