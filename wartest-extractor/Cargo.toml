@@ -1,0 +1,51 @@
+[package]
+name = "wartest"
+version = "0.1.0"
+edition = "2021"
+authors = ["Your Name <your.email@example.com>"]
+description = "A Rust-based system for analyzing Warcraft I and II game files and extracting assets"
+
+[dependencies]
+# File handling and binary parsing
+memmap2 = "0.9"
+byteorder = "1.4"
+nom = "7.1"
+
+# Image processing
+image = "0.24"
+png = "0.17"
+
+# Audio processing
+hound = "3.5"
+ogg = "0.8"
+
+# Data serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+bson = "2.8"
+
+# CLI and utilities
+clap = { version = "4.0", features = ["derive"] }
+anyhow = "1.0"
+thiserror = "1.0"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+
+# Windows API (for memory reading if needed)
+winapi = { version = "0.3", features = ["winuser", "processthreadsapi", "memoryapi", "handleapi", "errhandlingapi", "psapi"] }
+
+# File system operations
+walkdir = "2.3"
+
+# Progress bars
+indicatif = "0.17"
+
+# Async runtime (for future web integration)
+tokio = { version = "1.0", features = ["full"] }
+
+[dev-dependencies]
+tempfile = "3.2"
+
+[[bin]]
+name = "wartest"
+path = "src/main.rs"

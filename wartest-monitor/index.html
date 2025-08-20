@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wartest Monitor - Warcraft II Game Monitor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .status-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .status-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #007bff;
+        }
+
+        .status-item h3 {
+            color: #007bff;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .status-item .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .status-item .status-active {
+            color: #28a745;
+        }
+
+        .status-item .status-inactive {
+            color: #dc3545;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #1e7e34;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #545b62;
+            transform: translateY(-2px);
+        }
+
+        .game-info {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .game-info h2 {
+            color: #007bff;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .game-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .detail-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .detail-item label {
+            font-weight: 600;
+            color: #666;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .detail-item .value {
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .history-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .history-section h2 {
+            color: #007bff;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+
+        .game-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .game-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #007bff;
+        }
+
+        .game-item h4 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .game-item .game-meta {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #c3e6cb;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎮 Wartest Monitor</h1>
+            <p>Warcraft II Multiplayer Game Monitor</p>
+        </div>
+
+        <div id="status-card" class="status-card">
+            <div class="status-grid">
+                <div class="status-item">
+                    <h3>Platform</h3>
+                    <div id="platform" class="value">Loading...</div>
+                </div>
+                <div class="status-item">
+                    <h3>Game Detected</h3>
+                    <div id="game-detected" class="value">Loading...</div>
+                </div>
+                <div class="status-item">
+                    <h3>Monitoring Status</h3>
+                    <div id="monitoring-status" class="value status-inactive">Inactive</div>
+                </div>
+                <div class="status-item">
+                    <h3>Games Monitored</h3>
+                    <div id="games-monitored" class="value">0</div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="start-btn" class="btn btn-success">Start Monitoring</button>
+                <button id="stop-btn" class="btn btn-danger" disabled>Stop Monitoring</button>
+                <button id="upload-btn" class="btn btn-primary">Upload Results</button>
+                <button id="refresh-btn" class="btn btn-secondary">Refresh Status</button>
+            </div>
+        </div>
+
+        <div id="current-game" class="game-info hidden">
+            <h2>Current Game</h2>
+            <div class="game-details">
+                <div class="detail-item">
+                    <label>Game ID</label>
+                    <div id="current-game-id" class="value">-</div>
+                </div>
+                <div class="detail-item">
+                    <label>Duration</label>
+                    <div id="current-game-duration" class="value">-</div>
+                </div>
+                <div class="detail-item">
+                    <label>Players</label>
+                    <div id="current-game-players" class="value">-</div>
+                </div>
+                <div class="detail-item">
+                    <label>Map</label>
+                    <div id="current-game-map" class="value">-</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="history-section" class="history-section">
+            <h2>Game History</h2>
+            <div id="game-list" class="game-list">
+                <div class="loading">Loading game history...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tauri API
+        const { invoke } = window.__TAURI__.tauri;
+
+        // App state
+        let appState = {
+            isMonitoring: false,
+            currentGame: null,
+            gameHistory: []
+        };
+
+        // Initialize app
+        async function initializeApp() {
+            try {
+                const appInfo = await invoke('initialize_app');
+                updatePlatformInfo(appInfo);
+                await refreshStatus();
+                await loadGameHistory();
+            } catch (error) {
+                showError('Failed to initialize app: ' + error);
+            }
+        }
+
+        // Update platform information
+        function updatePlatformInfo(appInfo) {
+            document.getElementById('platform').textContent = appInfo.platform;
+            document.getElementById('game-detected').textContent = appInfo.game_detected ? 'Yes' : 'No';
+        }
+
+        // Refresh monitoring status
+        async function refreshStatus() {
+            try {
+                const status = await invoke('get_monitoring_status');
+                appState.isMonitoring = status.is_active;
+                appState.currentGame = status.current_game;
+                
+                updateMonitoringStatus(status);
+                updateCurrentGame(status.current_game);
+            } catch (error) {
+                showError('Failed to refresh status: ' + error);
+            }
+        }
+
+        // Update monitoring status display
+        function updateMonitoringStatus(status) {
+            const statusElement = document.getElementById('monitoring-status');
+            const startBtn = document.getElementById('start-btn');
+            const stopBtn = document.getElementById('stop-btn');
+            
+            if (status.is_active) {
+                statusElement.textContent = 'Active';
+                statusElement.className = 'value status-active';
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+            } else {
+                statusElement.textContent = 'Inactive';
+                statusElement.className = 'value status-inactive';
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+            }
+            
+            document.getElementById('games-monitored').textContent = status.total_games_monitored;
+        }
+
+        // Update current game display
+        function updateCurrentGame(game) {
+            const currentGameElement = document.getElementById('current-game');
+            
+            if (game) {
+                currentGameElement.classList.remove('hidden');
+                document.getElementById('current-game-id').textContent = game.game_id;
+                document.getElementById('current-game-duration').textContent = formatDuration(game.game_duration);
+                document.getElementById('current-game-players').textContent = game.players.length;
+                document.getElementById('current-game-map').textContent = game.map_info.name;
+            } else {
+                currentGameElement.classList.add('hidden');
+            }
+        }
+
+        // Load game history
+        async function loadGameHistory() {
+            try {
+                const history = await invoke('get_game_history');
+                appState.gameHistory = history;
+                updateGameHistory(history);
+            } catch (error) {
+                showError('Failed to load game history: ' + error);
+            }
+        }
+
+        // Update game history display
+        function updateGameHistory(history) {
+            const gameList = document.getElementById('game-list');
+            
+            if (history.length === 0) {
+                gameList.innerHTML = '<div class="loading">No games recorded yet</div>';
+                return;
+            }
+            
+            gameList.innerHTML = history.map(game => `
+                <div class="game-item">
+                    <h4>${game.game_id}</h4>
+                    <div class="game-meta">
+                        <span>Map: ${game.map_info.name}</span>
+                        <span>Duration: ${formatDuration(game.game_duration)}</span>
+                        <span>Players: ${game.players.length}</span>
+                        <span>Outcome: ${getGameOutcomeText(game.game_outcome)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Start monitoring
+        async function startMonitoring() {
+            try {
+                await invoke('start_monitoring');
+                showSuccess('Monitoring started successfully');
+                await refreshStatus();
+            } catch (error) {
+                showError('Failed to start monitoring: ' + error);
+            }
+        }
+
+        // Stop monitoring
+        async function stopMonitoring() {
+            try {
+                await invoke('stop_monitoring');
+                showSuccess('Monitoring stopped successfully');
+                await refreshStatus();
+            } catch (error) {
+                showError('Failed to stop monitoring: ' + error);
+            }
+        }
+
+        // Upload results
+        async function uploadResults() {
+            try {
+                const result = await invoke('upload_results');
+                if (result.success) {
+                    showSuccess(`Successfully uploaded ${result.games_uploaded} games`);
+                } else {
+                    showError('Upload failed: ' + (result.error_message || 'Unknown error'));
+                }
+            } catch (error) {
+                showError('Failed to upload results: ' + error);
+            }
+        }
+
+        // Utility functions
+        function formatDuration(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        function getGameOutcomeText(outcome) {
+            if (outcome.Victory) {
+                return `Victory (Team ${outcome.Victory.winning_team})`;
+            } else if (outcome.Defeat) {
+                return `Defeat (Team ${outcome.Defeat.losing_team})`;
+            } else if (outcome.Draw) {
+                return 'Draw';
+            } else if (outcome.Disconnect) {
+                return 'Disconnect';
+            }
+            return 'Unknown';
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+            document.querySelector('.container').insertBefore(errorDiv, document.querySelector('.status-card'));
+            
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success';
+            successDiv.textContent = message;
+            document.querySelector('.container').insertBefore(successDiv, document.querySelector('.status-card'));
+            
+            setTimeout(() => {
+                successDiv.remove();
+            }, 5000);
+        }
+
+        // Event listeners
+        document.getElementById('start-btn').addEventListener('click', startMonitoring);
+        document.getElementById('stop-btn').addEventListener('click', stopMonitoring);
+        document.getElementById('upload-btn').addEventListener('click', uploadResults);
+        document.getElementById('refresh-btn').addEventListener('click', refreshStatus);
+
+        // Initialize app when page loads
+        document.addEventListener('DOMContentLoaded', initializeApp);
+
+        // Auto-refresh status every 5 seconds
+        setInterval(refreshStatus, 5000);
+    </script>
+</body>
+</html>
