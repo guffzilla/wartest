@@ -776,7 +776,7 @@
                             <div class="version-item">
                                 <div class="version-info">
                                     <div class="version-name">Warcraft I: Remastered</div>
-                                    <div id="wc1-remastered-path" class="version-path">Not found</div>
+                                    <div id="wc1-remastered-path" class="version-path">Scanning...</div>
                                 </div>
                                 <div class="version-status">
                                     <div id="wc1-remastered-status" class="status-indicator status-not-found"></div>
@@ -802,7 +802,7 @@
                             <div class="version-item">
                                 <div class="version-info">
                                     <div class="version-name">Warcraft I: Orcs & Humans (DOS)</div>
-                                    <div id="wc1-dos-path" class="version-path">Not found</div>
+                                    <div id="wc1-dos-path" class="version-path">Scanning...</div>
                                 </div>
                                 <div class="version-status">
                                     <div id="wc1-dos-status" class="status-indicator status-not-found"></div>
@@ -833,7 +833,7 @@
                             <div class="version-item">
                                 <div class="version-info">
                                     <div class="version-name">Warcraft II: Remastered</div>
-                                    <div id="wc2-remastered-path" class="version-path">Not found</div>
+                                    <div id="wc2-remastered-path" class="version-path">Scanning...</div>
                                 </div>
                                 <div class="version-status">
                                     <div id="wc2-remastered-status" class="status-indicator status-not-found"></div>
@@ -859,7 +859,7 @@
                             <div class="version-item">
                                 <div class="version-info">
                                     <div class="version-name">Warcraft II: Combat Edition</div>
-                                    <div id="wc2-combat-path" class="version-path">Not found</div>
+                                    <div id="wc2-combat-path" class="version-path">Scanning...</div>
                                 </div>
                                 <div class="version-status">
                                     <div id="wc2-combat-status" class="status-indicator status-not-found"></div>
@@ -871,7 +871,7 @@
                             <div class="version-item">
                                 <div class="version-info">
                                     <div class="version-name">Warcraft II: Battle.net Edition</div>
-                                    <div id="wc2-bnet-path" class="version-path">Not found</div>
+                                    <div id="wc2-bnet-path" class="version-path">Scanning...</div>
                                 </div>
                                 <div class="version-status">
                                     <div id="wc2-bnet-status" class="status-indicator status-not-found"></div>
@@ -883,7 +883,7 @@
                             <div class="version-item">
                                 <div class="version-info">
                                     <div class="version-name">Warcraft II: Tides of Darkness (DOS)</div>
-                                    <div id="wc2-dos-path" class="version-path">Not found</div>
+                                    <div id="wc2-dos-path" class="version-path">Scanning...</div>
                                 </div>
                                 <div class="version-status">
                                     <div id="wc2-dos-status" class="status-indicator status-not-found"></div>
@@ -892,7 +892,7 @@
                             <div class="version-item">
                                 <div class="version-info">
                                     <div class="version-name">Warcraft II: Beyond the Dark Portal (DOS)</div>
-                                    <div id="wc2-dosx-path" class="version-path">Not found</div>
+                                    <div id="wc2-dosx-path" class="version-path">Scanning...</div>
                                 </div>
                                 <div class="version-status">
                                     <div id="wc2-dosx-status" class="status-indicator status-not-found"></div>
@@ -920,7 +920,7 @@
                             <div class="version-item">
                                 <div class="version-info">
                                     <div class="version-name">Warcraft III: Reforged</div>
-                                    <div id="wc3-reforged-path" class="version-path">Not found</div>
+                                    <div id="wc3-reforged-path" class="version-path">Scanning...</div>
                                 </div>
                                 <div class="version-status">
                                     <div id="wc3-reforged-status" class="status-indicator status-not-found"></div>
@@ -946,7 +946,7 @@
                             <div class="version-item">
                                 <div class="version-info">
                                     <div class="version-name">Warcraft III: Reign of Chaos</div>
-                                    <div id="wc3-roc-path" class="version-path">Not found</div>
+                                    <div id="wc3-roc-path" class="version-path">Scanning...</div>
                                 </div>
                                 <div class="version-status">
                                     <div id="wc3-roc-status" class="status-indicator status-not-found"></div>
@@ -955,7 +955,7 @@
                             <div class="version-item">
                                 <div class="version-info">
                                     <div class="version-name">Warcraft III: The Frozen Throne</div>
-                                    <div id="wc3-tft-path" class="version-path">Not found</div>
+                                    <div id="wc3-tft-path" class="version-path">Scanning...</div>
                                 </div>
                                 <div class="version-status">
                                     <div id="wc3-tft-status" class="status-indicator status-not-found"></div>
@@ -964,7 +964,7 @@
                             <div class="version-item">
                                 <div class="version-info">
                                     <div class="version-name">W3Arena (W3Champions)</div>
-                                    <div id="w3arena-path" class="version-path">Not found</div>
+                                    <div id="w3arena-path" class="version-path">Scanning...</div>
                                 </div>
                                 <div class="version-status">
                                     <div id="w3arena-status" class="status-indicator status-not-found"></div>
@@ -1023,32 +1023,8 @@
             invoke = window.__TAURI__.invoke;
             console.log('✅ Tauri API detected successfully');
         } catch (error) {
-            console.warn('❌ Tauri API not available, using mock functions for development');
-            console.error('Tauri API error:', error);
-            // Mock functions for development
-            invoke = async (command, args) => {
-                console.log(`Mock invoke: ${command}`, args);
-                await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate delay
-                
-                // Return mock data for development
-                switch (command) {
-                    case 'scan_for_games':
-                        return {
-                            'wc1-remastered': { found: true, path: 'C:\\Users\\garet\\OneDrive\\Desktop\\wartest\\games\\Warcraft I Remastered\\x86\\Warcraft.exe', launcher: 'Project', version: 'Remastered', multiple_installations: false },
-                            'wc2-remastered': { found: true, path: 'C:\\Users\\garet\\OneDrive\\Desktop\\wartest\\games\\Warcraft II Remastered\\x86\\Warcraft II.exe', launcher: 'Project', version: 'Remastered', multiple_installations: false },
-                            'wc2-combat': { found: true, path: 'C:\\Users\\garet\\OneDrive\\Desktop\\wartest\\games\\Warcraft II Combat Edition\\Warcraft II.exe', launcher: 'Project', version: 'Combat Edition', multiple_installations: false },
-                            'w3arena': { found: true, path: 'C:\\Users\\garet\\Desktop\\wartest\\games\\W3Arena\\W3Arena.exe', launcher: 'Project', version: 'W3Arena', multiple_installations: false }
-                        };
-                    case 'get_launcher_info':
-                        return [
-                            { name: 'Battle.net', is_installed: true, installation_path: 'C:\\Users\\garet\\AppData\\Local\\Battle.net', games_count: 3 },
-                            { name: 'GOG Galaxy', is_installed: false, installation_path: null, games_count: 0 },
-                            { name: 'Microsoft Game Pass', is_installed: false, installation_path: null, games_count: 0 }
-                        ];
-                    default:
-                        return { success: true, message: 'Mock response' };
-                }
-            };
+            console.error('❌ Tauri API not available:', error);
+            throw new Error('Tauri API not available - this app must run in a Tauri environment');
         }
 
         // Game data structure
@@ -1067,10 +1043,13 @@
         // Initialize app
         async function initializeApp() {
             try {
+                console.log('🚀 Initializing WCArena Core...');
                 await scanForGames();
                 await detectLaunchers();
+                console.log('✅ App initialization complete');
             } catch (error) {
-                console.error('Failed to initialize app:', error);
+                console.error('❌ Failed to initialize app:', error);
+                showNotification('Failed to initialize app: ' + error, 'error');
             }
         }
 
@@ -1091,7 +1070,9 @@
                 }
                 
                 // Call backend to scan for games
+                console.log('🔍 Calling scan_for_games...');
                 const results = await invoke('scan_for_games');
+                console.log('📊 Scan results:', results);
                 updateGameDisplay(results);
                 
                 scanStatus.textContent = 'Scan complete!';
@@ -1150,7 +1131,7 @@
                         mapButton.disabled = false;
                     }
                 } else {
-                    pathElement.textContent = 'Not found';
+                    pathElement.textContent = 'No games found';
                     statusElement.className = 'status-indicator status-not-found';
                     gameInstallations[gameKey] = { path: '', found: false, multiple: false };
                 }
@@ -1169,7 +1150,9 @@
         // Detect installed game launchers
         async function detectLaunchers() {
             try {
+                console.log('🔍 Calling get_launcher_info...');
                 const launchers = await invoke('get_launcher_info');
+                console.log('📊 Launcher results:', launchers);
                 updateLauncherDisplay(launchers);
             } catch (error) {
                 console.error('Failed to detect launchers:', error);
@@ -1236,17 +1219,50 @@
                     const folderPath = selected[0];
                     console.log('Selected folder:', folderPath);
                     
-                    // Here you could scan the folder for game executables
-                    // For now, just close the picker
-                    closeFolderPicker();
+                    // Scan the selected folder for games
+                    try {
+                        const results = await invoke('scan_folder_for_games', { folderPath: folderPath });
+                        console.log('Scan results:', results);
+                        
+                        if (Object.keys(results).length > 0) {
+                            updateGameDisplay(results);
+                            showNotification('Games found in selected folder!', 'success');
+                        } else {
+                            showNotification('No Warcraft games found in selected folder', 'warning');
+                        }
+                    } catch (scanError) {
+                        console.error('Failed to scan folder:', scanError);
+                        showNotification('Failed to scan folder: ' + scanError, 'error');
+                    }
                     
-                    // You could also call a backend function to scan this folder
-                    // await invoke('scan_folder_for_games', { folderPath });
+                    closeFolderPicker();
                 }
             } catch (error) {
                 console.error('Failed to open folder picker:', error);
-                alert('Failed to open folder picker: ' + error);
+                showNotification('Failed to open folder picker: ' + error, 'error');
             }
+        }
+        
+        // Show notification
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `map-notification map-notification-${type}`;
+            notification.textContent = message;
+            notification.style.position = 'fixed';
+            notification.style.top = '20px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '1000';
+            notification.style.minWidth = '300px';
+            
+            document.body.appendChild(notification);
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
         }
 
         // Close folder picker
@@ -1263,7 +1279,7 @@
                 const pathElement = document.getElementById(gameKey + '-path');
                 console.log('🗺️ Frontend: Found path element:', pathElement);
                 
-                if (!pathElement || pathElement.textContent === 'Not found') {
+                if (!pathElement || pathElement.textContent === 'No games found') {
                     console.log('🗺️ Frontend: Game not found or path not available');
                     showMapNotification(gameKey, 'Game not found or path not available', 'error');
                     return;

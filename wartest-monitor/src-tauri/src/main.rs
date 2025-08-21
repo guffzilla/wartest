@@ -134,7 +134,17 @@ async fn get_launcher_info() -> Result<Vec<Value>, String> {
     // Check for Battle.net
     let battle_net_path = std::env::var("LOCALAPPDATA")
         .map(|appdata| format!("{}\\Battle.net", appdata))
-        .unwrap_or_else(|_| "C:\\Users\\garet\\AppData\\Local\\Battle.net".to_string());
+        .unwrap_or_else(|_| {
+            // Fallback to common Battle.net installation paths
+            let common_paths = vec![
+                "C:\\Program Files (x86)\\Battle.net",
+                "C:\\Program Files\\Battle.net",
+            ];
+            common_paths.into_iter()
+                .find(|path| std::path::Path::new(path).exists())
+                .unwrap_or("C:\\Program Files (x86)\\Battle.net")
+                .to_string()
+        });
     
     if std::path::Path::new(&battle_net_path).exists() {
         launchers.push(serde_json::json!({
@@ -226,26 +236,93 @@ async fn get_map_folders(game_path: String) -> Result<Vec<String>, String> {
 
 #[tauri::command]
 async fn add_game_manually() -> Result<String, String> {
-    Ok("Manual game addition not implemented yet".to_string())
+    // This function is called when user wants to add a game manually
+    // The actual folder selection is handled by open_folder_dialog
+    Ok("Please use the folder picker to select your game installation".to_string())
+}
+
+#[tauri::command]
+async fn scan_folder_for_games(folder_path: String) -> Result<HashMap<String, Value>, String> {
+    println!("Scanning folder for games: {}", folder_path);
+    
+    let game_detector = GameDetector::new();
+    let path = std::path::Path::new(&folder_path);
+    
+    if !path.exists() {
+        return Err("Folder does not exist".to_string());
+    }
+    
+    // Scan the selected folder for games
+    let mut games = HashMap::new();
+    game_detector.scan_directory_for_games(path, &mut games, 3);
+    
+    // Convert to the expected format
+    let mut result = HashMap::new();
+    for (_game_name, installations) in games {
+        for installation in installations {
+            let game_key = match installation.version.as_deref() {
+                Some("Remastered") => {
+                    if installation.path.to_string_lossy().contains("Warcraft I") {
+                        "wc1-remastered"
+                    } else if installation.path.to_string_lossy().contains("Warcraft II") {
+                        "wc2-remastered"
+                    } else {
+                        continue;
+                    }
+                },
+                Some("Combat Edition") => "wc2-combat",
+                Some("Battle.net Edition") => "wc2-bnet",
+                Some("Reign of Chaos") => "wc3-roc",
+                Some("The Frozen Throne") => "wc3-tft",
+                Some("Reforged") => "wc3-reforged",
+                Some("W3Arena") => "w3arena",
+                _ => {
+                    if installation.path.to_string_lossy().contains("Warcraft I") && 
+                       !installation.path.to_string_lossy().contains("Remastered") {
+                        "wc1-dos"
+                    } else if installation.path.to_string_lossy().contains("Warcraft II") && 
+                              !installation.path.to_string_lossy().contains("Remastered") {
+                        "wc2-dos"
+                    } else {
+                        continue;
+                    }
+                }
+            };
+            
+            let game_info = serde_json::json!({
+                "found": true,
+                "path": installation.path.to_string_lossy(),
+                "launcher": installation.launcher.unwrap_or_else(|| "Manual".to_string()),
+                "version": installation.version.unwrap_or_else(|| "Unknown".to_string()),
+                "multiple_installations": false
+            });
+            
+            result.insert(game_key.to_string(), game_info);
+        }
+    }
+    
+    Ok(result)
 }
 
 #[tauri::command]
 async fn open_folder_dialog() -> Result<Vec<String>, String> {
-    // TODO: Implement folder dialog when Tauri features are available
-    Err("Folder dialog not yet implemented".to_string())
+    // For now, return a placeholder since dialog API needs to be implemented differently
+    // TODO: Implement proper folder dialog using native file picker
+    Err("Folder dialog not yet implemented - please use manual path entry".to_string())
 }
 
 #[tauri::command]
 async fn open_external_url(url: String) -> Result<(), String> {
-    // TODO: Implement external URL opening when Tauri features are available
+    // For now, just print the URL since shell-open feature is not available
     println!("Would open URL: {}", url);
     Ok(())
 }
 
 #[tauri::command]
 async fn open_wc_arena_app() -> Result<(), String> {
-    // TODO: Implement WCArena app opening
-    println!("Would open WCArena app");
+    // For now, just print the URL since shell-open feature is not available
+    let wc_arena_url = "https://wcarena.com"; // Replace with actual WCArena URL
+    println!("Would open WCArena: {}", wc_arena_url);
     Ok(())
 }
 
@@ -255,6 +332,7 @@ fn main() {
             scan_for_games,
             locate_games,
             add_game_manually,
+            scan_folder_for_games,
             get_launcher_info,
             get_map_folders,
             open_folder_dialog,
@@ -263,6 +341,12 @@ fn main() {
         ])
         .setup(|app| {
             let main_window = app.get_webview_window("main").unwrap();
+            
+            // Enable dev tools for debugging
+            #[cfg(debug_assertions)]
+            {
+                main_window.open_devtools();
+            }
             
             // Handle window events
             main_window.clone().on_window_event(move |event| {

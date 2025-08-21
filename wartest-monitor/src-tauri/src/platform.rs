@@ -151,8 +151,11 @@ impl GameDetector {
             // Battle.net default paths
             "C:\\Program Files (x86)\\Battle.net",
             
-            // Project-specific paths for testing
-            "C:\\Users\\garet\\OneDrive\\Desktop\\wartest\\games",
+            // Common game installation paths
+            "C:\\Games",
+            "C:\\Users\\Public\\Games",
+            "C:\\Program Files\\Games",
+            "C:\\Program Files (x86)\\Games",
         ];
 
         for path_str in common_paths {
@@ -165,7 +168,7 @@ impl GameDetector {
         Ok(games)
     }
 
-    fn scan_directory_for_games(&self, dir: &Path, games: &mut HashMap<String, Vec<GameInstallation>>, max_depth: usize) {
+    pub fn scan_directory_for_games(&self, dir: &Path, games: &mut HashMap<String, Vec<GameInstallation>>, max_depth: usize) {
         if max_depth == 0 {
             return;
         }

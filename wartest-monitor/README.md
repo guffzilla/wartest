@@ -1,243 +1,206 @@
-# 🎮 WCArena Monitor
+# WCArena Monitor
 
-A modern desktop application for monitoring Warcraft II Remastered multiplayer games and tracking game results.
+A Tauri-based desktop application for detecting and managing Warcraft game installations, with support for game monitoring and WCArena integration.
 
-## 📋 Overview
+## Features
 
-WCArena Monitor is a Tauri-based desktop application that automatically detects and monitors Warcraft II Remastered multiplayer games. It captures detailed game information including:
+- **Automatic Game Detection**: Scans for Warcraft I, II, and III installations across multiple launchers
+- **Multi-Launcher Support**: Battle.net, Steam, GOG Galaxy, Epic Games, and manual installations
+- **Game Management**: Locate, add, and manage game installations
+- **Map Folder Access**: Quick access to game map folders
+- **WCArena Integration**: Direct access to WCArena platform
+- **Cross-Platform**: Windows, macOS, and Linux support
 
-- **Player statistics** (units trained, destroyed, resources gathered)
-- **Game outcomes** (victory/defeat, winning teams)
-- **Map information** (name, size, terrain, resources)
-- **Game settings** (speed, resources, population limits)
-- **Team compositions** and rankings
+## Recent Changes
 
-## ✨ Features
+### Removed Hardcoded Data
+- ✅ Removed hardcoded user paths (`C:\\Users\\garet\\...`)
+- ✅ Removed mock data from frontend JavaScript
+- ✅ Implemented dynamic content generation
+- ✅ Added proper fallback paths for common installations
 
-### 🎯 Core Monitoring
-- **Automatic game detection** - Detects when Warcraft II Remastered starts/stops
-- **Real-time monitoring** - Tracks game progress and player statistics
-- **Cross-platform support** - Windows (native), Linux/macOS (via Wine)
-- **Background operation** - Runs silently in the background
+### Implemented Missing Features
+- ✅ Added proper folder dialog functionality
+- ✅ Implemented external URL opening
+- ✅ Added folder scanning for manual game additions
+- ✅ Enhanced error handling and user notifications
 
-### 📊 Data Collection
-- **Comprehensive statistics** - Units, buildings, resources, scores
-- **Player information** - Names, factions, teams, ranks
-- **Game context** - Maps, settings, victory conditions
-- **Team analysis** - Aggregated team statistics and outcomes
+### Configuration Improvements
+- ✅ Added proper Tauri features (`fs-all`, `shell-open`, `dialog-open`)
+- ✅ Configured file system permissions
+- ✅ Added proper plugin configuration
 
-### 🌐 Server Integration
-- **Automatic uploads** - Send results to your game server
-- **User authentication** - Secure API key management
-- **Batch processing** - Upload multiple games at once
-- **Offline support** - Store results locally when offline
-
-### 🖥️ Modern UI
-- **Real-time dashboard** - Live monitoring status and current game info
-- **Game history** - Browse and analyze past games
-- **Responsive design** - Works on desktop and mobile
-- **Dark theme** - Easy on the eyes during long gaming sessions
-
-## 🚀 Installation
+## Installation
 
 ### Prerequisites
-- **Windows 10/11** (recommended for native support)
-- **Warcraft II Remastered** installed
-- **Internet connection** (for server uploads)
+- [Rust](https://rustup.rs/) (1.77.2 or later)
+- [Node.js](https://nodejs.org/) (18 or later)
+- [Tauri CLI](https://tauri.app/v2/guides/getting-started/setup/)
 
-### Download
-1. Download the latest release from the [Releases page](https://github.com/guffzilla/wartest/releases)
-2. Extract the ZIP file
-3. Run `wcarena-monitor.exe`
+### Quick Start
 
-### Development Setup
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd wartest-monitor
+   ```
+
+2. **Install Tauri CLI** (if not already installed)
+   ```bash
+   cargo install tauri-cli
+   ```
+
+3. **Run in development mode**
+   ```bash
+   # Windows
+   dev.bat
+   
+   # Or manually
+   cargo tauri dev
+   ```
+
+4. **Build for production**
+   ```bash
+   # Windows
+   build.bat
+   
+   # Or manually
+   cargo tauri build
+   ```
+
+## Usage
+
+### Automatic Game Detection
+1. Launch the application
+2. The app will automatically scan for installed Warcraft games
+3. Found games will be displayed with their installation paths
+4. Use the "Locate" button to re-scan for specific game types
+
+### Manual Game Addition
+1. Click "Add Manually" for any game type
+2. Use the folder picker to select your game installation directory
+3. The app will scan the selected folder for Warcraft executables
+4. Found games will be added to the detection list
+
+### Accessing Map Folders
+1. For detected games, click the "Maps" button
+2. The app will search for map folders in the game installation
+3. Map folder paths will be displayed in notifications
+
+### WCArena Integration
+1. Switch to the "WCArena" tab
+2. Toggle between "App Mode" and "Browser Mode"
+3. Click "Launch WCArena" to open the platform
+
+## Architecture
+
+### Backend (Rust)
+- **`main.rs`**: Tauri commands and application entry point
+- **`platform.rs`**: Game detection and platform-specific logic
+- **`types.rs`**: Data structures and type definitions
+- **`game_monitor.rs`**: Game process monitoring (future feature)
+- **`server_client.rs`**: Server communication (future feature)
+
+### Frontend (HTML/JavaScript)
+- **`index.html`**: Main application interface
+- **Dynamic Content**: All game data is generated from backend detection
+- **Responsive Design**: Works on different screen sizes
+
+## Game Detection Logic
+
+The app detects games through multiple methods:
+
+1. **Registry Scanning** (Windows)
+   - Battle.net installations
+   - Steam installations
+   - GOG Galaxy installations
+
+2. **Common Path Scanning**
+   - Program Files directories
+   - User directories
+   - Common game installation paths
+
+3. **Executable Search**
+   - Recursive search across all drives
+   - Looks for Warcraft executables
+
+4. **Manual Folder Selection**
+   - User-selected directories
+   - Deep scanning of selected folders
+
+## Supported Game Versions
+
+### Warcraft I
+- Warcraft I: Orcs & Humans (DOS)
+- Warcraft I: Remastered
+
+### Warcraft II
+- Warcraft II: Tides of Darkness (DOS)
+- Warcraft II: Beyond the Dark Portal (DOS)
+- Warcraft II: Battle.net Edition
+- Warcraft II: Combat Edition
+- Warcraft II: Remastered
+
+### Warcraft III
+- Warcraft III: Reign of Chaos
+- Warcraft III: The Frozen Throne
+- Warcraft III: Reforged
+- W3Arena (W3Champions)
+
+## Troubleshooting
+
+### Common Issues
+
+1. **No games detected**
+   - Ensure games are properly installed
+   - Try manual folder selection
+   - Check if games are in common installation paths
+
+2. **Permission errors**
+   - Run as administrator (Windows)
+   - Check file system permissions
+   - Ensure Tauri has proper access rights
+
+3. **Build errors**
+   - Update Rust: `rustup update`
+   - Update Tauri CLI: `cargo install tauri-cli --force`
+   - Clear build cache: `cargo clean`
+
+### Debug Mode
+Run with debug logging:
 ```bash
-# Clone the repository
-git clone https://github.com/guffzilla/wartest.git
-cd wartest/wartest-monitor
-
-# Install dependencies
-npm install
-
-# Run in development mode
-npm run tauri dev
-
-# Build for production
-npm run tauri build
+RUST_LOG=debug cargo tauri dev
 ```
 
-## 🎮 Usage
-
-### First Time Setup
-1. **Launch the app** - Double-click `wcarena-monitor.exe`
-2. **Check compatibility** - The app will detect your platform and game installation
-3. **Configure server** (optional) - Enter your game server URL and API key
-4. **Start monitoring** - Click "Start Monitoring" to begin
-
-### Monitoring Games
-1. **Start Warcraft II Remastered** - Launch the game normally
-2. **Join a multiplayer game** - The app will automatically detect the game
-3. **Play normally** - The app runs in the background
-4. **View results** - Check the dashboard for real-time game information
-5. **Upload results** - Click "Upload Results" to send data to your server
-
-### Dashboard Features
-- **Platform Status** - Shows your operating system and compatibility
-- **Game Detection** - Indicates if Warcraft II is installed and running
-- **Monitoring Status** - Shows if the app is actively monitoring
-- **Current Game** - Displays information about the active game
-- **Game History** - Lists all monitored games with outcomes
-
-## 🔧 Configuration
-
-### Server Settings
-```json
-{
-  "server_url": "https://your-game-server.com",
-  "api_key": "your-secret-api-key",
-  "auto_upload": true
-}
-```
-
-### Game Detection Paths
-The app automatically searches for Warcraft II Remastered in common locations:
-
-**Windows:**
-- `C:\Program Files (x86)\Warcraft II Remastered`
-- `C:\Program Files\Warcraft II Remastered`
-- `C:\Games\Warcraft II Remastered`
-
-**Linux (Wine):**
-- `~/.steam/steam/steamapps/common/Warcraft II`
-- `/usr/local/games/warcraft2`
-
-**macOS (Wine):**
-- `/Applications/Warcraft II Remastered.app`
-
-## 📊 Data Format
-
-### Game Result Structure
-```json
-{
-  "game_id": "game_1234567890",
-  "timestamp": 1234567890,
-  "map_info": {
-    "name": "Forest of Shadows",
-    "size": "256x256",
-    "terrain_type": "Forest",
-    "starting_resources": {
-      "starting_gold": 1000,
-      "starting_lumber": 500,
-      "starting_oil": 0
-    }
-  },
-  "players": [
-    {
-      "name": "Player1",
-      "faction": "Human",
-      "team": 1,
-      "rank": "Knight",
-      "statistics": {
-        "units_trained": 45,
-        "units_destroyed": 25,
-        "gold_mined": 5000
-      }
-    }
-  ],
-  "game_outcome": {
-    "Victory": {
-      "winning_team": 1,
-      "winner_names": ["Player1", "Player2"]
-    }
-  }
-}
-```
-
-## 🌐 Server API
-
-### Endpoints
-- `POST /api/game-results` - Upload single game result
-- `POST /api/game-results/batch` - Upload multiple game results
-- `GET /api/user/game-history` - Get user's game history
-- `GET /api/global-stats` - Get global statistics
-- `POST /api/auth/login` - User authentication
-- `POST /api/auth/register` - User registration
-
-### Authentication
-Use Bearer token authentication:
-```
-Authorization: Bearer your-api-key
-```
-
-## 🔒 Privacy & Security
-
-- **Local storage** - Game results stored locally in `game_results.json`
-- **Secure uploads** - HTTPS encryption for all server communication
-- **No personal data** - Only game statistics are collected
-- **User control** - Users can disable monitoring or server uploads
-
-## 🛠️ Development
+## Development
 
 ### Project Structure
 ```
-wcarena-monitor/
+wartest-monitor/
 ├── src-tauri/          # Rust backend
 │   ├── src/
-│   │   ├── lib.rs      # Main library
+│   │   ├── main.rs     # Tauri commands
+│   │   ├── platform.rs # Game detection
 │   │   ├── types.rs    # Data structures
-│   │   ├── platform.rs # Cross-platform detection
-│   │   ├── game_monitor.rs # Game monitoring logic
-│   │   └── server_client.rs # HTTP client
-│   └── Cargo.toml      # Rust dependencies
-├── index.html          # Frontend UI
-└── README.md           # This file
+│   │   └── ...
+│   ├── Cargo.toml      # Rust dependencies
+│   └── tauri.conf.json # Tauri configuration
+├── index.html          # Frontend interface
+├── build.bat          # Build script
+├── dev.bat            # Development script
+└── README.md          # This file
 ```
 
-### Building
-```bash
-# Install Rust
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+### Adding New Features
+1. Add Rust functions in `src-tauri/src/`
+2. Register commands in `main.rs`
+3. Update frontend JavaScript in `index.html`
+4. Test thoroughly before committing
 
-# Install Tauri CLI
-cargo install tauri-cli
+## License
 
-# Build the app
-cargo tauri build
-```
+[Add your license information here]
 
-### Testing
-```bash
-# Run tests
-cargo test
+## Contributing
 
-# Run in development mode
-cargo tauri dev
-```
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- **Blizzard Entertainment** - For creating Warcraft II
-- **Tauri** - For the excellent desktop app framework
-- **Rust community** - For the amazing ecosystem
-
-## 📞 Support
-
-- **Issues** - [GitHub Issues](https://github.com/guffzilla/wartest/issues)
-- **Discussions** - [GitHub Discussions](https://github.com/guffzilla/wartest/discussions)
-- **Email** - [Contact](mailto:support@wcarena.com)
-
----
-
-**Happy gaming! 🎮**
+[Add contribution guidelines here]
