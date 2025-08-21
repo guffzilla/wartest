@@ -40,6 +40,9 @@ winapi = { version = "0.3", features = [
     "psapi"
 ] }
 
+# Windows Registry access
+winreg = "0.52"
+
 # File system and I/O
 walkdir = "2.4"
 

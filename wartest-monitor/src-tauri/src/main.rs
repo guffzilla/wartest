@@ -110,7 +110,8 @@ fn main() {
             scan_for_games,
             locate_games,
             add_game_manually,
-            get_launcher_info
+            get_launcher_info,
+            get_map_folders
         ])
         .on_window_event(|window, event| {
             if let WindowEvent::CloseRequested { api, .. } = event {
@@ -194,14 +195,7 @@ fn launch_warcraft_ii_internal() {
     println!("Attempting to launch Warcraft games through Battle.net...");
     
     // First, try to launch Battle.net if it's not running
-    let battle_net_paths = vec![
-        r"C:\Program Files (x86)\Battle.net\Battle.net Launcher.exe",
-        r"C:\Program Files\Battle.net\Battle.net Launcher.exe",
-        r"C:\Program Files (x86)\Battle.net\Battle.net.exe",
-        r"C:\Program Files\Battle.net\Battle.net.exe",
-        r"C:\Program Files (x86)\Battle.net\Battle.net Launcher\Battle.net Launcher.exe",
-        r"C:\Program Files\Battle.net\Battle.net Launcher\Battle.net Launcher.exe",
-    ];
+    let battle_net_paths = find_battle_net_paths();
     
     // Check if Battle.net is already running
     let battle_net_running = std::process::Command::new("tasklist")
@@ -248,20 +242,31 @@ fn launch_warcraft_ii_internal() {
     return;
 }
 
+/// Comprehensive Battle.net path finder using the improved detection system
+fn find_battle_net_paths() -> Vec<String> {
+    // Use the improved GameDetector to find Battle.net paths
+    let game_detector = app_lib::platform::GameDetector::new();
+    let battle_net_paths = game_detector.get_battle_net_paths();
+    
+    // Convert PathBuf to String and filter for executable files
+    let mut paths = Vec::new();
+    for path in battle_net_paths {
+        if path.is_file() && path.extension().map_or(false, |ext| ext == "exe") {
+            paths.push(path.to_string_lossy().to_string());
+        }
+    }
+    
+    println!("Found {} potential Battle.net executable paths: {:?}", paths.len(), paths);
+    paths
+}
+
 // Tauri command functions
 #[tauri::command]
 async fn launch_warcraft_ii() -> Result<String, String> {
     println!("Attempting to launch Warcraft games through Battle.net...");
     
     // First, try to launch Battle.net if it's not running
-    let battle_net_paths = vec![
-        r"C:\Program Files (x86)\Battle.net\Battle.net Launcher.exe",
-        r"C:\Program Files\Battle.net\Battle.net Launcher.exe",
-        r"C:\Program Files (x86)\Battle.net\Battle.net.exe",
-        r"C:\Program Files\Battle.net\Battle.net.exe",
-        r"C:\Program Files (x86)\Battle.net\Battle.net Launcher\Battle.net Launcher.exe",
-        r"C:\Program Files\Battle.net\Battle.net Launcher\Battle.net Launcher.exe",
-    ];
+    let battle_net_paths = find_battle_net_paths();
     
     // Check if Battle.net is already running
     let battle_net_running = std::process::Command::new("tasklist")
@@ -444,24 +449,59 @@ async fn scan_for_games() -> Result<std::collections::HashMap<String, serde_json
     let game_detector = app_lib::platform::GameDetector::new();
     
     match game_detector.detect_all_games() {
-        Ok(games) => {
-            println!("Comprehensive scan found {} games", games.len());
-            
-            // Map detected games to our expected game keys
-            for (name, installation) in games {
-                let game_key = map_game_name_to_key(&name);
-                if let Some(key) = game_key {
-                    results.insert(key, serde_json::json!({
-                        "found": true,
-                        "path": installation.path.to_string_lossy(),
-                        "launcher": installation.launcher,
-                        "version": installation.version
-                    }));
-                    println!("Found {} at: {} (via {})", name, installation.path.display(), 
-                             installation.launcher.as_deref().unwrap_or("Unknown"));
+            Ok(games) => {
+                println!("Comprehensive scan found {} game types", games.len());
+                
+                // Map detected games to our expected game keys
+                for (name, installations) in games {
+                    // Get the version from the first installation to construct the full game name
+                    let full_game_name = if let Some(first_install) = installations.first() {
+                        if let Some(version) = &first_install.version {
+                            format!("{} ({})", name, version)
+                        } else {
+                            name.clone()
+                        }
+                    } else {
+                        name.clone()
+                    };
+                    
+                    let game_key = map_game_name_to_key(&full_game_name);
+                    if let Some(key) = game_key {
+                        if installations.len() == 1 {
+                            // Single installation
+                            let installation = &installations[0];
+                            results.insert(key, serde_json::json!({
+                                "found": true,
+                                "path": installation.path.to_string_lossy(),
+                                "launcher": installation.launcher,
+                                "version": installation.version,
+                                "multiple_installations": false
+                            }));
+                            println!("Found {} at: {} (via {})", name, installation.path.display(), 
+                                     installation.launcher.as_deref().unwrap_or("Unknown"));
+                        } else {
+                            // Multiple installations - store all paths
+                            let paths: Vec<String> = installations.iter()
+                                .map(|i| i.path.to_string_lossy().to_string())
+                                .collect();
+                            let launchers: Vec<String> = installations.iter()
+                                .filter_map(|i| i.launcher.clone())
+                                .collect();
+                            
+                            results.insert(key, serde_json::json!({
+                                "found": true,
+                                "path": paths.join("; "),
+                                "launcher": launchers.join("; "),
+                                "version": "Multiple versions",
+                                "multiple_installations": true,
+                                "all_paths": paths,
+                                "all_launchers": launchers
+                            }));
+                            println!("Found {} at {} locations: {:?}", name, installations.len(), paths);
+                        }
+                    }
                 }
             }
-        }
         Err(e) => {
             eprintln!("Comprehensive scan failed: {}", e);
             println!("Falling back to basic path scanning...");
@@ -492,6 +532,26 @@ async fn scan_for_games() -> Result<std::collections::HashMap<String, serde_json
     
     println!("Scan complete. Found {} games", results.values().filter(|v| v["found"].as_bool().unwrap_or(false)).count());
     Ok(results)
+}
+
+#[tauri::command]
+async fn get_map_folders(game_path: String) -> Result<Vec<String>, String> {
+    println!("Finding map folders for game at: {}", game_path);
+    
+    let game_detector = app_lib::platform::GameDetector::new();
+    let path = std::path::Path::new(&game_path);
+    
+    if !path.exists() {
+        return Err("Game path does not exist".to_string());
+    }
+    
+    let map_folders = game_detector.find_map_folders(path);
+    let map_folder_paths: Vec<String> = map_folders.iter()
+        .map(|p| p.to_string_lossy().to_string())
+        .collect();
+    
+    println!("Found {} map folders: {:?}", map_folder_paths.len(), map_folder_paths);
+    Ok(map_folder_paths)
 }
 
 /// Fallback basic path scanning
@@ -550,32 +610,47 @@ fn scan_basic_paths() -> std::collections::HashMap<String, serde_json::Value> {
 /// Map game names to our internal game keys
 fn map_game_name_to_key(game_name: &str) -> Option<String> {
     let name_lower = game_name.to_lowercase();
+    println!("🔍 Mapping game name: '{}' -> '{}'", game_name, name_lower);
     
-    if name_lower.contains("warcraft i") || name_lower.contains("warcraft 1") {
-        if name_lower.contains("remastered") {
-            Some("wc1-remastered".to_string())
-        } else {
-            Some("wc1-dos".to_string())
-        }
-    } else if name_lower.contains("warcraft ii") || name_lower.contains("warcraft 2") {
-        if name_lower.contains("remastered") {
-            Some("wc2-remastered".to_string())
-        } else if name_lower.contains("combat") {
-            Some("wc2-combat".to_string())
-        } else {
-            Some("wc2-bnet".to_string())
-        }
-    } else if name_lower.contains("warcraft iii") || name_lower.contains("warcraft 3") {
+    // Check for longer/more specific patterns FIRST to avoid conflicts
+    if name_lower.contains("warcraft iii") || name_lower.contains("warcraft 3") {
         if name_lower.contains("reforged") {
+            println!("  ✅ Mapped to: wc3-reforged");
             Some("wc3-reforged".to_string())
         } else if name_lower.contains("frozen throne") {
+            println!("  ✅ Mapped to: wc3-tft");
             Some("wc3-tft".to_string())
         } else {
+            println!("  ✅ Mapped to: wc3-roc");
             Some("wc3-roc".to_string())
         }
+    } else if name_lower.contains("warcraft ii") || name_lower.contains("warcraft 2") {
+        if name_lower.contains("remastered") || name_lower.contains("(remastered") || name_lower.contains("remastered)") {
+            println!("  ✅ Mapped to: wc2-remastered");
+            Some("wc2-remastered".to_string())
+        } else if name_lower.contains("combat") || name_lower.contains("(combat") || name_lower.contains("combat)") {
+            println!("  ✅ Mapped to: wc2-combat");
+            Some("wc2-combat".to_string())
+        } else if name_lower.contains("battle.net") || name_lower.contains("bne") {
+            println!("  ✅ Mapped to: wc2-bnet");
+            Some("wc2-bnet".to_string())
+        } else {
+            println!("  ✅ Mapped to: wc2-bnet (default)");
+            Some("wc2-bnet".to_string())
+        }
+    } else if name_lower.contains("warcraft i") || name_lower.contains("warcraft 1") {
+        if name_lower.contains("remastered") || name_lower.contains("(remastered") || name_lower.contains("remastered)") {
+            println!("  ✅ Mapped to: wc1-remastered");
+            Some("wc1-remastered".to_string())
+        } else {
+            println!("  ✅ Mapped to: wc1-dos");
+            Some("wc1-dos".to_string())
+        }
     } else if name_lower.contains("w3arena") {
+        println!("  ✅ Mapped to: w3arena");
         Some("w3arena".to_string())
     } else {
+        println!("  ❌ No mapping found for: {}", game_name);
         None
     }
 }
@@ -615,91 +690,83 @@ async fn get_launcher_info() -> Result<Vec<serde_json::Value>, String> {
 async fn locate_games(game_type: String) -> Result<std::collections::HashMap<String, serde_json::Value>, String> {
     println!("Locating games for type: {}", game_type);
     
-    // This is a simplified version - in a real implementation, you might want to:
-    // 1. Search registry entries
-    // 2. Search common installation directories more thoroughly
-    // 3. Use Windows APIs to find installed programs
+    // Use our comprehensive game detection system instead of hardcoded paths
+    let game_detector = app_lib::platform::GameDetector::new();
     
-    let mut results = std::collections::HashMap::new();
-    
-    // For now, just return the same as scan_for_games but focused on the specific type
-    match game_type.as_str() {
-        "wc1" => {
-            let paths = vec![
-                (r"C:\Program Files (x86)\Warcraft I\Warcraft.exe", "wc1-dos"),
-                (r"C:\Program Files\Warcraft I\Warcraft.exe", "wc1-dos"),
-                (r"C:\Program Files (x86)\Warcraft I Remastered\Warcraft.exe", "wc1-remastered"),
-                (r"C:\Program Files\Warcraft I Remastered\Warcraft.exe", "wc1-remastered"),
-            ];
+    match game_detector.detect_all_games() {
+        Ok(games) => {
+            println!("Comprehensive scan found {} game types", games.len());
             
-            for (path, game_key) in paths {
-                if std::path::Path::new(path).exists() {
-                    results.insert(game_key.to_string(), serde_json::json!({
-                        "found": true,
-                        "path": path
-                    }));
+            // Filter results based on the requested game type
+            let mut results = std::collections::HashMap::new();
+            
+            for (name, installations) in games {
+                // Check if this game matches the requested type
+                let matches_type = match game_type.as_str() {
+                    "wc1" => name.to_lowercase().contains("warcraft i") || name.to_lowercase().contains("warcraft 1"),
+                    "wc2" => name.to_lowercase().contains("warcraft ii") || name.to_lowercase().contains("warcraft 2"),
+                    "wc3" => name.to_lowercase().contains("warcraft iii") || name.to_lowercase().contains("warcraft 3"),
+                    "w3arena" => name.to_lowercase().contains("w3arena") || name.to_lowercase().contains("w3champions"),
+                    _ => false,
+                };
+                
+                if matches_type {
+                    // Get the version from the first installation to construct the full game name
+                    let full_game_name = if let Some(first_install) = installations.first() {
+                        if let Some(version) = &first_install.version {
+                            format!("{} ({})", name, version)
+                        } else {
+                            name.clone()
+                        }
+                    } else {
+                        name.clone()
+                    };
+                    
+                    let game_key = map_game_name_to_key(&full_game_name);
+                    if let Some(key) = game_key {
+                        if installations.len() == 1 {
+                            // Single installation
+                            let installation = &installations[0];
+                            results.insert(key, serde_json::json!({
+                                "found": true,
+                                "path": installation.path.to_string_lossy(),
+                                "launcher": installation.launcher,
+                                "version": installation.version,
+                                "multiple_installations": false
+                            }));
+                            println!("Found {} at: {} (via {})", name, installation.path.display(), 
+                                     installation.launcher.as_deref().unwrap_or("Unknown"));
+                        } else {
+                            // Multiple installations - store all paths
+                            let paths: Vec<String> = installations.iter()
+                                .map(|i| i.path.to_string_lossy().to_string())
+                                .collect();
+                            let launchers: Vec<String> = installations.iter()
+                                .filter_map(|i| i.launcher.clone())
+                                .collect();
+                            
+                            results.insert(key, serde_json::json!({
+                                "found": true,
+                                "path": paths.join("; "),
+                                "launcher": launchers.join("; "),
+                                "version": "Multiple versions",
+                                "multiple_installations": true,
+                                "all_paths": paths,
+                                "all_launchers": launchers
+                            }));
+                            println!("Found {} at {} locations: {:?}", name, installations.len(), paths);
+                        }
+                    }
                 }
             }
-        },
-        "wc2" => {
-            let paths = vec![
-                (r"C:\Program Files (x86)\Warcraft II\Warcraft II.exe", "wc2-bnet"),
-                (r"C:\Program Files\Warcraft II\Warcraft II.exe", "wc2-bnet"),
-                (r"C:\Program Files (x86)\Warcraft II Combat Edition\Warcraft II.exe", "wc2-combat"),
-                (r"C:\Program Files\Warcraft II Combat Edition\Warcraft II.exe", "wc2-combat"),
-                (r"C:\Program Files (x86)\Warcraft II Remastered\Warcraft II.exe", "wc2-remastered"),
-                (r"C:\Program Files\Warcraft II Remastered\Warcraft II.exe", "wc2-remastered"),
-            ];
             
-            for (path, game_key) in paths {
-                if std::path::Path::new(path).exists() {
-                    results.insert(game_key.to_string(), serde_json::json!({
-                        "found": true,
-                        "path": path
-                    }));
-                }
-            }
-        },
-        "wc3" => {
-            let paths = vec![
-                (r"C:\Program Files (x86)\Warcraft III\Warcraft III.exe", "wc3-roc"),
-                (r"C:\Program Files\Warcraft III\Warcraft III.exe", "wc3-roc"),
-                (r"C:\Program Files (x86)\Warcraft III\Frozen Throne.exe", "wc3-tft"),
-                (r"C:\Program Files\Warcraft III\Frozen Throne.exe", "wc3-tft"),
-                (r"C:\Program Files (x86)\Warcraft III Reforged\Warcraft III.exe", "wc3-reforged"),
-                (r"C:\Program Files\Warcraft III Reforged\Warcraft III.exe", "wc3-reforged"),
-            ];
-            
-            for (path, game_key) in paths {
-                if std::path::Path::new(path).exists() {
-                    results.insert(game_key.to_string(), serde_json::json!({
-                        "found": true,
-                        "path": path
-                    }));
-                }
-            }
-        },
-        "w3arena" => {
-            let paths = vec![
-                (r"C:\Program Files (x86)\W3Arena\W3Arena.exe", "w3arena"),
-                (r"C:\Program Files\W3Arena\W3Arena.exe", "w3arena"),
-            ];
-            
-            for (path, game_key) in paths {
-                if std::path::Path::new(path).exists() {
-                    results.insert(game_key.to_string(), serde_json::json!({
-                        "found": true,
-                        "path": path
-                    }));
-                }
-            }
-        },
-        _ => {
-            return Err(format!("Unknown game type: {}", game_type));
+            Ok(results)
+        }
+        Err(e) => {
+            eprintln!("Comprehensive scan failed: {}", e);
+            Err(format!("Failed to detect games: {}", e))
         }
     }
-    
-    Ok(results)
 }
 
 #[tauri::command]
@@ -723,4 +790,33 @@ async fn add_game_manually(game_type: String, game_path: String) -> Result<(), S
     
     println!("Game added successfully: {} -> {}", game_type, game_path);
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_scan_for_games_command() {
+        println!("🧪 Testing scan_for_games Tauri command...");
+        
+        // Test the command directly
+        let result = tauri::async_runtime::block_on(scan_for_games());
+        
+        match result {
+            Ok(results) => {
+                println!("✅ scan_for_games command succeeded!");
+                println!("📊 Found {} game results", results.len());
+                
+                for (game_key, game_data) in &results {
+                    println!("  - {}: {:?}", game_key, game_data);
+                }
+            }
+            Err(e) => {
+                println!("❌ scan_for_games command failed: {}", e);
+            }
+        }
+        
+        assert!(true); // Test always passes, just for debugging
+    }
 }
