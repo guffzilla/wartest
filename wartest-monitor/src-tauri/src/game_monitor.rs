@@ -175,7 +175,7 @@ impl GameMonitor {
     fn find_warcraft_processes(&self) -> Result<Vec<ProcessInfo>> {
         match self.platform {
             Platform::Windows => self.find_windows_warcraft_processes(),
-            Platform::macOS | Platform::Linux => self.find_unix_warcraft_processes(),
+            Platform::MacOS | Platform::Linux => self.find_unix_warcraft_processes(),
         }
     }
 
@@ -279,7 +279,7 @@ impl GameMonitor {
                     })
                     .unwrap_or(false)
             }
-            Platform::macOS | Platform::Linux => {
+            Platform::MacOS | Platform::Linux => {
                 use std::process::Command;
                 Command::new("ps")
                     .args(&["-p", &pid.to_string()])
@@ -377,7 +377,7 @@ impl GameMonitor {
         // Platform-specific memory monitoring
         match self.platform {
             Platform::Windows => self.start_windows_memory_monitoring(_process)?,
-            Platform::macOS => self.start_macos_memory_monitoring(_process)?,
+            Platform::MacOS => self.start_macos_memory_monitoring(_process)?,
             Platform::Linux => self.start_linux_memory_monitoring(_process)?,
         }
         

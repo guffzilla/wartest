@@ -744,6 +744,12 @@
 
 
         <div class="game-tabs">
+            <!-- Launcher Information Section -->
+            <div id="launcher-info" class="launcher-info hidden">
+                <h3>Installed Game Launchers</h3>
+                <div id="launcher-grid" class="launcher-grid"></div>
+            </div>
+            
             <div class="tab-buttons">
                 <button class="tab-button active" onclick="switchTab('wc1')">Warcraft I</button>
                 <button class="tab-button" onclick="switchTab('wc2')">Warcraft II</button>
@@ -1009,13 +1015,16 @@
         </div>
     </div>
 
+    <script src="https://unpkg.com/@tauri-apps/api@2.0.0/dist/index.min.js"></script>
     <script>
         // Tauri API
         let invoke;
         try {
-            invoke = window.__TAURI__.tauri.invoke;
+            invoke = window.__TAURI__.invoke;
+            console.log('✅ Tauri API detected successfully');
         } catch (error) {
-            console.warn('Tauri API not available, using mock functions for development');
+            console.warn('❌ Tauri API not available, using mock functions for development');
+            console.error('Tauri API error:', error);
             // Mock functions for development
             invoke = async (command, args) => {
                 console.log(`Mock invoke: ${command}`, args);
@@ -1028,7 +1037,7 @@
                             'wc1-remastered': { found: true, path: 'C:\\Users\\garet\\OneDrive\\Desktop\\wartest\\games\\Warcraft I Remastered\\x86\\Warcraft.exe', launcher: 'Project', version: 'Remastered', multiple_installations: false },
                             'wc2-remastered': { found: true, path: 'C:\\Users\\garet\\OneDrive\\Desktop\\wartest\\games\\Warcraft II Remastered\\x86\\Warcraft II.exe', launcher: 'Project', version: 'Remastered', multiple_installations: false },
                             'wc2-combat': { found: true, path: 'C:\\Users\\garet\\OneDrive\\Desktop\\wartest\\games\\Warcraft II Combat Edition\\Warcraft II.exe', launcher: 'Project', version: 'Combat Edition', multiple_installations: false },
-                            'w3arena': { found: true, path: 'C:\\Users\\garet\\OneDrive\\Desktop\\wartest\\games\\W3Arena\\W3Arena.exe', launcher: 'Project', version: 'W3Arena', multiple_installations: false }
+                            'w3arena': { found: true, path: 'C:\\Users\\garet\\Desktop\\wartest\\games\\W3Arena\\W3Arena.exe', launcher: 'Project', version: 'W3Arena', multiple_installations: false }
                         };
                     case 'get_launcher_info':
                         return [
@@ -1203,22 +1212,9 @@
             try {
                 console.log('🔍 Frontend: Calling locate_games with gameType:', gameType);
                 
-                // Extract the base game type (e.g., 'wc1-remastered' -> 'wc1')
-                let baseGameType = gameType;
-                if (gameType.startsWith('wc1')) {
-                    baseGameType = 'wc1';
-                } else if (gameType.startsWith('wc2')) {
-                    baseGameType = 'wc2';
-                } else if (gameType.startsWith('wc3')) {
-                    baseGameType = 'wc3';
-                } else if (gameType.startsWith('w3arena')) {
-                    baseGameType = 'w3arena';
-                }
-                
-                console.log('🔍 Frontend: Extracted base game type:', baseGameType);
-                
-                const results = await invoke('locate_games', { gameType: baseGameType });
+                const results = await invoke('locate_games', { gameType: gameType });
                 console.log('✅ Frontend: Received results from backend:', results);
+                
                 updateGameDisplay(results);
             } catch (error) {
                 console.error('❌ Frontend: Failed to locate games:', error);

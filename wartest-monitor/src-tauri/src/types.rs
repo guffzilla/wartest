@@ -26,6 +26,14 @@ pub struct PlatformInfo {
     pub compatibility_level: CompatibilityLevel,
 }
 
+/// Game installation information
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GameInstallation {
+    pub path: std::path::PathBuf,
+    pub version: Option<String>,
+    pub launcher: Option<String>,
+}
+
 /// Game detection result
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GameDetectionResult {
