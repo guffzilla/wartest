@@ -13,13 +13,14 @@ refreshGamesBtn.addEventListener('click', refreshGameStatus);
 
 // Initialize the app
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, Tauri available:', !!window.__TAURI__);
     scanForGames();
 });
 
 async function scanForGames() {
     try {
         showNotification('Scanning for games...', 'info');
-        games = await window.__TAURI__.invoke('scan_games');
+        games = await window.__TAURI__.core.invoke('scan_games');
         displayGames();
         showNotification(`Found ${games.length} games`, 'success');
     } catch (error) {
@@ -30,7 +31,7 @@ async function scanForGames() {
 
 async function refreshGameStatus() {
     try {
-        const runningGamesList = await window.__TAURI__.invoke('get_running_games');
+        const runningGamesList = await window.__TAURI__.core.invoke('get_running_games');
         displayRunningGames(runningGamesList);
         showNotification('Game status refreshed', 'success');
     } catch (error) {
@@ -85,7 +86,7 @@ function displayRunningGames(runningGamesList) {
 async function launchGame(gameName) {
     try {
         showNotification(`Launching ${gameName}...`, 'info');
-        await window.__TAURI__.invoke('launch_game', { gameName });
+        await window.__TAURI__.core.invoke('launch_game', { gameName });
         showNotification(`${gameName} launched successfully!`, 'success');
         
         // Refresh the game status after a short delay

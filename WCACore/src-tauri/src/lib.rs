@@ -22,6 +22,7 @@ pub fn run() {
             get_running_games,
             get_all_games
         ])
+
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
