@@ -731,6 +731,19 @@
                 <div class="gear right-gear">⚙️</div>
             </div>
             <div class="title-subtitle">Advanced Gaming Command Center</div>
+            
+            <!-- Testing Panel -->
+            <div class="testing-panel">
+                <button class="btn btn-secondary" onclick="runAllTests()" style="margin: 10px;">
+                    🧪 Run All Tests
+                </button>
+                <button class="btn btn-secondary" onclick="validateDOMStructure()" style="margin: 10px;">
+                    📋 Test DOM
+                </button>
+                <button class="btn btn-secondary" onclick="testTauriAPI()" style="margin: 10px;">
+                    🔌 Test API
+                </button>
+            </div>
         </div>
 
         <div id="scan-progress" class="scan-progress hidden">
@@ -748,6 +761,18 @@
             <div id="launcher-info" class="launcher-info hidden">
                 <h3>Installed Game Launchers</h3>
                 <div id="launcher-grid" class="launcher-grid"></div>
+            </div>
+            
+            <!-- Game List Section -->
+            <div id="game-list" class="game-list">
+                <h3>Detected Games</h3>
+                <div id="game-container"></div>
+            </div>
+            
+            <!-- Status Display Section -->
+            <div id="status-display" class="status-display">
+                <div id="status-message">Ready</div>
+                <div id="status-progress" class="hidden"></div>
             </div>
             
             <div class="tab-buttons">
@@ -1015,16 +1040,84 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/@tauri-apps/api@2.0.0/dist/index.min.js"></script>
-    <script>
-        // Tauri API
+    <!-- Frontend Testing Framework -->
+    <script src="frontend_tests.js"></script>
+
+    <script type="module">
+        // In Tauri v2, the API is available through window.__TAURI__
         let invoke;
-        try {
-            invoke = window.__TAURI__.invoke;
-            console.log('✅ Tauri API detected successfully');
-        } catch (error) {
-            console.error('❌ Tauri API not available:', error);
-            throw new Error('Tauri API not available - this app must run in a Tauri environment');
+        
+        // Wait for Tauri to be ready
+        async function initTauri() {
+            // Wait for Tauri API to be injected (can take a moment)
+            let attempts = 0;
+            const maxAttempts = 50; // 5 seconds with 100ms intervals
+            
+            while (attempts < maxAttempts) {
+                if (window.__TAURI__) {
+                    if (window.__TAURI__.core) {
+                        invoke = window.__TAURI__.core.invoke;
+                        console.log('✅ Tauri v2 API detected successfully');
+                        return true;
+                    } else if (window.__TAURI__.invoke) {
+                        invoke = window.__TAURI__.invoke;
+                        console.log('✅ Tauri API detected successfully');
+                        return true;
+                    }
+                }
+                
+                console.log(`Waiting for Tauri API... (attempt ${attempts + 1}/${maxAttempts})`);
+                await new Promise(resolve => setTimeout(resolve, 100));
+                attempts++;
+            }
+            
+            console.error('❌ Tauri API not available after waiting - app must be running in Tauri environment');
+            console.error('Current window object:', window);
+            console.error('__TAURI__ object:', window.__TAURI__);
+            
+            // Show user-friendly error
+            document.body.innerHTML = `
+                <div style="
+                    display: flex; 
+                    align-items: center; 
+                    justify-content: center; 
+                    min-height: 100vh; 
+                    background: linear-gradient(135deg, #0f1419 0%, #1a2332 100%);
+                    color: #e8eaed;
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    text-align: center;
+                    padding: 20px;
+                ">
+                    <div>
+                        <h1 style="color: #ffd700; margin-bottom: 20px;">⚠️ Tauri Environment Required</h1>
+                        <p style="font-size: 1.2rem; margin-bottom: 20px;">
+                            This application must be launched through the Tauri runtime.
+                        </p>
+                        <p style="color: #9aa0a6;">
+                            Please run: <code style="background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px;">cargo tauri dev</code>
+                        </p>
+                    </div>
+                </div>
+            `;
+            return false;
+        }
+
+        // Wait for DOM and Tauri to be ready
+        async function initializeApp() {
+            // Wait for Tauri to be ready
+            const tauriReady = await initTauri();
+            if (!tauriReady) return;
+            
+            try {
+                console.log('🚀 Initializing WCArena Core...');
+                await scanForGames();
+                await detectLaunchers();
+                console.log('✅ App initialization complete');
+            } catch (error) {
+                console.error('❌ Failed to initialize app:', error);
+                // For initialization errors, show at top since there's no specific trigger element
+                showNotification('Failed to initialize app: ' + error, 'error');
+            }
         }
 
         // Game data structure
@@ -1039,19 +1132,6 @@
             'wc3-reforged': { path: '', found: false },
             'w3arena': { path: '', found: false }
         };
-
-        // Initialize app
-        async function initializeApp() {
-            try {
-                console.log('🚀 Initializing WCArena Core...');
-                await scanForGames();
-                await detectLaunchers();
-                console.log('✅ App initialization complete');
-            } catch (error) {
-                console.error('❌ Failed to initialize app:', error);
-                showNotification('Failed to initialize app: ' + error, 'error');
-            }
-        }
 
         // Scan for installed games
         async function scanForGames() {
@@ -1090,12 +1170,25 @@
 
         // Update game display with scan results
         function updateGameDisplay(results) {
+            if (!results || typeof results !== 'object') {
+                console.error('❌ Invalid results data:', results);
+                return;
+            }
+            
             Object.keys(results).forEach(gameKey => {
                 const result = results[gameKey];
                 const pathElement = document.getElementById(gameKey + '-path');
                 const statusElement = document.getElementById(gameKey + '-status');
                 
-                if (result.found) {
+                // Add null checks to prevent DOM access errors
+                if (!pathElement || !statusElement) {
+                    console.error(`❌ Required elements not found for game ${gameKey}:`);
+                    console.error(`  path element: ${gameKey}-path`, !!pathElement);
+                    console.error(`  status element: ${gameKey}-status`, !!statusElement);
+                    return;
+                }
+                
+                if (result && result.found) {
                     if (result.multiple_installations) {
                         // Show multiple installations with a dropdown
                         pathElement.innerHTML = `
@@ -1115,7 +1208,7 @@
                         gameInstallations[gameKey] = { 
                             path: result.all_paths[0], 
                             found: true, 
-                            multiple: true,
+                            multiple: false,
                             all_paths: result.all_paths 
                         };
                     } else {
@@ -1158,13 +1251,93 @@
                 console.error('Failed to detect launchers:', error);
             }
         }
+        
+        // ===== TESTING FUNCTIONS =====
+        
+        // Test DOM structure validation
+        function validateDOMStructure() {
+            const required = {
+                'launcher-info': 'Launcher information container',
+                'launcher-grid': 'Launcher grid display',
+                'game-list': 'Game list container',
+                'status-display': 'Status display area'
+            };
+            
+            const missing = [];
+            
+            Object.entries(required).forEach(([id, description]) => {
+                const element = document.getElementById(id);
+                if (!element) {
+                    missing.push(`${id} (${description})`);
+                }
+            });
+            
+            if (missing.length > 0) {
+                console.error('❌ Missing required DOM elements:', missing);
+                return false;
+            }
+            
+            console.log('✅ All required DOM elements found');
+            return true;
+        }
+        
+        // Test Tauri API functionality
+        async function testTauriAPI() {
+            console.log('🧪 Starting Tauri API tests...');
+            
+            const tests = [
+                { name: 'get_launcher_info', args: [] },
+                { name: 'scan_for_games', args: [] },
+                { name: 'locate_games', args: [] }
+            ];
+            
+            for (const test of tests) {
+                try {
+                    console.log(`🔍 Testing ${test.name}...`);
+                    const result = await window.__TAURI__.invoke(test.name, test.args);
+                    console.log(`✅ ${test.name}:`, result);
+                } catch (error) {
+                    console.error(`❌ ${test.name} failed:`, error);
+                }
+            }
+        }
+        
+        // Comprehensive testing function
+        async function runAllTests() {
+            console.log('🚀 Running comprehensive tests...');
+            
+            // Test 1: DOM Structure
+            console.log('\n📋 Test 1: DOM Structure Validation');
+            const domValid = validateDOMStructure();
+            
+            // Test 2: Tauri API
+            console.log('\n🔌 Test 2: Tauri API Testing');
+            await testTauriAPI();
+            
+            // Test 3: Tauri Context
+            console.log('\n🌐 Test 3: Tauri Context Check');
+            console.log('Window location:', window.location.href);
+            console.log('Tauri available:', !!window.__TAURI__);
+            console.log('Tauri version:', window.__TAURI__?.version);
+            console.log('Tauri config:', window.__TAURI__?.config);
+            
+            console.log('\n✅ All tests completed!');
+        }
 
         // Update launcher display
         function updateLauncherDisplay(launchers) {
             const launcherInfo = document.getElementById('launcher-info');
             const launcherGrid = document.getElementById('launcher-grid');
             
-            if (launchers.length > 0) {
+            // Add null checks to prevent DOM access errors
+            if (!launcherInfo || !launcherGrid) {
+                console.error('❌ Required launcher display elements not found');
+                console.error('launcher-info:', !!launcherInfo);
+                console.error('launcher-grid:', !!launcherGrid);
+                return;
+            }
+            
+            if (launchers && launchers.length > 0) {
                 launcherGrid.innerHTML = '';
                 
                 launchers.forEach(launcher => {
@@ -1187,6 +1360,8 @@
                 });
                 
                 launcherInfo.classList.remove('hidden');
+            } else {
+                console.log('📊 No launchers to display or invalid data:', launchers);
             }
         }
 
@@ -1226,36 +1401,58 @@
                         
                         if (Object.keys(results).length > 0) {
                             updateGameDisplay(results);
-                            showNotification('Games found in selected folder!', 'success');
+                            const browseButton = document.querySelector('#folder-picker .btn-primary');
+                            showNotification('Games found in selected folder!', 'success', browseButton);
                         } else {
-                            showNotification('No Warcraft games found in selected folder', 'warning');
+                            const browseButton = document.querySelector('#folder-picker .btn-primary');
+                            showNotification('No Warcraft games found in selected folder', 'warning', browseButton);
                         }
                     } catch (scanError) {
                         console.error('Failed to scan folder:', scanError);
-                        showNotification('Failed to scan folder: ' + scanError, 'error');
+                        const browseButton = document.querySelector('#folder-picker .btn-primary');
+                        showNotification('Failed to scan folder: ' + scanError, 'error', browseButton);
                     }
                     
                     closeFolderPicker();
                 }
             } catch (error) {
                 console.error('Failed to open folder picker:', error);
-                showNotification('Failed to open folder picker: ' + error, 'error');
+                const browseButton = document.querySelector('#folder-picker .btn-primary');
+                showNotification('Failed to open folder picker: ' + error, 'error', browseButton);
             }
         }
         
         // Show notification
-        function showNotification(message, type) {
+        function showNotification(message, type, targetElement = null) {
             // Create notification element
             const notification = document.createElement('div');
             notification.className = `map-notification map-notification-${type}`;
             notification.textContent = message;
-            notification.style.position = 'fixed';
-            notification.style.top = '20px';
-            notification.style.right = '20px';
-            notification.style.zIndex = '1000';
             notification.style.minWidth = '300px';
             
-            document.body.appendChild(notification);
+            if (targetElement) {
+                // Position relative to the target element
+                notification.style.position = 'absolute';
+                notification.style.zIndex = '1000';
+                
+                // Get target element position
+                const rect = targetElement.getBoundingClientRect();
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                
+                // Position above the target element
+                notification.style.top = (rect.top + scrollTop - 50) + 'px';
+                notification.style.left = rect.left + 'px';
+                
+                // Insert before the target element
+                targetElement.parentNode.insertBefore(notification, targetElement);
+            } else {
+                // Fallback to fixed positioning at top-right
+                notification.style.position = 'fixed';
+                notification.style.top = '20px';
+                notification.style.right = '20px';
+                notification.style.zIndex = '1000';
+                document.body.appendChild(notification);
+            }
             
             // Auto-hide after 5 seconds
             setTimeout(() => {
@@ -1393,8 +1590,13 @@
             clickedButton.classList.add('active');
         }
 
-        // Initialize app when page loads
-        document.addEventListener('DOMContentLoaded', initializeApp);
+        // Initialize app when page loads - wait for both DOM and Tauri
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            // DOM already loaded
+            initializeApp();
+        }
     </script>
 </body>
 </html>

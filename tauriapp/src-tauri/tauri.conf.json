@@ -22,7 +22,7 @@
       "csp": null
     }
   },
-  "identifier": "com.wcarena.monitor",
+  "identifier": "com.tauriapp.monitor",
   "bundle": {
     "active": true,
     "targets": "all",
@@ -34,5 +34,12 @@
       "icons/icon.ico"
     ]
   },
-  "plugins": {}
+  "plugins": {
+    "shell": {
+      "open": true
+    },
+    "dialog": {
+      "open": true
+    }
+  }
 }

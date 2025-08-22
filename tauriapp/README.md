@@ -42,7 +42,7 @@ A Tauri-based desktop application for detecting and managing Warcraft game insta
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd wartest-monitor
+   cd tauriapp
    ```
 
 2. **Install Tauri CLI** (if not already installed)
@@ -176,7 +176,7 @@ RUST_LOG=debug cargo tauri dev
 
 ### Project Structure
 ```
-wartest-monitor/
+tauriapp/
 ├── src-tauri/          # Rust backend
 │   ├── src/
 │   │   ├── main.rs     # Tauri commands

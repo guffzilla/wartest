@@ -1,5 +1,5 @@
 [package]
-name = "wcarena-monitor"
+name = "tauriapp"
 version = "0.1.0"
 description = "WCArena - Warcraft II Multiplayer Game Monitor"
 authors = ["you"]
@@ -21,7 +21,16 @@ tauri-build = { version = "2.4.0", features = [] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
-tauri = { version = "2.8.2", features = ["devtools"] }
+tauri = { version = "2.4.0", features = ["devtools", "wry"] }
+tauri-runtime = "2.4.0"
+tauri-runtime-wry = "2.4.0"
+
+[patch.crates-io]
+tauri = { version = "2.4.0" }
+tauri-runtime = { version = "2.4.0" }
+tauri-runtime-wry = { version = "2.4.0" }
+tauri-macros = { version = "2.4.0" }
+tauri-utils = { version = "2.4.0" }
 
 # Game monitoring dependencies
 anyhow = "1.0"
@@ -61,6 +70,13 @@ parking_lot = "0.12"
 reqwest = { version = "0.11", features = ["json"] }
 tokio = { version = "1.0", features = ["full"] }
 
+[dev-dependencies]
+tokio = { version = "1.0", features = ["full", "test-util"] }
+
 # System tray support removed for now to focus on core functionality
+
+# Tauri plugins - Removed temporarily to fix version conflicts
+# tauri-plugin-dialog = "2.0.0"
+# tauri-plugin-opener = "2.0.0"
 
 

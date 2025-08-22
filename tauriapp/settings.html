@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wartest Monitor Settings</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .settings-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .setting-group {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+        .setting-group h3 {
+            margin-top: 0;
+            color: #555;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .checkbox-group {
+            margin-bottom: 10px;
+        }
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="settings-container">
+        <h2>Wartest Monitor Settings</h2>
+        
+        <div class="setting-group">
+            <h3>Monitoring Settings</h3>
+            <div class="checkbox-group">
+                <input type="checkbox" id="auto-start" checked>
+                <label for="auto-start">Auto-start monitoring on app launch</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="minimize-to-tray" checked>
+                <label for="minimize-to-tray">Minimize to system tray when closed</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="start-with-windows">
+                <label for="start-with-windows">Start with Windows</label>
+            </div>
+        </div>
+        
+        <div class="setting-group">
+            <h3>Game Detection</h3>
+            <label for="scan-interval">Scan interval (seconds):</label>
+            <input type="number" id="scan-interval" value="30" min="5" max="300">
+            
+            <label for="game-paths">Additional game paths (one per line):</label>
+            <textarea id="game-paths" rows="3" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"></textarea>
+        </div>
+        
+        <div class="setting-group">
+            <h3>Server Settings</h3>
+            <label for="server-url">Server URL:</label>
+            <input type="text" id="server-url" placeholder="https://api.wcarena.com">
+            
+            <label for="api-key">API Key:</label>
+            <input type="text" id="api-key" placeholder="Enter your API key">
+        </div>
+        
+        <div class="setting-group">
+            <h3>Notifications</h3>
+            <div class="checkbox-group">
+                <input type="checkbox" id="game-start-notify" checked>
+                <label for="game-start-notify">Notify when game starts</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="game-end-notify" checked>
+                <label for="game-end-notify">Notify when game ends</label>
+            </div>
+            <div class="checkbox-group">
+                <input type="checkbox" id="error-notify" checked>
+                <label for="error-notify">Notify on errors</label>
+            </div>
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button onclick="saveSettings()">Save Settings</button>
+            <button onclick="resetSettings()">Reset to Defaults</button>
+            <button onclick="closeWindow()">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Load settings when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSettings();
+        });
+        
+        function loadSettings() {
+            // In a real implementation, this would load from the Rust backend
+            // For now, we'll use default values
+            console.log('Loading settings...');
+        }
+        
+        function saveSettings() {
+            // Collect all settings
+            const settings = {
+                autoStart: document.getElementById('auto-start').checked,
+                minimizeToTray: document.getElementById('minimize-to-tray').checked,
+                startWithWindows: document.getElementById('start-with-windows').checked,
+                scanInterval: document.getElementById('scan-interval').value,
+                gamePaths: document.getElementById('game-paths').value,
+                serverUrl: document.getElementById('server-url').value,
+                apiKey: document.getElementById('api-key').value,
+                gameStartNotify: document.getElementById('game-start-notify').checked,
+                gameEndNotify: document.getElementById('game-end-notify').checked,
+                errorNotify: document.getElementById('error-notify').checked
+            };
+            
+            console.log('Saving settings:', settings);
+            
+            // In a real implementation, this would save to the Rust backend
+            alert('Settings saved!');
+        }
+        
+        function resetSettings() {
+            if (confirm('Are you sure you want to reset all settings to defaults?')) {
+                document.getElementById('auto-start').checked = true;
+                document.getElementById('minimize-to-tray').checked = true;
+                document.getElementById('start-with-windows').checked = false;
+                document.getElementById('scan-interval').value = '30';
+                document.getElementById('game-paths').value = '';
+                document.getElementById('server-url').value = '';
+                document.getElementById('api-key').value = '';
+                document.getElementById('game-start-notify').checked = true;
+                document.getElementById('game-end-notify').checked = true;
+                document.getElementById('error-notify').checked = true;
+            }
+        }
+        
+        function closeWindow() {
+            window.close();
+        }
+    </script>
+</body>
+</html>

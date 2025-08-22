@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wartest Monitor Status</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .status-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-active {
+            background-color: #4CAF50;
+        }
+        .status-inactive {
+            background-color: #f44336;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .status-item {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="status-container">
+        <h2>Wartest Monitor Status</h2>
+        <div class="status-item">
+            <span class="status-indicator status-inactive" id="monitoring-status"></span>
+            <strong>Monitoring:</strong> <span id="monitoring-text">Inactive</span>
+        </div>
+        <div class="status-item">
+            <strong>Games Detected:</strong> <span id="games-count">0</span>
+        </div>
+        <div class="status-item">
+            <strong>Last Check:</strong> <span id="last-check">Never</span>
+        </div>
+    </div>
+
+    <script>
+        // Listen for status updates from the Rust backend
+        if (window.__TAURI__) {
+            window.__TAURI__.event.listen('status-update', (event) => {
+                const status = event.payload;
+                const statusElement = document.getElementById('monitoring-text');
+                const indicator = document.getElementById('monitoring-status');
+                
+                statusElement.textContent = status;
+                indicator.className = status === 'Active' ? 
+                    'status-indicator status-active' : 
+                    'status-indicator status-inactive';
+            });
+        }
+    </script>
+</body>
+</html>

@@ -6,10 +6,8 @@ pub mod platform;
 pub mod server_client;
 pub mod types;
 
-use tauri::State;
 use std::sync::Mutex;
 use game_monitor::GameMonitor;
-use types::*;
 
 /// Application state
 pub struct AppState {

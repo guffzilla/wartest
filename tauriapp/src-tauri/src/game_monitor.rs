@@ -3,20 +3,12 @@ use crate::platform::Platform;
 use crate::types::ProcessInfo;
 use crate::server_client::ServerClient;
 use anyhow::Result;
-use std::collections::HashMap;
 use std::fs::{File, OpenOptions};
 use std::io::{BufReader, BufWriter};
-use std::net::UdpSocket;
 use std::path::Path;
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
-use winapi::um::{
-    processthreadsapi::OpenProcess,
-    handleapi::CloseHandle,
-    winnt::{PROCESS_QUERY_INFORMATION, PROCESS_VM_READ},
-    psapi::{EnumProcesses, GetModuleBaseNameA},
-};
 
 /// Main game monitor for Warcraft II multiplayer
 pub struct GameMonitor {
@@ -491,9 +483,9 @@ impl GameMonitor {
     
     /// Upload results to server
     pub fn upload_results(&self) -> Result<UploadResult> {
-        if let Some(ref server_client) = self.server_client {
+        if let Some(ref _server_client) = self.server_client {
             let mut uploaded = 0;
-            let mut errors: Vec<String> = Vec::new();
+            let errors: Vec<String> = Vec::new();
             
             // Note: This would need to be handled asynchronously in a real implementation
             // For now, we'll just return a placeholder result

@@ -1,7 +1,6 @@
 use std::path::{Path, PathBuf};
 use std::collections::HashMap;
-use anyhow::{Result, anyhow};
-use serde_json::Value;
+use anyhow::Result;
 use crate::types::{GameInstallation};
 
 #[derive(Debug, Clone)]
@@ -114,13 +113,13 @@ impl GameDetector {
 
             // Check for GOG Galaxy games
             if let Ok(gog_key) = hklm.open_subkey("SOFTWARE\\GOG.com\\GalaxyClient\\paths") {
-                if let Ok(gog_path) = gog_key.get_value::<String, _>("client") {
+                if let Ok(_gog_path) = gog_key.get_value::<String, _>("client") {
                     // GOG games detection would go here
                 }
             }
 
             // Check for Epic Games
-            if let Ok(epic_key) = hklm.open_subkey("SOFTWARE\\Epic Games\\EpicGamesLauncher") {
+            if let Ok(_epic_key) = hklm.open_subkey("SOFTWARE\\Epic Games\\EpicGamesLauncher") {
                 if let Ok(_epic_path) = hklm.get_value::<String, _>("AppDataPath") {
                     // Epic games detection would go here
                 }
