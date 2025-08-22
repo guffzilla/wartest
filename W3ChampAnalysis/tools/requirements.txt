@@ -1,0 +1,36 @@
+# W3Champions Analysis Tools Requirements
+
+# PE File Analysis
+pefile>=2023.2.7
+
+# Network Analysis
+pyshark>=0.6.0
+requests>=2.31.0
+
+# Data Processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# JSON and Data Handling
+json5>=0.9.14
+pyyaml>=6.0
+
+# System and Process Analysis
+psutil>=5.9.0
+pywin32>=306; sys_platform == "win32"
+
+# Web Scraping and Analysis
+beautifulsoup4>=4.12.0
+selenium>=4.10.0
+
+# Cryptography and Security
+cryptography>=41.0.0
+hashlib2>=1.0.0
+
+# Utilities
+tqdm>=4.65.0
+colorama>=0.4.6

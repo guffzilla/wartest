@@ -1,0 +1,80 @@
+[package]
+name = "wc2-replay-analyzer"
+version = "0.1.0"
+edition = "2021"
+authors = ["WC2 Replay Team"]
+description = "Real WC2 Remastered Replay File Analyzer & Viewer"
+license = "MIT"
+
+[dependencies]
+# Binary file analysis
+byteorder = "1.5"
+hex = "0.4"
+crc = "3.3"
+
+# Async runtime
+tokio = { version = "1.0", features = ["full"] }
+
+# File handling
+walkdir = "2.4"
+notify = "6.1"
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Logging
+tracing = "0.1"
+tracing-subscriber = "0.3"
+
+# Error handling
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Time handling
+chrono = { version = "0.4", features = ["serde"] }
+
+# Command line parsing
+clap = { version = "4.0", features = ["derive"] }
+
+# Hash calculation
+sha2 = "0.10"
+md5 = "0.7"
+
+# Compression
+flate2 = "1.0"
+zstd = "0.13"
+
+# System information
+sysinfo = "0.30"
+
+# GUI Framework (egui)
+eframe = "0.26"
+egui = "0.26"
+egui_plot = "0.26"
+
+# Graphics and rendering
+wgpu = "0.20"
+pollster = "0.3"
+
+# Image processing
+image = "0.25"
+
+# Audio (for replay sound effects)
+cpal = "0.15"
+
+# Database for replay storage
+rusqlite = { version = "0.31", features = ["bundled"] }
+
+[dev-dependencies]
+tokio-test = "0.4"
+
+[[bin]]
+name = "wc2-analyzer"
+path = "src/main.rs"
+
+[[bin]]
+name = "wc2-viewer"
+path = "src/bin/viewer.rs"
+
+
