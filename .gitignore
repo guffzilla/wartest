@@ -41,7 +41,53 @@ node_modules/
 .env.local
 .env.*.local
 
-
 # Added by cargo
-
 /target
+
+# Rust build artifacts (comprehensive)
+**/target/
+**/*.exe
+**/*.pdb
+**/*.dll
+**/*.so
+**/*.dylib
+**/*.rlib
+**/*.d
+**/*.o
+**/*.lock
+
+# Cargo incremental builds
+**/incremental/
+**/dep-graph.bin
+**/query-cache.bin
+**/work-products.bin
+
+# Debug and release builds
+**/debug/
+**/release/
+
+# Test artifacts
+**/test_*.exe
+**/test_*.pdb
+
+# Asset extraction outputs
+extracted_sprites/
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+
+# Large data files
+*.json
+*.bin
+*.dat
+*.idx
+*.grp
+
+# Temporary and cache files
+*.tmp
+*.temp
+*.cache
+*.bak
+*.old
