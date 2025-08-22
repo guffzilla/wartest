@@ -5,14 +5,18 @@ games/W3Champions/
 # Extracted WC1 assets - contains extracted game data and images
 WC1Assets/
 WC1Assets_test/
+WC1Assets_organized/
 
 # Extracted WC2 assets - contains extracted game data and images
 WC2Assets/
 WC2Assets_test/
 WC2Assets_organized/
 
-# Organized asset folders
-WC1Assets_organized/
+# All extracted asset folders (comprehensive)
+**/WC*Assets*/
+**/WC*Assets*_*/
+**/extracted_*/
+**/assets_*/
 
 # Web analysis folders
 WC2WebAnalysis/
@@ -92,6 +96,34 @@ games/**/*.pak
 **/extracted/**/*.jpeg
 **/extracted/**/*.gif
 **/extracted/**/*.bmp
+
+# Game asset images (comprehensive)
+**/WC*Assets*/**/*.png
+**/WC*Assets*/**/*.jpg
+**/WC*Assets*/**/*.jpeg
+**/WC*Assets*/**/*.gif
+**/WC*Assets*/**/*.bmp
+**/WC*Assets*/**/*.ico
+
+# Game installation images
+games/**/Data/**/*.png
+games/**/Data/**/*.jpg
+games/**/Data/**/*.jpeg
+games/**/Data/**/*.gif
+games/**/Data/**/*.bmp
+games/**/Data/**/*.ico
+games/**/data/**/*.png
+games/**/data/**/*.jpg
+games/**/data/**/*.jpeg
+games/**/data/**/*.gif
+games/**/data/**/*.bmp
+games/**/data/**/*.ico
+
+# Allow only small project icons (under 100KB)
+!**/icons/**/*.png
+!**/icons/**/*.ico
+!**/src/**/*.svg
+!**/assets/**/*.svg
 
 # Temporary and cache files
 *.tmp
