@@ -1,0 +1,33 @@
+[package]
+name = "shared-ai"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "Shared AI and machine learning functionality"
+license.workspace = true
+
+[dependencies]
+# Core dependencies (from workspace)
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+chrono.workspace = true
+
+# AI and ML (compatible versions)
+tch = "0.10"  # PyTorch bindings - compatible with rust-bert
+rust-bert = "0.20"  # BERT models for text analysis
+
+# Data processing
+ndarray = "0.15"
+ndarray-stats = "0.5"
+
+# Statistics and math
+statrs = "0.16"
+rand = "0.8"
+
+[lib]
+name = "shared_ai"
+path = "src/lib.rs"

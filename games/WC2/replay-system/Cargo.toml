@@ -1,0 +1,57 @@
+[package]
+name = "wc2-replay-system"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "Warcraft II Remastered Replay Analysis System"
+license.workspace = true
+
+[dependencies]
+# Core dependencies (from workspace)
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+chrono.workspace = true
+
+# File and binary processing
+byteorder = "1.4"
+walkdir = "2.3"
+notify = "6.1"
+hex = "0.4"
+crc = "3.3"
+flate2 = "1.0"
+zstd = "0.12"
+
+# GUI and UI
+eframe = "0.26"
+egui = "0.26"
+egui_plot = "0.26"
+wgpu = "0.20"
+pollster = "0.3"
+image = "0.25"
+cpal = "0.15"
+
+# Database
+rusqlite = { version = "0.31", features = ["bundled"] }
+
+# Command line parsing
+clap = { version = "4.0", features = ["derive"] }
+
+# Hashing
+sha2 = "0.10"
+md5 = "0.7"
+
+# System info
+sysinfo = "0.29"
+
+[[bin]]
+name = "wc2-analyzer"
+path = "src/main.rs"
+
+[[bin]]
+name = "wc2-viewer"
+path = "src/bin/viewer.rs"

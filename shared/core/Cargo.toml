@@ -1,0 +1,31 @@
+[package]
+name = "shared-core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "Shared core game engine functionality"
+license.workspace = true
+
+[dependencies]
+# Core dependencies (from workspace)
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+chrono.workspace = true
+
+# Windows API (for process monitoring and memory hooks)
+windows.workspace = true
+
+# System monitoring
+sysinfo = "0.29"
+
+# File operations
+walkdir = "2.3"
+notify = "6.1"
+
+[lib]
+name = "shared_core"
+path = "src/lib.rs"

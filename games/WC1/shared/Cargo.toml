@@ -1,0 +1,31 @@
+[package]
+name = "wc1-shared"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "Warcraft I Shared Utilities"
+license.workspace = true
+
+[dependencies]
+# Core dependencies (from workspace)
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+chrono.workspace = true
+
+# File and binary processing
+byteorder = "1.4"
+walkdir = "2.3"
+notify = "6.1"
+hex = "0.4"
+crc = "3.3"
+
+# Hashing
+sha2 = "0.10"
+md5 = "0.7"
+
+[lib]
+name = "wc1_shared"
+path = "src/lib.rs"

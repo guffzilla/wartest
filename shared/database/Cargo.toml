@@ -1,0 +1,24 @@
+[package]
+name = "shared-database"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "Shared database layer and schemas"
+license.workspace = true
+
+[dependencies]
+# Core dependencies (from workspace)
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+chrono.workspace = true
+
+# Database (PostgreSQL only to avoid conflicts)
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "chrono"], default-features = false }
+
+[lib]
+name = "shared_database"
+path = "src/lib.rs"

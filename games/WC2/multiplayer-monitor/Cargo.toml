@@ -1,0 +1,53 @@
+[package]
+name = "wc2-multiplayer-monitor"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+description = "Warcraft II Multiplayer Game Monitoring System"
+license.workspace = true
+
+[dependencies]
+# Core dependencies (from workspace)
+tokio.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+chrono.workspace = true
+
+# Windows API (for process monitoring)
+windows.workspace = true
+
+# File and binary processing
+byteorder = "1.4"
+walkdir = "2.3"
+notify = "6.1"
+hex = "0.4"
+crc = "3.3"
+
+# Network and communication
+reqwest = { version = "0.11", features = ["json"] }
+tokio-tungstenite = "0.20"
+url = "2.4"
+
+# Command line parsing
+clap = { version = "4.0", features = ["derive"] }
+
+# Hashing and cryptography
+sha2 = "0.10"
+md5 = "0.7"
+
+# System monitoring
+sysinfo = "0.29"
+
+# Database (removed to avoid conflicts - will use shared database later)
+
+[[bin]]
+name = "wc2-multiplayer-monitor"
+path = "src/main.rs"
+
+[lib]
+name = "wc2_multiplayer_monitor"
+path = "src/lib.rs"

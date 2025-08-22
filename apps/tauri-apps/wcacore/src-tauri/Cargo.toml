@@ -1,0 +1,47 @@
+[package]
+name = "wcacore"
+version.workspace = true
+description = "Warcraft Game Analysis Core Application"
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "wcacore_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+# Tauri dependencies
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+
+# Core dependencies (from workspace)
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+thiserror.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+chrono.workspace = true
+
+# Game-specific dependencies (corrected paths)
+wc2-replay-system = { path = "../../../../games/WC2/replay-system" }
+wc2-multiplayer-monitor = { path = "../../../../games/WC2/multiplayer-monitor" }
+wc3-champions-analysis = { path = "../../../../games/WC3/champions-analysis" }
+wc1-asset-extractor = { path = "../../../../games/WC1/asset-extractor" }
+
+# Database for storing game data
+rusqlite = { version = "0.31", features = ["bundled"] }
+
+# File operations
+walkdir = "2.3"
+notify = "6.1"
+

@@ -1,5 +1,6 @@
-# Games folder - contains Warcraft I and II files
-games/
+# Game installations folder - contains actual game installations (not our code)
+games/Warcraft*/
+games/W3Champions/
 
 # Extracted WC1 assets - contains extracted game data and images
 WC1Assets/
@@ -54,7 +55,8 @@ node_modules/
 **/*.rlib
 **/*.d
 **/*.o
-**/*.lock
+# Note: We want to track Cargo.lock files for reproducible builds
+# **/*.lock
 
 # Cargo incremental builds
 **/incremental/
@@ -70,20 +72,26 @@ node_modules/
 **/test_*.exe
 **/test_*.pdb
 
-# Asset extraction outputs
+# Asset extraction outputs (large generated files)
 extracted_sprites/
-*.png
-*.jpg
-*.jpeg
-*.gif
-*.bmp
+WC*Assets*/
+**/extracted/
+**/output/
 
-# Large data files
-*.json
-*.bin
-*.dat
-*.idx
-*.grp
+# Large binary game files (but allow small config/data files)
+games/**/*.bin
+games/**/*.dat
+games/**/*.idx
+games/**/*.grp
+games/**/*.mpq
+games/**/*.pak
+
+# Large extracted images (but allow small icons/assets in projects)
+**/extracted/**/*.png
+**/extracted/**/*.jpg
+**/extracted/**/*.jpeg
+**/extracted/**/*.gif
+**/extracted/**/*.bmp
 
 # Temporary and cache files
 *.tmp
@@ -91,3 +99,18 @@ extracted_sprites/
 *.cache
 *.bak
 *.old
+
+# AI model files and training data (can be very large)
+**/models/**/*.bin
+**/models/**/*.pt
+**/models/**/*.onnx
+**/training_data/
+
+# Large log files from analysis
+**/logs/*.log
+**/logs/*.out
+
+# Database files (development/testing)
+**/*.db
+**/*.sqlite
+**/*.sqlite3

@@ -1,51 +1,80 @@
-[package]
-name = "wartest"
+[workspace]
+resolver = "2"
+members = [
+    # Shared libraries
+    "shared/core",
+    "shared/utils", 
+    "shared/ai",
+    
+    # Warcraft I projects
+    "games/WC1/asset-extractor",
+    "games/WC1/game-analyzer",
+    "games/WC1/multiplayer-monitor",
+    "games/WC1/shared",
+    
+    # Warcraft II projects
+    "games/WC2/asset-extractor",
+    "games/WC2/game-analyzer", 
+    "games/WC2/multiplayer-monitor",
+    "games/WC2/replay-system",
+    "games/WC2/shared",
+    
+    # Warcraft III projects
+    "games/WC3/asset-extractor",
+    "games/WC3/game-analyzer",
+    "games/WC3/multiplayer-monitor", 
+    "games/WC3/champions-analysis",
+    "games/WC3/shared",
+    
+    # Tauri applications
+    "apps/tauri-apps/wcacore/src-tauri",
+]
+
+[workspace.package]
 version = "0.1.0"
 edition = "2021"
 authors = ["Your Name <your.email@example.com>"]
-description = "A Rust-based system for analyzing Warcraft I and II game files and extracting assets"
+description = "Warcraft Game Analysis and Management System"
+license = "MIT"
 
-[dependencies]
-# File handling and binary parsing
-memmap2 = "0.9"
-byteorder = "1.4"
-nom = "7.1"
-
-# Image processing
-image = "0.24"
-png = "0.17"
-
-# Audio processing
-hound = "3.5"
-ogg = "0.8"
-
-# Data serialization
+[workspace.dependencies]
+# Core dependencies
+tokio = { version = "1.0", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-bson = "2.8"
-
-# CLI and utilities
-clap = { version = "4.0", features = ["derive"] }
 anyhow = "1.0"
 thiserror = "1.0"
 tracing = "0.1"
 tracing-subscriber = "0.3"
+chrono = { version = "0.4", features = ["serde"] }
 
-# Windows API (for memory reading if needed)
-winapi = { version = "0.3", features = ["winuser", "processthreadsapi", "memoryapi", "handleapi", "errhandlingapi", "psapi"] }
-
-# File system operations
+# File and binary processing
+byteorder = "1.4"
 walkdir = "2.3"
+notify = "6.1"
+hex = "0.4"
+crc = "3.3"
+flate2 = "1.0"
+zstd = "0.12"
 
-# Progress bars
-indicatif = "0.17"
+# Database
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "chrono"] }
+rusqlite = { version = "0.31", features = ["bundled"] }
 
-# Async runtime (for future web integration)
-tokio = { version = "1.0", features = ["full"] }
+# GUI and UI
+eframe = "0.26"
+egui = "0.26"
+egui_plot = "0.26"
 
-[dev-dependencies]
-tempfile = "3.2"
+# Windows API (for process monitoring)
+windows = { version = "0.52", features = [
+    "Win32_Foundation",
+    "Win32_System_Threading",
+    "Win32_System_ProcessStatus",
+    "Win32_System_Memory",
+    "Win32_System_SystemInformation"
+]}
 
-[[bin]]
-name = "wartest"
-path = "src/main.rs"
+# AI and ML
+tch = "0.10"  # PyTorch bindings - compatible with rust-bert
+rust-bert = "0.20"  # BERT models for text analysis
