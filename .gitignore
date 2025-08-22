@@ -1,6 +1,7 @@
 # Game installations folder - contains actual game installations (not our code)
 games/Warcraft*/
 games/W3Champions/
+games/War2Combat/
 
 # Extracted WC1 assets - contains extracted game data and images
 WC1Assets/
