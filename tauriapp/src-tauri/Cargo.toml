@@ -25,12 +25,7 @@ tauri = { version = "2.4.0", features = ["devtools", "wry"] }
 tauri-runtime = "2.4.0"
 tauri-runtime-wry = "2.4.0"
 
-[patch.crates-io]
-tauri = { version = "2.4.0" }
-tauri-runtime = { version = "2.4.0" }
-tauri-runtime-wry = { version = "2.4.0" }
-tauri-macros = { version = "2.4.0" }
-tauri-utils = { version = "2.4.0" }
+
 
 # Game monitoring dependencies
 anyhow = "1.0"
