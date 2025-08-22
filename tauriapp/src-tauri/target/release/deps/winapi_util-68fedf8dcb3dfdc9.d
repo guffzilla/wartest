@@ -1,0 +1,11 @@
+C:\Users\garet\OneDrive\Desktop\wartest\tauriapp\src-tauri\target\release\deps\winapi_util-68fedf8dcb3dfdc9.d: C:\Users\garet\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-util-0.1.10\src\lib.rs C:\Users\garet\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-util-0.1.10\src\console.rs C:\Users\garet\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-util-0.1.10\src\file.rs C:\Users\garet\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-util-0.1.10\src\sysinfo.rs C:\Users\garet\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-util-0.1.10\src\win.rs
+
+C:\Users\garet\OneDrive\Desktop\wartest\tauriapp\src-tauri\target\release\deps\libwinapi_util-68fedf8dcb3dfdc9.rlib: C:\Users\garet\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-util-0.1.10\src\lib.rs C:\Users\garet\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-util-0.1.10\src\console.rs C:\Users\garet\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-util-0.1.10\src\file.rs C:\Users\garet\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-util-0.1.10\src\sysinfo.rs C:\Users\garet\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-util-0.1.10\src\win.rs
+
+C:\Users\garet\OneDrive\Desktop\wartest\tauriapp\src-tauri\target\release\deps\libwinapi_util-68fedf8dcb3dfdc9.rmeta: C:\Users\garet\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-util-0.1.10\src\lib.rs C:\Users\garet\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-util-0.1.10\src\console.rs C:\Users\garet\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-util-0.1.10\src\file.rs C:\Users\garet\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-util-0.1.10\src\sysinfo.rs C:\Users\garet\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-util-0.1.10\src\win.rs
+
+C:\Users\garet\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-util-0.1.10\src\lib.rs:
+C:\Users\garet\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-util-0.1.10\src\console.rs:
+C:\Users\garet\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-util-0.1.10\src\file.rs:
+C:\Users\garet\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-util-0.1.10\src\sysinfo.rs:
+C:\Users\garet\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\winapi-util-0.1.10\src\win.rs:
