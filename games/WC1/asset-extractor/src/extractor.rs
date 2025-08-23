@@ -1,5 +1,29 @@
-use crate::{Result, ExtractorConfig, ExtractorError};
 use std::path::Path;
+use anyhow::Result;
+
+/// Configuration for WC1 asset extraction
+pub struct ExtractorConfig {
+    /// Input directory path
+    pub input_dir: String,
+    /// Output directory path
+    pub output_dir: String,
+    /// Whether to overwrite existing files
+    pub overwrite: bool,
+}
+
+/// Errors that can occur during extraction
+#[derive(Debug, thiserror::Error)]
+pub enum ExtractorError {
+    /// File not found
+    #[error("File not found: {0}")]
+    FileNotFound(String),
+    /// Invalid format
+    #[error("Invalid format: {0}")]
+    InvalidFormat(String),
+    /// Extraction failed
+    #[error("Extraction failed: {0}")]
+    ExtractionFailed(String),
+}
 
 /// Main asset extractor for Warcraft I
 pub struct WC1AssetExtractor {
@@ -17,11 +41,11 @@ impl WC1AssetExtractor {
         let input_path = Path::new(&self.config.input_dir);
         
         if !input_path.exists() {
-            return Err(ExtractorError::FileNotFound(self.config.input_dir.clone()).into());
+            return Err(anyhow::anyhow!("File not found: {}", self.config.input_dir));
         }
         
         if !input_path.is_dir() {
-            return Err(ExtractorError::InvalidFormat("Input must be a directory".to_string()).into());
+            return Err(anyhow::anyhow!("Input must be a directory: {}", self.config.input_dir));
         }
         
         // TODO: Implement actual extraction logic
@@ -35,7 +59,7 @@ impl WC1AssetExtractor {
         let input_path = Path::new(&self.config.input_dir);
         
         if !input_path.exists() {
-            return Err(ExtractorError::FileNotFound(self.config.input_dir.clone()).into());
+            return Err(anyhow::anyhow!("File not found: {}", self.config.input_dir));
         }
         
         // TODO: Implement actual asset listing logic

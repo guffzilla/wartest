@@ -8,7 +8,7 @@ pub mod asset_extraction;
 
 pub use file_ops::FileOps;
 pub use binary_parser::BinaryParser;
-pub use asset_extraction::AssetExtraction;
+pub use asset_extraction::AssetExtractor;
 
 /// Result type for the shared utils library
 pub type Result<T> = anyhow::Result<T>;

@@ -3,11 +3,10 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::net::{TcpStream, UdpSocket};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
-use winapi::um::{
-    processthreadsapi::OpenProcess,
-    handleapi::CloseHandle,
-    winnt::{PROCESS_QUERY_INFORMATION, PROCESS_VM_READ},
-    psapi::{EnumProcesses, GetModuleBaseNameA},
+use windows::Win32::{
+    Foundation::HANDLE,
+    System::Threading::{OpenProcess, PROCESS_QUERY_INFORMATION, PROCESS_VM_READ},
+    System::ProcessStatus::{EnumProcesses, GetModuleBaseNameA},
 };
 
 // Custom serialization for SystemTime

@@ -5,8 +5,8 @@
 pub mod game_analysis;
 pub mod pattern_recognition;
 
-pub use game_analysis::GameAnalysisAI;
-pub use pattern_recognition::PatternRecognition;
+pub use game_analysis::GameAnalysisEngine;
+pub use pattern_recognition::PatternRecognitionEngine;
 
 /// Result type for the shared AI library
 pub type Result<T> = anyhow::Result<T>;
