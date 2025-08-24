@@ -1,13 +1,40 @@
 <script lang="ts">
   import { 
     wc1Games, wc2Games, wc3Games, 
-    wc1DefaultGame, wc2DefaultGame, wc3DefaultGame,
-    scanResult, isLoading, scanGames, launchGame, refreshGames,
-    userPreferences, updateUserPreference
+    scanResult, isLoading, scanGames, launchGame, refreshGames
   } from '../stores/gameStore';
   
   let isScanning = false;
-  let showPaths = false;
+  
+  // Featured installation management - one per game type
+  let featuredInstallations = {
+    WC1: null as any,
+    WC2: null as any,
+    WC3: null as any
+  };
+  
+  // Initialize featured installations when stores change
+  $: if ($wc1Games.length > 0) {
+    if (!featuredInstallations.WC1) {
+      // Prefer Remastered over DOS versions
+      const remastered = $wc1Games.find(g => g.installation_type === 'Remastered (Windows)');
+      featuredInstallations.WC1 = remastered || $wc1Games[0];
+    }
+  }
+  
+  $: if ($wc2Games.length > 0) {
+    if (!featuredInstallations.WC2) {
+      const remastered = $wc2Games.find(g => g.installation_type === 'Remastered (Windows)');
+      featuredInstallations.WC2 = remastered || $wc2Games[0];
+    }
+  }
+  
+  $: if ($wc3Games.length > 0) {
+    if (!featuredInstallations.WC3) {
+      const reforged = $wc3Games.find(g => g.installation_type === 'Reforged');
+      featuredInstallations.WC3 = reforged || $wc3Games[0];
+    }
+  }
   
   async function handleScanGames() {
     isScanning = true;
@@ -77,16 +104,28 @@
     }
   }
   
-  function getAvailableInstallationTypes(games: any[]) {
-    return [...new Set(games.map(g => g.installation_type))];
+  // Function to change featured installation
+  function setFeaturedInstallation(gameType: 'WC1' | 'WC2' | 'WC3', game: any) {
+    featuredInstallations[gameType] = game;
+    featuredInstallations = { ...featuredInstallations }; // Trigger reactivity
   }
   
-  function handlePreferenceChange(gameType: 'WC1' | 'WC2' | 'WC3', newPreference: string) {
-    updateUserPreference(gameType, newPreference);
+  // Function to get available installations for a game type
+  function getAvailableInstallations(gameType: 'WC1' | 'WC2' | 'WC3') {
+    switch (gameType) {
+      case 'WC1': return $wc1Games;
+      case 'WC2': return $wc2Games;
+      case 'WC3': return $wc3Games;
+      default: return [];
+    }
   }
   
-  function togglePaths() {
-    showPaths = !showPaths;
+  // Function to get installation display name
+  function getInstallationDisplayName(game: any) {
+    if (game.installation_type === 'Remastered (Windows)') return 'Remastered';
+    if (game.installation_type === 'Original (DOS)') return 'DOS Version';
+    if (game.installation_type === 'Reforged') return 'Reforged';
+    return game.installation_type;
   }
 </script>
 
@@ -98,9 +137,6 @@
     </button>
     <button class="btn btn-secondary" on:click={handleRefreshGames}>
       🔄 Refresh Status
-    </button>
-    <button class="btn btn-info" on:click={togglePaths}>
-      {showPaths ? '📁 Hide Paths' : '📁 Show Paths'}
     </button>
     <div class="scan-summary">
       {#if $scanResult}
@@ -120,68 +156,73 @@
         <div class="game-count">{$wc1Games.length} installation{$wc1Games.length !== 1 ? 's' : ''}</div>
       </div>
       
-      <!-- Default Game Preference Selector -->
-      {#if $wc1Games.length > 1}
-        <div class="preference-selector">
-          <label for="wc1-preference">Default Version:</label>
-          <select 
-            id="wc1-preference" 
-            value={$userPreferences.wc1Default}
-            on:change={(e) => handlePreferenceChange('WC1', e.target.value)}
-          >
-            {#each getAvailableInstallationTypes($wc1Games) as type}
-              <option value={type}>{type}</option>
-            {/each}
-          </select>
-        </div>
-      {/if}
-      
-      {#if $wc1DefaultGame}
-        <div class="primary-game">
+             {#if $wc1Games.length > 0 && featuredInstallations.WC1}
+         <!-- Featured Game Display -->
+        <div class="featured-game">
           <div class="game-info">
-            <div class="game-name">{$wc1DefaultGame.name}</div>
+            <div class="game-name">{featuredInstallations.WC1.name}</div>
             <div class="game-version">
-              {getInstallationTypeIcon($wc1DefaultGame.installation_type)} {$wc1DefaultGame.installation_type}
+              {getInstallationTypeIcon(featuredInstallations.WC1.installation_type)} {getInstallationDisplayName(featuredInstallations.WC1)}
             </div>
-            <div class="game-drive" style="color: {getDriveColor($wc1DefaultGame.drive)}">
-              📁 {$wc1DefaultGame.drive}
+            <div class="game-drive" style="color: {getDriveColor(featuredInstallations.WC1.drive)}">
+              📁 {featuredInstallations.WC1.drive}
             </div>
-            {#if showPaths}
-              <div class="game-path">
-                <strong>Installation:</strong> {$wc1DefaultGame.path}
-              </div>
-              <div class="game-executable">
-                <strong>Executable:</strong> {$wc1DefaultGame.executable}
-              </div>
-            {/if}
+            <div class="game-path">
+              <strong>Installation:</strong> {featuredInstallations.WC1.path}
+            </div>
+            <div class="game-executable">
+              <strong>Executable:</strong> {featuredInstallations.WC1.executable}
+            </div>
           </div>
           <div class="game-actions">
-            <button class="btn btn-launch" on:click={() => handleLaunchGame($wc1DefaultGame)}>
+            <button class="btn btn-launch" on:click={() => handleLaunchGame(featuredInstallations.WC1)}>
               🚀 Launch
             </button>
-            {#if $wc1DefaultGame.maps_folder}
-              <button class="btn btn-maps" on:click={() => handleOpenMaps($wc1DefaultGame)}>
+            {#if featuredInstallations.WC1.maps_folder}
+              <button class="btn btn-maps" on:click={() => handleOpenMaps(featuredInstallations.WC1)}>
                 🗺️ Maps
               </button>
             {/if}
           </div>
         </div>
         
+        <!-- Featured Installation Selector -->
+        <div class="featured-selector">
+          <label for="wc1-featured">Switch to different installation:</label>
+          <select 
+            id="wc1-featured" 
+            value={featuredInstallations.WC1.path}
+            on:change={(e) => {
+              const selectedGame = $wc1Games.find(g => g.path === e.target.value);
+              if (selectedGame) setFeaturedInstallation('WC1', selectedGame);
+            }}
+          >
+            {#each $wc1Games as game}
+              <option value={game.path}>
+                {getInstallationTypeIcon(game.installation_type)} {getInstallationDisplayName(game)} ({game.drive})
+              </option>
+            {/each}
+          </select>
+        </div>
+        
+        <!-- Other Installations (Collapsed by Default) -->
         {#if $wc1Games.length > 1}
-          <div class="secondary-games">
+          <div class="other-installations">
             <details>
-              <summary>+{$wc1Games.length - 1} more installation{$wc1Games.length !== 2 ? 's' : ''}</summary>
-              <div class="secondary-list">
-                {#each $wc1Games.filter(g => g !== $wc1DefaultGame) as game}
-                  <div class="secondary-game">
-                    <div class="secondary-game-info">
-                      <span class="game-type">{getInstallationTypeIcon(game.installation_type)} {game.installation_type}</span>
+              <summary>📦 {$wc1Games.length - 1} other installation{$wc1Games.length !== 2 ? 's' : ''}</summary>
+              <div class="installation-list">
+                {#each $wc1Games.filter(g => g !== featuredInstallations.WC1) as game}
+                  <div class="other-installation">
+                    <div class="other-info">
+                      <span class="game-version">{getInstallationTypeIcon(game.installation_type)} {getInstallationDisplayName(game)}</span>
                       <span class="game-drive" style="color: {getDriveColor(game.drive)}">{game.drive}</span>
-                      {#if showPaths}
-                        <div class="game-path-small">{game.path}</div>
-                      {/if}
                     </div>
-                    <button class="btn btn-small" on:click={() => handleLaunchGame(game)}>Launch</button>
+                    <div class="other-actions">
+                      <button class="btn btn-small" on:click={() => setFeaturedInstallation('WC1', game)}>
+                        Make Featured
+                      </button>
+                      <button class="btn btn-small" on:click={() => handleLaunchGame(game)}>Launch</button>
+                    </div>
                   </div>
                 {/each}
               </div>
@@ -204,68 +245,73 @@
         <div class="game-count">{$wc2Games.length} installation{$wc2Games.length !== 1 ? 's' : ''}</div>
       </div>
       
-      <!-- Default Game Preference Selector -->
-      {#if $wc2Games.length > 1}
-        <div class="preference-selector">
-          <label for="wc2-preference">Default Version:</label>
-          <select 
-            id="wc2-preference" 
-            value={$userPreferences.wc2Default}
-            on:change={(e) => handlePreferenceChange('WC2', e.target.value)}
-          >
-            {#each getAvailableInstallationTypes($wc2Games) as type}
-              <option value={type}>{type}</option>
-            {/each}
-          </select>
-        </div>
-      {/if}
-      
-      {#if $wc2DefaultGame}
-        <div class="primary-game">
+      {#if $wc2Games.length > 0 && featuredInstallations.WC2}
+        <!-- Featured Game Display -->
+        <div class="featured-game">
           <div class="game-info">
-            <div class="game-name">{$wc2DefaultGame.name}</div>
+            <div class="game-name">{featuredInstallations.WC2.name}</div>
             <div class="game-version">
-              {getInstallationTypeIcon($wc2DefaultGame.installation_type)} {$wc2DefaultGame.installation_type}
+              {getInstallationTypeIcon(featuredInstallations.WC2.installation_type)} {getInstallationDisplayName(featuredInstallations.WC2)}
             </div>
-            <div class="game-drive" style="color: {getDriveColor($wc2DefaultGame.drive)}">
-              📁 {$wc2DefaultGame.drive}
+            <div class="game-drive" style="color: {getDriveColor(featuredInstallations.WC2.drive)}">
+              📁 {featuredInstallations.WC2.drive}
             </div>
-            {#if showPaths}
-              <div class="game-path">
-                <strong>Installation:</strong> {$wc2DefaultGame.path}
-              </div>
-              <div class="game-executable">
-                <strong>Executable:</strong> {$wc2DefaultGame.executable}
-              </div>
-            {/if}
+            <div class="game-path">
+              <strong>Installation:</strong> {featuredInstallations.WC2.path}
+            </div>
+            <div class="game-executable">
+              <strong>Executable:</strong> {featuredInstallations.WC2.executable}
+            </div>
           </div>
           <div class="game-actions">
-            <button class="btn btn-launch" on:click={() => handleLaunchGame($wc2DefaultGame)}>
+            <button class="btn btn-launch" on:click={() => handleLaunchGame(featuredInstallations.WC2)}>
               🚀 Launch
             </button>
-            {#if $wc2DefaultGame.maps_folder}
-              <button class="btn btn-maps" on:click={() => handleOpenMaps($wc2DefaultGame)}>
+            {#if featuredInstallations.WC2.maps_folder}
+              <button class="btn btn-maps" on:click={() => handleOpenMaps(featuredInstallations.WC2)}>
                 🗺️ Maps
               </button>
             {/if}
           </div>
         </div>
         
+        <!-- Featured Installation Selector -->
+        <div class="featured-selector">
+          <label for="wc2-featured">Switch to different installation:</label>
+          <select 
+            id="wc2-featured" 
+            value={featuredInstallations.WC2.path}
+            on:change={(e) => {
+              const selectedGame = $wc2Games.find(g => g.path === e.target.value);
+              if (selectedGame) setFeaturedInstallation('WC2', selectedGame);
+            }}
+          >
+            {#each $wc2Games as game}
+              <option value={game.path}>
+                {getInstallationTypeIcon(game.installation_type)} {getInstallationDisplayName(game)} ({game.drive})
+              </option>
+            {/each}
+          </select>
+        </div>
+        
+        <!-- Other Installations (Collapsed by Default) -->
         {#if $wc2Games.length > 1}
-          <div class="secondary-games">
+          <div class="other-installations">
             <details>
-              <summary>+{$wc2Games.length - 1} more installation{$wc2Games.length !== 2 ? 's' : ''}</summary>
-              <div class="secondary-list">
-                {#each $wc2Games.filter(g => g !== $wc2DefaultGame) as game}
-                  <div class="secondary-game">
-                    <div class="secondary-game-info">
-                      <span class="game-type">{getInstallationTypeIcon(game.installation_type)} {game.installation_type}</span>
+              <summary>📦 {$wc2Games.length - 1} other installation{$wc2Games.length !== 2 ? 's' : ''}</summary>
+              <div class="installation-list">
+                {#each $wc2Games.filter(g => g !== featuredInstallations.WC2) as game}
+                  <div class="other-installation">
+                    <div class="other-info">
+                      <span class="game-version">{getInstallationTypeIcon(game.installation_type)} {getInstallationDisplayName(game)}</span>
                       <span class="game-drive" style="color: {getDriveColor(game.drive)}">{game.drive}</span>
-                      {#if showPaths}
-                        <div class="game-path-small">{game.path}</div>
-                      {/if}
                     </div>
-                    <button class="btn btn-small" on:click={() => handleLaunchGame(game)}>Launch</button>
+                    <div class="other-actions">
+                      <button class="btn btn-small" on:click={() => setFeaturedInstallation('WC2', game)}>
+                        Make Featured
+                      </button>
+                      <button class="btn btn-small" on:click={() => handleLaunchGame(game)}>Launch</button>
+                    </div>
                   </div>
                 {/each}
               </div>
@@ -288,68 +334,73 @@
         <div class="game-count">{$wc3Games.length} installation{$wc3Games.length !== 1 ? 's' : ''}</div>
       </div>
       
-      <!-- Default Game Preference Selector -->
-      {#if $wc3Games.length > 1}
-        <div class="preference-selector">
-          <label for="wc3-preference">Default Version:</label>
-          <select 
-            id="wc3-preference" 
-            value={$userPreferences.wc3Default}
-            on:change={(e) => handlePreferenceChange('WC3', e.target.value)}
-          >
-            {#each getAvailableInstallationTypes($wc3Games) as type}
-              <option value={type}>{type}</option>
-            {/each}
-          </select>
-        </div>
-      {/if}
-      
-      {#if $wc3DefaultGame}
-        <div class="primary-game">
+      {#if $wc3Games.length > 0 && featuredInstallations.WC3}
+        <!-- Featured Game Display -->
+        <div class="featured-game">
           <div class="game-info">
-            <div class="game-name">{$wc3DefaultGame.name}</div>
+            <div class="game-name">{featuredInstallations.WC3.name}</div>
             <div class="game-version">
-              {getInstallationTypeIcon($wc3DefaultGame.installation_type)} {$wc3DefaultGame.installation_type}
+              {getInstallationTypeIcon(featuredInstallations.WC3.installation_type)} {getInstallationDisplayName(featuredInstallations.WC3)}
             </div>
-            <div class="game-drive" style="color: {getDriveColor($wc3DefaultGame.drive)}">
-              📁 {$wc3DefaultGame.drive}
+            <div class="game-drive" style="color: {getDriveColor(featuredInstallations.WC3.drive)}">
+              📁 {featuredInstallations.WC3.drive}
             </div>
-            {#if showPaths}
-              <div class="game-path">
-                <strong>Installation:</strong> {$wc3DefaultGame.path}
-              </div>
-              <div class="game-executable">
-                <strong>Executable:</strong> {$wc3DefaultGame.executable}
-              </div>
-            {/if}
+            <div class="game-path">
+              <strong>Installation:</strong> {featuredInstallations.WC3.path}
+            </div>
+            <div class="game-executable">
+              <strong>Executable:</strong> {featuredInstallations.WC3.executable}
+            </div>
           </div>
           <div class="game-actions">
-            <button class="btn btn-launch" on:click={() => handleLaunchGame($wc3DefaultGame)}>
+            <button class="btn btn-launch" on:click={() => handleLaunchGame(featuredInstallations.WC3)}>
               🚀 Launch
             </button>
-            {#if $wc3DefaultGame.maps_folder}
-              <button class="btn btn-maps" on:click={() => handleOpenMaps($wc3DefaultGame)}>
+            {#if featuredInstallations.WC3.maps_folder}
+              <button class="btn btn-maps" on:click={() => handleOpenMaps(featuredInstallations.WC3)}>
                 🗺️ Maps
               </button>
             {/if}
           </div>
         </div>
         
+        <!-- Featured Installation Selector -->
+        <div class="featured-selector">
+          <label for="wc3-featured">Switch to different installation:</label>
+          <select 
+            id="wc3-featured" 
+            value={featuredInstallations.WC3.path}
+            on:change={(e) => {
+              const selectedGame = $wc3Games.find(g => g.path === e.target.value);
+              if (selectedGame) setFeaturedInstallation('WC3', selectedGame);
+            }}
+          >
+            {#each $wc3Games as game}
+              <option value={game.path}>
+                {getInstallationTypeIcon(game.installation_type)} {getInstallationDisplayName(game)} ({game.drive})
+              </option>
+            {/each}
+          </select>
+        </div>
+        
+        <!-- Other Installations (Collapsed by Default) -->
         {#if $wc3Games.length > 1}
-          <div class="secondary-games">
+          <div class="other-installations">
             <details>
-              <summary>+{$wc3Games.length - 1} more installation{$wc3Games.length !== 2 ? 's' : ''}</summary>
-              <div class="secondary-list">
-                {#each $wc3Games.filter(g => g !== $wc3DefaultGame) as game}
-                  <div class="secondary-game">
-                    <div class="secondary-game-info">
-                      <span class="game-type">{getInstallationTypeIcon(game.installation_type)} {game.installation_type}</span>
+              <summary>📦 {$wc3Games.length - 1} other installation{$wc3Games.length !== 2 ? 's' : ''}</summary>
+              <div class="installation-list">
+                {#each $wc3Games.filter(g => g !== featuredInstallations.WC3) as game}
+                  <div class="other-installation">
+                    <div class="other-info">
+                      <span class="game-version">{getInstallationTypeIcon(game.installation_type)} {getInstallationDisplayName(game)}</span>
                       <span class="game-drive" style="color: {getDriveColor(game.drive)}">{game.drive}</span>
-                      {#if showPaths}
-                        <div class="game-path-small">{game.path}</div>
-                      {/if}
                     </div>
-                    <button class="btn btn-small" on:click={() => handleLaunchGame(game)}>Launch</button>
+                    <div class="other-actions">
+                      <button class="btn btn-small" on:click={() => setFeaturedInstallation('WC3', game)}>
+                        Make Featured
+                      </button>
+                      <button class="btn btn-small" on:click={() => handleLaunchGame(game)}>Launch</button>
+                    </div>
                   </div>
                 {/each}
               </div>
@@ -545,38 +596,108 @@
     padding: 4px 12px;
     border-radius: 20px;
   }
-
-  .preference-selector {
-    margin-bottom: 20px;
-    padding: 15px;
+  
+  /* Featured Installation Interface Styles */
+  .featured-selector {
+    margin-bottom: 15px;
+    padding: 12px 15px;
     background: rgba(255, 255, 255, 0.02);
-    border-radius: 10px;
+    border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.05);
   }
-
-  .preference-selector label {
+  
+  .featured-selector label {
     display: block;
     margin-bottom: 8px;
     color: #9aa0a6;
     font-size: 0.9rem;
     font-weight: 500;
   }
-
-  .preference-selector select {
+  
+  .featured-selector select {
     width: 100%;
-    padding: 8px 12px;
+    padding: 10px 12px;
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 6px;
+    border-radius: 8px;
     background: rgba(255, 255, 255, 0.05);
     color: #ffffff;
     font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
-
-  .preference-selector select:focus {
+  
+  .featured-selector select:focus {
     outline: none;
     border-color: #ffd700;
     box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
   }
+  
+  .featured-selector select:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+  
+  .featured-game {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  .other-installations {
+    margin-top: 15px;
+  }
+  
+  .other-installations summary {
+    cursor: pointer;
+    color: #9aa0a6;
+    font-size: 0.9rem;
+    padding: 12px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    transition: color 0.2s ease;
+  }
+  
+  .other-installations summary:hover {
+    color: #ffffff;
+  }
+  
+  .installation-list {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .other-installation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.2s ease;
+  }
+  
+  .other-installation:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateX(5px);
+  }
+  
+  .other-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .other-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+
 
   .primary-game {
     background: rgba(255, 255, 255, 0.03);
@@ -584,6 +705,15 @@
     padding: 20px;
     margin-bottom: 15px;
     border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .featured-game {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   }
 
   .game-info {
