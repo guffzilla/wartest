@@ -1,0 +1,15 @@
+{
+  "session_id": "wc2-lab-1756050394",
+  "start_time": "2025-08-24T15:46:34.248403200Z",
+  "end_time": "2025-08-24T15:46:34.263671Z",
+  "total_game_states": 0,
+  "total_game_events": 0,
+  "total_analysis_results": 0,
+  "config": {
+    "headless_mode": true,
+    "memory_scan_interval": 100,
+    "event_recording": true,
+    "extraction_depth": "Detailed",
+    "output_format": "JSON"
+  }
+}

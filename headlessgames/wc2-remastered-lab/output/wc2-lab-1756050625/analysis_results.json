@@ -1,0 +1,69 @@
+[
+  {
+    "id": "mem_001",
+    "timestamp": "2025-08-24T15:50:25.965589700Z",
+    "analysis_type": "MemoryStructure",
+    "results": {
+      "MemoryStructure": {
+        "data_structures": [
+          {
+            "name": "GameState",
+            "address": 268435456,
+            "size": 1024,
+            "fields": [
+              {
+                "name": "game_phase",
+                "offset": 0,
+                "size": 4,
+                "field_type": "Integer32",
+                "value": 1
+              },
+              {
+                "name": "game_time",
+                "offset": 4,
+                "size": 4,
+                "field_type": "Integer32",
+                "value": 0
+              }
+            ],
+            "confidence": 0.85
+          }
+        ],
+        "memory_layouts": [],
+        "pointer_relationships": [],
+        "data_types": []
+      }
+    },
+    "confidence": 0.85,
+    "metadata": {}
+  },
+  {
+    "id": "pat_001",
+    "timestamp": "2025-08-24T15:50:25.965596900Z",
+    "analysis_type": "PatternRecognition",
+    "results": {
+      "PatternRecognition": {
+        "patterns": [
+          {
+            "name": "UnitMovement",
+            "pattern_type": "Behavior",
+            "description": "Regular unit movement patterns",
+            "signature": [
+              85,
+              78,
+              73,
+              84
+            ],
+            "occurrence_count": 150,
+            "first_occurrence": "2025-08-24T15:50:25.965597400Z",
+            "last_occurrence": "2025-08-24T15:50:25.965597500Z"
+          }
+        ],
+        "confidence_scores": {},
+        "pattern_evolution": []
+      }
+    },
+    "confidence": 0.9,
+    "metadata": {}
+  }
+]

@@ -10,6 +10,7 @@ pub mod game_state;
 pub mod events;
 pub mod analysis;
 pub mod utils;
+pub mod ai_agent;
 
 // Re-export main types for convenience
 pub use core::{Laboratory, LaboratoryConfig, ExtractionDepth, OutputFormat};
@@ -18,6 +19,7 @@ pub use memory::{MemoryAnalyzer, ProcessMemoryMap, MemoryRegion, MemoryAnalysis}
 pub use game_state::{GameState, GameStateTracker, GamePhase, UnitType, BuildingType};
 pub use events::{EventRecorder, GameEvent, EventType, EventData};
 pub use analysis::{AnalysisResult, AnalysisType, AnalysisData};
+pub use ai_agent::{AIAgent, AIAction, ActionSequences, MenuTarget, GameType};
 
 /// Laboratory version
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
