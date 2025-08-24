@@ -79,8 +79,8 @@ export const wc1DefaultGame = derived(games, $games => {
   const gamesOfType = $games.filter(game => game.game_type === 'WC1');
   if (gamesOfType.length === 0) return null;
   
-  // Priority order: Remastered > BattleNet > Original > Custom
-  const priority = ['Remastered', 'BattleNet', 'Original', 'Custom'];
+  // Priority order: Remastered > DOS > BattleNet > Original > Custom
+  const priority = ['Remastered', 'DOS', 'BattleNet', 'Original', 'Custom'];
   for (const priorityType of priority) {
     const found = gamesOfType.find(game => game.installation_type === priorityType);
     if (found) return found;
@@ -92,8 +92,8 @@ export const wc2DefaultGame = derived(games, $games => {
   const gamesOfType = $games.filter(game => game.game_type === 'WC2');
   if (gamesOfType.length === 0) return null;
   
-  // Priority order: Remastered > BattleNet > Original > Custom
-  const priority = ['Remastered', 'BattleNet', 'Original', 'Custom'];
+  // Priority order: Remastered > DOS > BattleNet > Original > Custom
+  const priority = ['Remastered', 'DOS', 'BattleNet', 'Original', 'Custom'];
   for (const priorityType of priority) {
     const found = gamesOfType.find(game => game.installation_type === priorityType);
     if (found) return found;

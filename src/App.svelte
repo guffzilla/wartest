@@ -1,29 +1,11 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { invoke } from '@tauri-apps/api/core';
-  import TabManager from './components/TabManager.svelte';
-  import GameScanner from './components/GameScanner.svelte';
-  import { games, runningGames, scanGames, refreshGames } from './stores/gameStore';
-  
-  let currentTab = 'wc2';
-  let isLoading = false;
+  import Dashboard from './components/Dashboard.svelte';
+  import { scanGames } from './stores/gameStore';
   
   onMount(async () => {
     await scanGames();
   });
-  
-  async function handleScanGames() {
-    isLoading = true;
-    try {
-      await scanGames();
-    } finally {
-      isLoading = false;
-    }
-  }
-  
-  async function handleRefreshGames() {
-    await refreshGames();
-  }
 </script>
 
 <main>
@@ -36,57 +18,7 @@
     <div class="title-subtitle">Unified Warcraft Management Center</div>
   </div>
 
-  <div class="control-panel">
-    <button class="btn btn-primary" on:click={handleScanGames} disabled={isLoading}>
-      {isLoading ? 'Scanning...' : '🔍 Scan for Games'}
-    </button>
-    <button class="btn btn-secondary" on:click={handleRefreshGames}>
-      🔄 Refresh Status
-    </button>
-  </div>
-
-  <TabManager bind:currentTab />
-  
-  <div class="main-content">
-    {#if currentTab === 'wc1'}
-      <div class="tab-content">
-        <h2>Warcraft I Management</h2>
-        <p>Manage Warcraft I installations and campaigns</p>
-        <GameScanner gameType="wc1" />
-      </div>
-    {:else if currentTab === 'wc2'}
-      <div class="tab-content">
-        <h2>Warcraft II Management</h2>
-        <p>Manage Warcraft II installations and campaigns</p>
-        <GameScanner gameType="wc2" />
-      </div>
-    {:else if currentTab === 'wc3'}
-      <div class="tab-content">
-        <h2>Warcraft III Management</h2>
-        <p>Manage Warcraft III installations and campaigns</p>
-        <GameScanner gameType="wc3" />
-      </div>
-    {:else if currentTab === 'wc-arena'}
-      <div class="tab-content">
-        <h2>WC Arena Integration</h2>
-        <p>Advanced features and cross-game management</p>
-        <div class="arena-features">
-          <div class="feature-card">
-            <h3>Replay Analysis</h3>
-            <p>Analyze replays from all Warcraft versions</p>
-          </div>
-          <div class="feature-card">
-            <h3>Game Management</h3>
-            <p>Unified game launching and process monitoring</p>
-          </div>
-          <div class="feature-card">
-            <h3>Performance Monitoring</h3>
-            <p>Monitor game performance and system resources</p>
-          </div>
-        </div>
-      </div>
-    {/if}
-  </div>
+  <Dashboard />
 </main>
 
 <style>
@@ -177,108 +109,5 @@
     opacity: 0.8;
   }
 
-  .control-panel {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    margin-bottom: 20px;
-  }
 
-  .btn {
-    padding: 12px 24px;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-
-  .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-  }
-
-  .btn-primary:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-  }
-
-  .btn-primary:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  .btn-secondary {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    color: white;
-  }
-
-  .btn-secondary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(240, 147, 251, 0.4);
-  }
-
-  .main-content {
-    margin-top: 20px;
-  }
-
-  .tab-content {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 25px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .tab-content h2 {
-    font-size: 1.8rem;
-    margin-bottom: 20px;
-    color: #ffffff;
-    text-align: center;
-  }
-
-  .tab-content p {
-    font-size: 1.1rem;
-    color: #e8eaed;
-    margin-bottom: 25px;
-    text-align: center;
-    opacity: 0.8;
-  }
-
-  .arena-features {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
-  }
-
-  .feature-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 20px;
-    text-align: center;
-    transition: all 0.3s ease;
-  }
-
-  .feature-card:hover {
-    background: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 215, 0, 0.3);
-    transform: translateY(-2px);
-  }
-
-  .feature-card h3 {
-    color: #ffd700;
-    margin-bottom: 10px;
-    font-size: 1.2rem;
-  }
-
-  .feature-card p {
-    color: #9aa0a6;
-    font-size: 0.9rem;
-    margin: 0;
-  }
 </style>
