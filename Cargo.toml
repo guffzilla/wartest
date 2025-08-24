@@ -7,7 +7,7 @@ members = [
     "shared/ai",
     
     # Main Tauri application
-    "src-tauri",
+    "src-tauri", "headlessgames/wc2-remastered-lab",
 ]
 
 [workspace.package]

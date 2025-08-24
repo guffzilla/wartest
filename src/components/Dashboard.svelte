@@ -14,25 +14,28 @@
   };
   
   // Initialize featured installations when stores change
-  $: if ($wc1Games.length > 0) {
+  $: if ($wc1Games && $wc1Games.length > 0) {
     if (!featuredInstallations.WC1) {
       // Prefer Remastered over DOS versions
       const remastered = $wc1Games.find(g => g.installation_type === 'Remastered (Windows)');
       featuredInstallations.WC1 = remastered || $wc1Games[0];
+      console.log('Initialized WC1 featured installation:', featuredInstallations.WC1);
     }
   }
   
-  $: if ($wc2Games.length > 0) {
+  $: if ($wc2Games && $wc2Games.length > 0) {
     if (!featuredInstallations.WC2) {
       const remastered = $wc2Games.find(g => g.installation_type === 'Remastered (Windows)');
       featuredInstallations.WC2 = remastered || $wc2Games[0];
+      console.log('Initialized WC2 featured installation:', featuredInstallations.WC2);
     }
   }
   
-  $: if ($wc3Games.length > 0) {
+  $: if ($wc3Games && $wc3Games.length > 0) {
     if (!featuredInstallations.WC3) {
       const reforged = $wc3Games.find(g => g.installation_type === 'Reforged');
       featuredInstallations.WC3 = reforged || $wc3Games[0];
+      console.log('Initialized WC3 featured installation:', featuredInstallations.WC3);
     }
   }
   
@@ -106,8 +109,15 @@
   
   // Function to change featured installation
   function setFeaturedInstallation(gameType: 'WC1' | 'WC2' | 'WC3', game: any) {
+    console.log(`Setting featured installation for ${gameType}:`, game);
+    if (!game) {
+      console.error('No game provided to setFeaturedInstallation');
+      return;
+    }
+    
     featuredInstallations[gameType] = game;
     featuredInstallations = { ...featuredInstallations }; // Trigger reactivity
+    console.log(`Updated featured installations:`, featuredInstallations);
   }
   
   // Function to get available installations for a game type
