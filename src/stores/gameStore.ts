@@ -151,16 +151,8 @@ export async function launchGame(gameInfo: GameInfo) {
   }
 }
 
-export async function getGameAssets(gameType: string, gamePath: string) {
-  try {
-    const assets = await invoke<string[]>('get_game_assets', { gameType, gamePath });
-    console.log(`Retrieved assets for ${gameType}:`, assets);
-    return assets;
-  } catch (error) {
-    console.error(`Failed to get assets for ${gameType}:`, error);
-    throw error;
-  }
-}
+// Asset extraction is handled by separate local development tools
+// This function is no longer needed in the main application
 
 // Helper functions to get games by type (for backward compatibility)
 export function getGamesByType(gameType: 'wc1' | 'wc2' | 'wc3') {

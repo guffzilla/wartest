@@ -222,8 +222,8 @@
           <p>Manage original and custom campaigns</p>
         </div>
         <div class="feature-item">
-          <h4>Asset Extraction</h4>
-          <p>Extract sprites, sounds, and maps</p>
+          <h4>Campaign Management</h4>
+          <p>Manage original and custom campaigns</p>
         </div>
       {:else if gameType === 'wc2'}
         <div class="feature-item">

@@ -451,19 +451,8 @@ async fn launch_game(request: GameLaunchRequest) -> Result<(), String> {
     }
 }
 
-#[tauri::command]
-async fn get_game_assets(_game_type: String, game_path: String) -> Result<Vec<String>, String> {
-    // This is a stub - we don't want to link to game assets
-    // Just return the maps folder path if available
-    let path = Path::new(&game_path);
-    let maps_folder = find_maps_folder(path);
-    
-    if let Some(maps_path) = maps_folder {
-        Ok(vec![maps_path])
-    } else {
-        Ok(vec![])
-    }
-}
+// Asset extraction is handled by separate local development tools
+// This function is no longer needed in the main application
 
 fn main() {
     tauri::Builder::default()
@@ -471,7 +460,6 @@ fn main() {
             scan_for_games,
             get_running_games,
             launch_game,
-            get_game_assets,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

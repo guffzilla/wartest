@@ -51,19 +51,19 @@
     {#if currentTab === 'wc1'}
       <div class="tab-content">
         <h2>Warcraft I Management</h2>
-        <p>Manage Warcraft I installations, campaigns, and assets</p>
+        <p>Manage Warcraft I installations and campaigns</p>
         <GameScanner gameType="wc1" />
       </div>
     {:else if currentTab === 'wc2'}
       <div class="tab-content">
         <h2>Warcraft II Management</h2>
-        <p>Manage Warcraft II installations, campaigns, and assets</p>
+        <p>Manage Warcraft II installations and campaigns</p>
         <GameScanner gameType="wc2" />
       </div>
     {:else if currentTab === 'wc3'}
       <div class="tab-content">
         <h2>Warcraft III Management</h2>
-        <p>Manage Warcraft III installations, campaigns, and assets</p>
+        <p>Manage Warcraft III installations and campaigns</p>
         <GameScanner gameType="wc3" />
       </div>
     {:else if currentTab === 'wc-arena'}
@@ -76,8 +76,8 @@
             <p>Analyze replays from all Warcraft versions</p>
           </div>
           <div class="feature-card">
-            <h3>Asset Management</h3>
-            <p>Cross-game asset organization and management</p>
+            <h3>Game Management</h3>
+            <p>Unified game launching and process monitoring</p>
           </div>
           <div class="feature-card">
             <h3>Performance Monitoring</h3>
