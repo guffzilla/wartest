@@ -1,10 +1,18 @@
 <script lang="ts">
-  import { games, runningGames, getGamesByType, getRunningGamesByType } from '../stores/gameStore';
+  import { 
+    wc1Games, wc2Games, wc3Games, 
+    wc1RunningGames, wc2RunningGames, wc3RunningGames 
+  } from '../stores/gameStore';
   
   export let gameType: 'wc1' | 'wc2' | 'wc3';
   
-  $: gamesOfType = getGamesByType(gameType)($games);
-  $: runningGamesOfType = getRunningGamesByType(gameType)($runningGames);
+  $: gamesOfType = gameType === 'wc1' ? $wc1Games : 
+                   gameType === 'wc2' ? $wc2Games : 
+                   $wc3Games;
+  
+  $: runningGamesOfType = gameType === 'wc1' ? $wc1RunningGames : 
+                          gameType === 'wc2' ? $wc2RunningGames : 
+                          $wc3RunningGames;
   
   function getGameTypeTitle() {
     switch (gameType) {

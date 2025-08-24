@@ -5404,6 +5404,7 @@ name = "wc-arena-core"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "glob",
  "serde",
  "serde_json",
  "sysinfo 0.30.13",

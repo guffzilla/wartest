@@ -92,7 +92,7 @@ impl PatternRecognitionEngine {
             (b"WC3", "Warcraft III Data"),
         ];
         
-        for (signature, description) in signatures {
+        for (signature, _description) in signatures {
             if let Some(pos) = self.find_signature(data, signature) {
                 patterns.push(RecognizedPattern {
                     pattern: signature.to_vec(),

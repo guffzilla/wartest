@@ -2,7 +2,8 @@
   "identifier": "com.wc-arena.core",
   "build": {
     "beforeDevCommand": "npm run dev",
-    "beforeBuildCommand": "npm run build"
+    "beforeBuildCommand": "npm run build",
+    "devUrl": "http://localhost:1420"
   },
   "app": {
     "security": {

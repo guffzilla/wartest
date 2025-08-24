@@ -1,6 +1,7 @@
-import { writable } from 'svelte/store';
+import { writable, derived } from 'svelte/store';
 import { invoke } from '@tauri-apps/api/core';
 
+// Types matching the backend
 export interface GameInfo {
   key: string;
   name: string;
@@ -8,21 +9,25 @@ export interface GameInfo {
   version: string;
   found: boolean;
   is_running: boolean;
-  process_id?: number;
   game_type: 'wc1' | 'wc2' | 'wc3';
+}
+
+export interface ScanResult {
+  games: ScanResultGame[];
+}
+
+export interface ScanResultGame {
+  name: string;
+  path: string;
+  version: string;
+  game_type: 'WC1' | 'WC2' | 'WC3'; // Backend uses uppercase
+  is_running: boolean;
 }
 
 export interface RunningGame {
   name: string;
   process_id: number;
-  game_type: 'wc1' | 'wc2' | 'wc3';
-}
-
-export interface ScanResult {
-  found: boolean;
-  path: string;
-  multiple_installations: boolean;
-  all_paths: string[];
+  game_type: 'WC1' | 'WC2' | 'WC3';
 }
 
 // Create stores
@@ -55,17 +60,23 @@ games.set(defaultGames);
 export async function scanGames() {
   isLoading.set(true);
   try {
-    const results = await invoke<Record<string, ScanResult>>('scan_for_games');
+    const results = await invoke<ScanResult>('scan_for_games');
     
     // Update games with scan results
     games.update(currentGames => {
       return currentGames.map(game => {
-        const result = results[game.game_type];
-        if (result) {
+        // Find matching game from scan results (convert backend enum to frontend format)
+        const foundGame = results.games.find(scanGame => 
+          scanGame.game_type.toLowerCase() === game.game_type
+        );
+        
+        if (foundGame) {
           return {
             ...game,
-            found: result.found,
-            path: result.path,
+            found: true,
+            path: foundGame.path,
+            version: foundGame.version,
+            is_running: foundGame.is_running,
           };
         }
         return game;
@@ -120,12 +131,47 @@ export async function getGameAssets(gameType: 'wc1' | 'wc2' | 'wc3', gamePath: s
   }
 }
 
-// Helper functions to get games by type
+// Derived stores for filtered games
+export const wc1Games = derived(games, $games => 
+  $games.filter(game => game.game_type === 'wc1')
+);
+
+export const wc2Games = derived(games, $games => 
+  $games.filter(game => game.game_type === 'wc2')
+);
+
+export const wc3Games = derived(games, $games => 
+  $games.filter(game => game.game_type === 'wc3')
+);
+
+export const wc1RunningGames = derived(runningGames, $runningGames => 
+  $runningGames.filter(game => game.game_type.toLowerCase() === 'wc1')
+);
+
+export const wc2RunningGames = derived(runningGames, $runningGames => 
+  $runningGames.filter(game => game.game_type.toLowerCase() === 'wc2')
+);
+
+export const wc3RunningGames = derived(runningGames, $runningGames => 
+  $runningGames.filter(game => game.game_type.toLowerCase() === 'wc3')
+);
+
+// Helper functions to get games by type (for backward compatibility)
 export function getGamesByType(gameType: 'wc1' | 'wc2' | 'wc3') {
-  return games.map(games => games.filter(game => game.game_type === gameType));
+  switch (gameType) {
+    case 'wc1': return wc1Games;
+    case 'wc2': return wc2Games;
+    case 'wc3': return wc3Games;
+    default: return wc2Games; // fallback
+  }
 }
 
 export function getRunningGamesByType(gameType: 'wc1' | 'wc2' | 'wc3') {
-  return runningGames.map(games => games.filter(game => game.game_type === gameType));
+  switch (gameType) {
+    case 'wc1': return wc1RunningGames;
+    case 'wc2': return wc2RunningGames;
+    case 'wc3': return wc3RunningGames;
+    default: return wc2RunningGames; // fallback
+  }
 }
 
