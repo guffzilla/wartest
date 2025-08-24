@@ -71,6 +71,18 @@
       console.error('Failed to launch game:', error);
     }
   }
+
+  async function handleOpenMaps(game: any) {
+    if (game.maps_folder) {
+      try {
+        // Use Tauri's invoke command to open the maps folder
+        const { invoke } = await import('@tauri-apps/api/core');
+        await invoke('open_folder', { folderPath: game.maps_folder });
+      } catch (error) {
+        console.error('Failed to open maps folder:', error);
+      }
+    }
+  }
   
   async function handleScanGames() {
     try {
@@ -135,7 +147,7 @@
             Launch
           </button>
           {#if defaultGame.maps_folder}
-            <button class="btn btn-secondary">
+            <button class="btn btn-secondary" on:click={() => handleOpenMaps(defaultGame)}>
               Open Maps
             </button>
           {/if}
@@ -178,7 +190,7 @@
                 Launch
               </button>
               {#if game.maps_folder}
-                <button class="btn btn-secondary btn-small">
+                <button class="btn btn-secondary btn-small" on:click={() => handleOpenMaps(game)}>
                   Maps
                 </button>
               {/if}
@@ -253,6 +265,10 @@
         <div class="feature-item">
           <h4>Custom Games</h4>
           <p>Manage custom game types and mods</p>
+        </div>
+        <div class="feature-item">
+          <h4>W3Champions</h4>
+          <p>Custom map platform and launcher</p>
         </div>
       {/if}
     </div>

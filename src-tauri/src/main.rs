@@ -65,7 +65,8 @@ pub struct GameLaunchRequest {
 const WC1_PATTERNS: &[&str] = &[
     "warcraft.exe", "war.exe", "wc1.exe", "warcraft1.exe",
     "warcraft orcs & humans.exe", "orcs & humans.exe",
-    "warcraft orcs and humans.exe", "warcraft-orcs.exe"
+    "warcraft orcs and humans.exe", "warcraft-orcs.exe",
+    "war.exe"  // Original WC1 executable
 ];
 
 const WC2_PATTERNS: &[&str] = &[
@@ -78,7 +79,8 @@ const WC2_PATTERNS: &[&str] = &[
 const WC3_PATTERNS: &[&str] = &[
     "warcraft3.exe", "war3.exe", "wc3.exe", "warcraft iii.exe",
     "warcraft iii launcher.exe", "world editor.exe", "warcraft3launcher.exe",
-    "war3launcher.exe", "warcraft3reforged.exe", "war3reforged.exe"
+    "war3launcher.exe", "warcraft3reforged.exe", "war3reforged.exe",
+    "w3champions.exe", "w3c.exe", "w3ch.exe", "w3champions launcher.exe"
 ];
 
 // Common installation directories to scan
@@ -92,6 +94,8 @@ const COMMON_PATHS: &[&str] = &[
     "GOG Games\\Warcraft*",
     "Steam\\steamapps\\common\\Warcraft*",
     "Epic Games\\Warcraft*",
+    "W3Champions*",
+    "W3C*",
 ];
 
 /// Get all available drives on Windows
@@ -134,15 +138,22 @@ fn scan_installed_games() -> Vec<GameInfo> {
         if let Ok(current_dir) = std::env::current_dir() {
             if let Some(current_drive) = current_dir.components().next() {
                 if current_drive.as_os_str().to_string_lossy() == *drive {
-                    if let Ok(games_dir) = std::env::current_dir().map(|p| p.join("games")) {
+                    // Look for games directory relative to project root (one level up from src-tauri)
+                    if let Some(games_dir) = current_dir.parent().map(|p| p.join("games")) {
+                        println!("Checking project games directory: {}", games_dir.display());
                         if games_dir.exists() {
+                            println!("Project games directory exists, scanning...");
                             if let Ok(entries) = fs::read_dir(games_dir) {
                                 for entry in entries.filter_map(Result::ok) {
+                                    println!("Checking games directory entry: {}", entry.path().display());
                                     if let Some(game_info) = detect_game_in_directory(&entry.path()) {
+                                        println!("Found game in project games directory: {:?}", game_info);
                                         games.push(game_info);
                                     }
                                 }
                             }
+                        } else {
+                            println!("Project games directory does not exist");
                         }
                     }
                 }
@@ -247,7 +258,7 @@ fn create_game_info(
     dir_name: &str, 
     drive: &str
 ) -> GameInfo {
-    let executable = exe_path.file_name().unwrap().to_string_lossy().to_string();
+    let executable = exe_path.to_string_lossy().to_string(); // Store full executable path
     let maps_folder = find_maps_folder(dir_path);
     
     let (name, version, installation_type) = match game_type {
@@ -271,7 +282,12 @@ fn create_game_info(
 
 /// Find the Maps folder for a game installation
 fn find_maps_folder(game_dir: &Path) -> Option<String> {
-    let maps_paths = ["Maps", "maps", "MAPS", "Maps\\Custom", "maps\\custom"];
+    let maps_paths = [
+        "Maps", "maps", "MAPS", 
+        "Maps\\Custom", "maps\\custom",
+        "Maps\\W3Champions", "maps\\w3champions",
+        "W3Champions\\Maps", "w3champions\\maps"
+    ];
     
     for maps_path in maps_paths {
         let full_path = game_dir.join(maps_path);
@@ -457,6 +473,26 @@ async fn launch_game(request: GameLaunchRequest) -> Result<(), String> {
     }
 }
 
+#[tauri::command]
+async fn open_folder(folder_path: String) -> Result<(), String> {
+    let path = Path::new(&folder_path);
+    if !path.exists() {
+        return Err(format!("Folder not found: {}", folder_path));
+    }
+    if !path.is_dir() {
+        return Err(format!("Path is not a directory: {}", folder_path));
+    }
+    
+    // Use the Windows explorer command to open the folder
+    match Command::new("explorer")
+        .arg(&folder_path)
+        .spawn()
+    {
+        Ok(_) => Ok(()),
+        Err(e) => Err(format!("Failed to open folder: {}", e))
+    }
+}
+
 // Asset extraction is handled by separate local development tools
 // This function is no longer needed in the main application
 
@@ -466,6 +502,7 @@ fn main() {
             scan_for_games,
             get_running_games,
             launch_game,
+            open_folder,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
