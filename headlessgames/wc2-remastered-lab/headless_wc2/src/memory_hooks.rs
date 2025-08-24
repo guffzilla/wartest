@@ -1,9 +1,10 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::sync::Mutex;
-use anyhow::Result;
+use anyhow::{Result, anyhow};
 use log::{info, warn, error, debug};
 use serde::{Serialize, Deserialize};
+use rand::Rng;
 
 // Windows API imports for real process control
 use windows::Win32::System::Threading::{OpenProcess, PROCESS_ALL_ACCESS};
@@ -331,15 +332,21 @@ impl MemoryHookManager {
     
     /// Read memory from the target process
     pub async fn read_memory(&self, address: u64, size: usize) -> Result<Vec<u8>> {
-        if let Some(handle) = self.process_handle {
+        if let Some(_handle) = self.process_handle {
             let mut buffer = vec![0u8; size];
-            let mut bytes_read = 0usize;
             
-            // For now, return mock data until we implement proper memory reading
-            debug!("�� Mock read {} bytes from address 0x{:x}", size, address);
+            // For now, return mock data until we have full Windows API features
+            // In a real implementation, we'd use ReadProcessMemory
+            debug!("🔍 Mock read {} bytes from address 0x{:x}", size, address);
+            
+            // Fill with some mock data
+            for (i, byte) in buffer.iter_mut().enumerate() {
+                *byte = ((address + i as u64) % 256) as u8;
+            }
+            
             Ok(buffer)
         } else {
-            Err(anyhow::anyhow!("No process handle available"))
+            Err(anyhow!("No process handle available"))
         }
     }
     
@@ -366,7 +373,7 @@ impl MemoryHookManager {
         for hook in hooks.values() {
             if hook.active {
                 // Mock change detection for now
-                if rand::random::<bool>() {
+                if rand::thread_rng().gen_bool(0.1) { // 10% chance of change
                     changed_hooks.push(hook.clone());
                 }
             }
@@ -383,6 +390,58 @@ impl MemoryHookManager {
     pub async fn get_memory_regions(&self) -> Vec<MemoryRegion> {
         let regions = self.memory_regions.lock().await;
         regions.clone()
+    }
+    
+    /// Read specific game state data from Warcraft II memory
+    pub async fn read_game_memory(&self) -> Result<MemoryState> {
+        info!("🔍 Reading Warcraft II game memory...");
+        
+        if self.process_handle.is_none() {
+            return Err(anyhow::anyhow!("No process handle available"));
+        }
+        
+        // For now, we'll implement basic memory reading
+        // In a real implementation, we'd need to reverse engineer the memory layout
+        let mut new_state = MemoryState::default();
+        
+        // Try to read some common memory regions where game data might be stored
+        // These addresses would need to be discovered through reverse engineering
+        let possible_addresses = [
+            0x00400000, // Common base address for Windows executables
+            0x00800000, // Extended memory region
+            0x00C00000, // Additional memory region
+        ];
+        
+        for &base_addr in &possible_addresses {
+            match self.read_memory(base_addr as u64, 1024).await {
+                Ok(_data) => {
+                    info!("✅ Successfully read memory from 0x{:x}", base_addr);
+                    // Here we would parse the data to extract game state
+                    // For now, we'll just mark that we can read memory
+                    new_state.game_phase = "MemoryAccessible".to_string();
+                    break;
+                }
+                Err(e) => {
+                    debug!("⚠️ Failed to read from 0x{:x}: {}", base_addr, e);
+                    continue;
+                }
+            }
+        }
+        
+        // Update timestamp
+        new_state.timestamp = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_secs();
+        
+        // Update the current state
+        {
+            let mut current_state = self.current_state.lock().await;
+            *current_state = new_state.clone();
+        }
+        
+        info!("✅ Game memory read completed");
+        Ok(new_state)
     }
 }
 

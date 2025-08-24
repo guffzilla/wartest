@@ -20,6 +20,10 @@ async fn main() -> Result<()> {
     
     info!("✅ Headless game engine initialized successfully");
     
+    // Start memory monitoring
+    game_engine.start_memory_monitoring().await?;
+    info!("🔍 Memory monitoring started");
+    
     // Start the headless game
     match game_engine.start_headless_game().await {
         Ok(_) => {

@@ -31,6 +31,8 @@ pub enum GameHotkey {
     BuildStable,
     BuildChurch,
     BuildWorkshop,
+    BuildMine,       // Gold mine
+    BuildOilWell,    // Oil well
     
     // Unit training
     BuildWorker,
@@ -42,6 +44,7 @@ pub enum GameHotkey {
     BuildMage,
     BuildCatapult,
     BuildBallista,
+    BuildPeasant,    // Human worker
     
     // Game commands
     PauseGame,
@@ -50,6 +53,11 @@ pub enum GameHotkey {
     SaveGame,
     LoadGame,
     QuitGame,
+    StartGame,      // Start a new game
+    SinglePlayer,   // Navigate to single player
+    CustomGame,     // Navigate to custom game
+    Campaign,       // Navigate to campaign
+    Multiplayer,    // Navigate to multiplayer
     
     // Camera control
     CameraUp,
@@ -243,6 +251,46 @@ impl InputSimulator {
                 self.send_key(VK_HOME.0, false).await?;  // Press Home
                 sleep(Duration::from_millis(50)).await;
                 self.send_key(VK_HOME.0, true).await?;   // Release Home
+            }
+            GameHotkey::StartGame => {
+                self.send_key(VK_RETURN.0, false).await?;  // Press Enter
+                sleep(Duration::from_millis(50)).await;
+                self.send_key(VK_RETURN.0, true).await?;   // Release Enter
+            }
+            GameHotkey::SinglePlayer => {
+                self.send_key(VK_S.0, false).await?;  // Press S
+                sleep(Duration::from_millis(50)).await;
+                self.send_key(VK_S.0, true).await?;   // Release S
+            }
+            GameHotkey::CustomGame => {
+                self.send_key(VK_C.0, false).await?;  // Press C
+                sleep(Duration::from_millis(50)).await;
+                self.send_key(VK_C.0, true).await?;   // Release C
+            }
+            GameHotkey::Campaign => {
+                self.send_key(VK_C.0, false).await?;  // Press C
+                sleep(Duration::from_millis(50)).await;
+                self.send_key(VK_C.0, true).await?;   // Release C
+            }
+            GameHotkey::Multiplayer => {
+                self.send_key(VK_M.0, false).await?;  // Press M
+                sleep(Duration::from_millis(50)).await;
+                self.send_key(VK_M.0, true).await?;   // Release M
+            }
+            GameHotkey::BuildMine => {
+                self.send_key(VK_M.0, false).await?;  // Press M
+                sleep(Duration::from_millis(50)).await;
+                self.send_key(VK_M.0, true).await?;   // Release M
+            }
+            GameHotkey::BuildOilWell => {
+                self.send_key(VK_O.0, false).await?;  // Press O
+                sleep(Duration::from_millis(50)).await;
+                self.send_key(VK_O.0, true).await?;   // Release O
+            }
+            GameHotkey::BuildPeasant => {
+                self.send_key(VK_P.0, false).await?;  // Press P
+                sleep(Duration::from_millis(50)).await;
+                self.send_key(VK_P.0, true).await?;   // Release P
             }
             // Add more hotkeys as needed...
             _ => {
@@ -597,6 +645,8 @@ impl InputSimulator {
             "stable" => GameHotkey::BuildStable,
             "church" => GameHotkey::BuildChurch,
             "workshop" => GameHotkey::BuildWorkshop,
+            "mine" => GameHotkey::BuildMine,
+            "oil well" => GameHotkey::BuildOilWell,
             _ => return Err(anyhow!("Unknown building type: {}", building_type)),
         };
         
@@ -624,6 +674,7 @@ impl InputSimulator {
             "mage" => GameHotkey::BuildMage,
             "catapult" => GameHotkey::BuildCatapult,
             "ballista" => GameHotkey::BuildBallista,
+            "peasant" => GameHotkey::BuildPeasant,
             _ => return Err(anyhow!("Unknown unit type: {}", unit_type)),
         };
         

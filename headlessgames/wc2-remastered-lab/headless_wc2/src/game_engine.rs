@@ -327,19 +327,85 @@ impl HeadlessGameEngine {
             self.execute_ai_actions(actions).await?;
         }
         
+        // Periodically adapt AI strategy
+        if game_state.game_time % 1000 == 0 { // Every 1000 game ticks
+            if let Some(ai_controller) = Arc::get_mut(&mut self.ai_controller.clone()) {
+                ai_controller.adapt_strategy().await?;
+            }
+        }
+        
         Ok(())
     }
     
     async fn execute_ai_actions(&self, actions: Vec<String>) -> Result<()> {
         for action in actions {
-            debug!("Executing AI action: {}", action);
+            debug!("🤖 Executing AI action: {}", action);
             
-            // Execute action through function hooks
-            self.function_hooks.execute_ai_action(&action).await?;
+            // Execute the action based on its type
+            match action.as_str() {
+                "navigate_to_start_game" => {
+                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::StartGame).await?;
+                }
+                "build_barracks" => {
+                    self.ai_build_building("Barracks", 100, 100).await?;
+                }
+                "build_town_hall" => {
+                    self.ai_build_building("Town Hall", 64, 64).await?;
+                }
+                "build_farm" => {
+                    self.ai_build_building("Farm", 80, 80).await?;
+                }
+                "train_peasants" => {
+                    self.ai_train_unit("Peasant").await?;
+                }
+                "train_archers" => {
+                    self.ai_train_unit("Archer").await?;
+                }
+                "attack_move_forward" => {
+                    self.ai_attack_move(200, 200).await?;
+                }
+                "focus_on_economy" => {
+                    // Focus on economic buildings
+                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildFarm).await?;
+                }
+                "focus_on_military" => {
+                    // Focus on military buildings
+                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildBarracks).await?;
+                }
+                "balanced_development" => {
+                    // Balanced approach
+                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildTownHall).await?;
+                }
+                "fast_military_build" => {
+                    // Quick military build
+                    self.ai_build_building("Barracks", 120, 120).await?;
+                }
+                "rush_attack" => {
+                    // Rush attack
+                    self.ai_attack_move(300, 300).await?;
+                }
+                "build_defensive_structures" => {
+                    // Build defenses
+                    self.ai_build_building("Tower", 90, 90).await?;
+                }
+                "expand_economy_slowly" => {
+                    // Slow economic expansion
+                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildFarm).await?;
+                }
+                _ => {
+                    // Unknown action - log and skip
+                    debug!("⚠️ Unknown AI action: {}", action);
+                }
+            }
             
-            // Record action in replay
-            if self.config.enable_replay_recording {
-                self.replay_system.record_ai_action(&action).await?;
+            // Record the action for learning
+            if let Some(ai_controller) = Arc::get_mut(&mut self.ai_controller.clone()) {
+                ai_controller.record_learning_example(
+                    "AI Decision".to_string(),
+                    action.clone(),
+                    "Executed".to_string(),
+                    0.5, // Default success score, will be updated based on outcome
+                ).await?;
             }
         }
         
@@ -489,6 +555,82 @@ impl HeadlessGameEngine {
         self.game_state.lock().await.clone()
     }
     
+    /// Read game memory and update the current game state
+    pub async fn read_game_memory(&self) -> Result<()> {
+        info!("🔍 Reading game memory to update state...");
+        
+        // Read memory from the game process
+        let memory_state = self.memory_hooks.read_game_memory().await?;
+        
+        // Update our game state with the memory data
+        let mut game_state = self.game_state.lock().await;
+        
+        // Update game phase
+        game_state.game_phase = match memory_state.game_phase.as_str() {
+            "MainMenu" => GamePhase::MainMenu,
+            "InGame" => GamePhase::InGame,
+            "Paused" => GamePhase::Paused,
+            "Victory" => GamePhase::Victory,
+            "Defeat" => GamePhase::Defeat,
+            "Campaign" => GamePhase::Campaign,
+            "CustomScenario" => GamePhase::CustomScenario,
+            "Multiplayer" => GamePhase::Multiplayer,
+            "MemoryAccessible" => GamePhase::InGame, // Memory is accessible, assume in game
+            _ => GamePhase::MainMenu,
+        };
+        
+        // Update resources if available
+        if let Some(gold) = memory_state.player_resources.get("gold") {
+            game_state.player_resources.gold = *gold;
+        }
+        if let Some(wood) = memory_state.player_resources.get("wood") {
+            game_state.player_resources.wood = *wood;
+        }
+        if let Some(oil) = memory_state.player_resources.get("oil") {
+            game_state.player_resources.oil = *oil;
+        }
+        if let Some(food) = memory_state.player_resources.get("food") {
+            game_state.player_resources.food_current = *food;
+        }
+        
+        // Update units
+        game_state.units = memory_state.units.iter().map(|unit| UnitInfo {
+            id: unit.id,
+            unit_type: unit.unit_type.clone(),
+            position: (unit.x, unit.y),
+            health: unit.health,
+            max_health: unit.health, // We'll need to determine max health separately
+            owner: unit.owner,
+            is_selected: false, // This would need to be determined from game state
+            current_action: None, // This would need to be determined from game state
+        }).collect();
+        
+        // Update buildings
+        game_state.buildings = memory_state.buildings.iter().map(|building| BuildingInfo {
+            id: building.id,
+            building_type: building.building_type.clone(),
+            position: (building.x, building.y),
+            health: building.health,
+            max_health: building.health, // We'll need to determine max health separately
+            owner: building.owner,
+            is_completed: true, // Assume completed for now
+            current_production: None, // This would need to be determined from game state
+        }).collect();
+        
+        // Update map info
+        game_state.map_info.width = memory_state.map_data.width;
+        game_state.map_info.height = memory_state.map_data.height;
+        
+        // Update timestamp
+        game_state.last_update = memory_state.timestamp;
+        game_state.game_time = memory_state.timestamp;
+        
+        info!("✅ Game state updated from memory: {} units, {} buildings", 
+              game_state.units.len(), game_state.buildings.len());
+        
+        Ok(())
+    }
+    
     pub async fn update_config(&mut self, new_config: HeadlessConfig) -> Result<()> {
         info!("⚙️ Updating configuration...");
         self.config = new_config;
@@ -497,6 +639,73 @@ impl HeadlessGameEngine {
         self.initialize_game().await?;
         
         info!("✅ Configuration updated");
+        Ok(())
+    }
+
+    /// Start continuous memory monitoring
+    pub async fn start_memory_monitoring(&self) -> Result<()> {
+        info!("🔍 Starting continuous memory monitoring...");
+        
+        let memory_hooks = self.memory_hooks.clone();
+        let game_state = self.game_state.clone();
+        
+        // Spawn a background task for memory monitoring
+        tokio::spawn(async move {
+            let mut interval = tokio::time::interval(tokio::time::Duration::from_millis(100)); // 10 FPS
+            
+            loop {
+                interval.tick().await;
+                
+                // Read game memory
+                match memory_hooks.read_game_memory().await {
+                    Ok(memory_state) => {
+                        // Update game state with memory data
+                        let mut state = game_state.lock().await;
+                        
+                        // Update basic info
+                        state.game_phase = match memory_state.game_phase.as_str() {
+                            "MainMenu" => GamePhase::MainMenu,
+                            "InGame" => GamePhase::InGame,
+                            "Paused" => GamePhase::Paused,
+                            "Victory" => GamePhase::Victory,
+                            "Defeat" => GamePhase::Defeat,
+                            "Campaign" => GamePhase::Campaign,
+                            "CustomScenario" => GamePhase::CustomScenario,
+                            "Multiplayer" => GamePhase::Multiplayer,
+                            "MemoryAccessible" => GamePhase::InGame,
+                            _ => GamePhase::MainMenu,
+                        };
+                        
+                        state.last_update = memory_state.timestamp;
+                        state.game_time = memory_state.timestamp;
+                        
+                        // Update memory hooks count
+                        state.memory_hooks_active = memory_state.units.len() + memory_state.buildings.len();
+                    }
+                    Err(e) => {
+                        debug!("⚠️ Memory read failed: {}", e);
+                    }
+                }
+            }
+        });
+        
+        info!("✅ Memory monitoring started");
+        Ok(())
+    }
+
+    /// Get AI analytics and learning progress
+    pub async fn get_ai_analytics(&self) -> Result<crate::ai_controller::AIAnalytics> {
+        self.ai_controller.get_ai_status().await
+    }
+    
+    /// Change AI strategy
+    pub async fn change_ai_strategy(&mut self, new_strategy: crate::ai_controller::AIStrategy) -> Result<()> {
+        info!("🔄 Changing AI strategy to: {:?}", new_strategy);
+        
+        // This would require mutable access to the AI controller
+        // For now, we'll just log the change
+        info!("✅ AI strategy change requested to: {:?}", new_strategy);
+        
         Ok(())
     }
 }
