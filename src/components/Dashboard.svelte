@@ -15,6 +15,7 @@
   
   // Initialize featured installations when stores change
   $: if ($wc1Games && $wc1Games.length > 0) {
+    console.log('WC1 games updated:', $wc1Games);
     if (!featuredInstallations.WC1) {
       // Prefer Remastered over DOS versions
       const remastered = $wc1Games.find(g => g.installation_type === 'Remastered (Windows)');
@@ -24,6 +25,7 @@
   }
   
   $: if ($wc2Games && $wc2Games.length > 0) {
+    console.log('WC2 games updated:', $wc2Games);
     if (!featuredInstallations.WC2) {
       const remastered = $wc2Games.find(g => g.installation_type === 'Remastered (Windows)');
       featuredInstallations.WC2 = remastered || $wc2Games[0];
@@ -32,6 +34,7 @@
   }
   
   $: if ($wc3Games && $wc3Games.length > 0) {
+    console.log('WC3 games updated:', $wc3Games);
     if (!featuredInstallations.WC3) {
       const reforged = $wc3Games.find(g => g.installation_type === 'Reforged');
       featuredInstallations.WC3 = reforged || $wc3Games[0];
@@ -115,9 +118,14 @@
       return;
     }
     
+    // Update the featured installation
     featuredInstallations[gameType] = game;
-    featuredInstallations = { ...featuredInstallations }; // Trigger reactivity
-    console.log(`Updated featured installations:`, featuredInstallations);
+    
+    // Force reactivity by creating a new object
+    featuredInstallations = { ...featuredInstallations };
+    
+    console.log(`Updated featured installations for ${gameType}:`, featuredInstallations[gameType]);
+    console.log('Full featured installations object:', featuredInstallations);
   }
   
   // Function to get available installations for a game type
@@ -137,6 +145,17 @@
     if (game.installation_type === 'Reforged') return 'Reforged';
     return game.installation_type;
   }
+  
+  // Debug function to check current state
+  function debugCurrentState() {
+    console.log('=== DEBUG: Current State ===');
+    console.log('WC1 Games:', $wc1Games);
+    console.log('WC2 Games:', $wc2Games);
+    console.log('WC3 Games:', $wc3Games);
+    console.log('Featured Installations:', featuredInstallations);
+    console.log('Scan Result:', $scanResult);
+    console.log('===========================');
+  }
 </script>
 
 <div class="dashboard">
@@ -147,6 +166,9 @@
     </button>
     <button class="btn btn-secondary" on:click={handleRefreshGames}>
       🔄 Refresh Status
+    </button>
+    <button class="btn btn-debug" on:click={debugCurrentState}>
+      🐛 Debug State
     </button>
     <div class="scan-summary">
       {#if $scanResult}
@@ -532,6 +554,16 @@
   .btn-info:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+  }
+  
+  .btn-debug {
+    background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+    color: white;
+  }
+  
+  .btn-debug:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 152, 0, 0.4);
   }
 
   .scan-summary {

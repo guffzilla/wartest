@@ -74,19 +74,26 @@
    - Research utilities (development use only)
 
 ### **📋 Planned Features**
-1. **Game Analysis**
+1. **AI-Driven Game Analytics** 🆕
+   - AI agents for automated game interaction
+   - Comprehensive data extraction and analysis
+   - Advanced replay generation with enhanced graphics
+   - Enhanced victory/loss screens with detailed statistics
+   - Real-time gameplay monitoring and analytics
+
+2. **Game Analysis**
    - Replay analysis and viewing
    - Game statistics and metrics
    - Performance analysis
    - Pattern recognition
 
-2. **Multiplayer Features**
+3. **Multiplayer Features**
    - Real-time game monitoring
    - Battle.net integration
    - LAN game support
    - Community features
 
-3. **Advanced Management**
+4. **Advanced Management**
    - Game configuration management
    - Performance optimization
    - User experience improvements
@@ -267,12 +274,43 @@ tools/
 - **PROJECT_ARCHITECTURE.md**: System architecture and design
 - **MIGRATION_GUIDE.md**: Migration from old structure
 - **MULTIPLAYER_ANALYSIS.md**: Multiplayer system analysis
+- **AI_GAME_ANALYTICS_PLAN.md**: 🆕 Comprehensive plan for AI-driven game analytics system
 
 ### **📋 Needed**
 - **DEVELOPMENT_GUIDE.md**: Development setup and guidelines
 - **API_DOCUMENTATION.md**: Backend API reference
 - **TESTING_GUIDE.md**: Testing procedures and guidelines
 - **DEPLOYMENT_GUIDE.md**: Deployment and distribution
+
+## **🤖 AI-Driven Game Analytics System** 🆕
+
+### **Current Status: Planning Phase**
+The AI-driven game analytics system is currently in the planning and design phase. This ambitious system will revolutionize how players interact with Warcraft II Remastered by providing:
+
+- **AI Game Interaction**: Automated agents that can navigate menus and start games
+- **Comprehensive Data Extraction**: Capture all gameplay events and statistics
+- **Advanced Replay Generation**: Create detailed replays with enhanced graphics
+- **Enhanced Analytics**: Victory/loss screens with 10x more detail than in-game stats
+
+### **Development Approach**
+- **Phase 1**: AI agent framework and game interaction system
+- **Phase 2**: Comprehensive data extraction and event recording
+- **Phase 3**: Advanced replay generation with graphics engine
+- **Phase 4**: Enhanced victory/loss screens and analytics
+- **Phase 5**: Laboratory environment for testing and optimization
+
+### **Technical Foundation**
+The system builds on the existing `wc2-remastered-lab` headless laboratory, which already provides:
+- ✅ Process monitoring and detection
+- ✅ Memory analysis framework
+- ✅ Event recording infrastructure
+- ✅ Data serialization capabilities
+
+### **Next Steps**
+1. **Enhance Laboratory**: Add AI agent capabilities to existing lab
+2. **Input Simulation**: Implement mouse/keyboard input simulation
+3. **Screen Analysis**: Add computer vision for UI recognition
+4. **Menu Navigation**: Build AI logic for game menu navigation
 
 ## **🛠️ Local Development Tools**
 
@@ -308,9 +346,11 @@ tools/
 
 **Key Architectural Decision**: Asset extraction and analysis tools are maintained as separate local development tools, keeping the main application focused on game management and user experience while preserving research capabilities for developers.
 
+**AI Analytics System**: The new AI-driven game analytics system represents a major evolution of the project, moving from passive game management to active game interaction and comprehensive data analysis.
+
 **Current Status**: **Phase 2 Complete** - Core application functional, ready for advanced feature development.
 
-**Next Milestone**: Complete game analysis and shared library implementation.
+**Next Milestone**: Begin implementation of AI-driven game analytics system, starting with AI agent framework and game interaction capabilities.
 
 ---
 
