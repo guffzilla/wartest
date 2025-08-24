@@ -1,119 +1,110 @@
 use anyhow::Result;
-use log::{info, error, warn};
-use std::sync::Arc;
-use tokio::sync::Mutex;
-use std::ffi::c_void;
+use log::{info, warn, error};
+use std::path::PathBuf;
+use std::env;
 
-mod core;
-mod memory;
-mod process;
-mod game_state;
-mod events;
-mod analysis;
-mod utils;
-mod ai_agent;
-
-use core::Laboratory;
-use process::ProcessMonitor;
-use memory::MemoryAnalyzer;
-use game_state::GameStateTracker;
-use events::EventRecorder;
-use ai_agent::{AIAgent, ActionSequences, GameType, MenuTarget};
+use wc2_remastered_lab::{
+    create_laboratory, init_logging,
+    CustomGameBuilder, BuildConfig, BuildType
+};
 
 #[tokio::main]
 async fn main() -> Result<()> {
     // Initialize logging
-    env_logger::init();
-    info!("🚀 Starting WC2 Remastered Headless Laboratory with AI Agent...");
+    init_logging()?;
+    info!("🚀 Starting WC2 Remastered Headless Laboratory...");
+    info!("Version: {}", wc2_remastered_lab::VERSION);
 
-    // Create shared state
-    let laboratory = Arc::new(Mutex::new(Laboratory::new()?));
-
-    // Initialize core components
-    let process_monitor = Arc::new(Mutex::new(ProcessMonitor::new()?));
-    let memory_analyzer = Arc::new(Mutex::new(MemoryAnalyzer::new()?));
-    let game_state_tracker = Arc::new(Mutex::new(GameStateTracker::new()?));
-    let event_recorder = Arc::new(Mutex::new(EventRecorder::new()?));
-
-    info!("📊 Laboratory components initialized successfully");
-
-    // Initialize AI Agent
-    let mut ai_agent = AIAgent::new();
-    info!("🤖 AI Agent created successfully");
-
-    // Run the laboratory with AI agent integration
-    run_laboratory_with_ai(
-        laboratory, 
-        process_monitor, 
-        memory_analyzer, 
-        game_state_tracker, 
-        event_recorder,
-        &mut ai_agent
-    ).await?;
-
-    info!("✅ Laboratory analysis with AI Agent completed successfully");
-    Ok(())
-}
-
-async fn run_laboratory_with_ai(
-    laboratory: Arc<Mutex<Laboratory>>,
-    process_monitor: Arc<Mutex<ProcessMonitor>>,
-    memory_analyzer: Arc<Mutex<MemoryAnalyzer>>,
-    game_state_tracker: Arc<Mutex<GameStateTracker>>,
-    event_recorder: Arc<Mutex<EventRecorder>>,
-    ai_agent: &mut AIAgent,
-) -> Result<()> {
-    info!("🔬 Starting WC2 Remastered analysis with AI Agent...");
-
-    // Phase 1: Process Detection
-    info!("📋 Phase 1: Detecting WC2 Remastered processes...");
-    let processes = process_monitor.lock().await.find_wc2_processes().await?;
-
-    if processes.is_empty() {
-        info!("⚠️  No WC2 Remastered processes found. Starting AI Agent demonstration...");
-        
-        // Demonstrate AI Agent capabilities
-        demonstrate_ai_agent(ai_agent).await?;
-        
-    } else {
-        info!("🎮 Found {} WC2 Remastered process(es)", processes.len());
-
-        // Phase 2: AI Agent Integration
-        info!("📋 Phase 2: Integrating AI Agent with running game...");
-        integrate_ai_with_running_game(ai_agent, &processes).await?;
-
-        // Phase 3: Memory Analysis
-        info!("📋 Phase 3: Analyzing memory structures...");
-        for process in processes {
-            let memory_map = memory_analyzer.lock().await.analyze_process(&process).await?;
-            info!("💾 Memory analysis completed for PID {}", process.pid);
-
-            // Phase 4: Game State Tracking
-            info!("📋 Phase 4: Tracking game state...");
-            let game_state = game_state_tracker.lock().await.track_state(&memory_map).await?;
-
-            // Phase 5: Event Recording
-            info!("📋 Phase 5: Recording game events...");
-            event_recorder.lock().await.record_events(&game_state).await?;
+    // Check command line arguments
+    let args: Vec<String> = env::args().collect();
+    
+    if args.len() > 1 {
+        match args[1].as_str() {
+            "custom-build" => {
+                run_custom_game_builder().await?;
+            }
+            "ai-demo" => {
+                run_ai_agent_demo().await?;
+            }
+            "help" | "--help" | "-h" => {
+                print_usage();
+            }
+            _ => {
+                warn!("Unknown command: {}. Running default laboratory...", args[1]);
+                run_default_laboratory().await?;
+            }
         }
+    } else {
+        // Default behavior - run laboratory with AI Agent
+        run_default_laboratory().await?;
     }
 
-    // Phase 6: Data Analysis
-    info!("📋 Phase 6: Analyzing collected data...");
-    let analysis_results = analysis::analyze_collected_data().await?;
-
-    // Save results
-    laboratory.lock().await.save_results(&analysis_results).await?;
-
-    info!("✅ Laboratory analysis with AI Agent completed successfully");
     Ok(())
 }
 
-/// Demonstrate AI Agent capabilities when no game is running
-async fn demonstrate_ai_agent(ai_agent: &mut AIAgent) -> Result<()> {
-    info!("🎭 Demonstrating AI Agent capabilities...");
+/// Run the custom game builder
+async fn run_custom_game_builder() -> Result<()> {
+    info!("🔧 Starting Custom Game Builder...");
+    info!("🔒 SAFETY: This will NEVER modify your original game files!");
+    info!("📁 All work is done on isolated copies in our AI laboratory folder");
     
-    // Show what the AI agent can do
+    // Get WC2 Remastered installation path from user or environment
+    let original_path = get_wc2_installation_path()?;
+    
+    // Ensure we're working in our AI laboratory directory, not in the game directory
+    let current_dir = std::env::current_dir()?;
+    let custom_path = current_dir.join("custom_wc2_build");
+    
+    // Safety check: ensure we're not trying to work inside the original game directory
+    if custom_path.starts_with(&original_path) {
+        return Err(anyhow::anyhow!(
+            "🚨 SAFETY VIOLATION: Cannot create custom build inside original game directory! \
+            This would risk modifying your original files. \
+            Please run this command from a different location."
+        ));
+    }
+    
+    info!("📁 Original game path: {:?}", original_path);
+    info!("📁 Custom build path: {:?}", custom_path);
+    info!("🔒 SAFETY: Working with isolated copies only");
+    
+    // Create custom game builder
+    let config = BuildConfig {
+        headless_mode: true,
+        disable_networking: true,
+        enable_data_export: true,
+        enable_ai_integration: true,
+        build_type: BuildType::Debug,
+    };
+    
+    let builder = CustomGameBuilder::new(original_path, custom_path)
+        .with_config(config);
+    
+    // Initialize the build environment
+    builder.initialize().await?;
+    
+    // Start the analysis
+    builder.start_analysis().await?;
+    
+    info!("✅ Custom Game Builder initialized successfully!");
+    info!("🔒 SAFETY CONFIRMED: All operations completed on isolated copies only");
+    info!("💡 Check the 'custom_wc2_build' directory for analysis tools and reports");
+    info!("🚀 Ready to begin reverse engineering WC2 Remastered!");
+    
+    Ok(())
+}
+
+/// Run AI Agent demonstration mode
+async fn run_ai_agent_demo() -> Result<()> {
+    info!("🤖 Starting AI Agent Demonstration Mode...");
+    
+    // Create laboratory instance
+    let mut laboratory = create_laboratory()?;
+    
+    // Start laboratory session
+    laboratory.start_session().await?;
+    
+    // Demonstrate AI Agent capabilities
     info!("🤖 AI Agent can perform the following actions:");
     info!("   • Mouse clicks and movements");
     info!("   • Keyboard input simulation");
@@ -123,6 +114,7 @@ async fn demonstrate_ai_agent(ai_agent: &mut AIAgent) -> Result<()> {
     info!("   • Custom scenario loading");
     
     // Create example action sequences
+    use wc2_remastered_lab::ai_agent::{ActionSequences, MenuTarget};
     let campaign_sequence = ActionSequences::start_campaign_mission("Human Campaign - Mission 1");
     let custom_sequence = ActionSequences::start_custom_scenario("2v2_Grunt");
     let menu_sequence = ActionSequences::return_to_main_menu();
@@ -132,56 +124,86 @@ async fn demonstrate_ai_agent(ai_agent: &mut AIAgent) -> Result<()> {
     info!("   • Custom scenario sequence: {} actions", custom_sequence.len());
     info!("   • Menu navigation sequence: {} actions", menu_sequence.len());
     
-    // Note: We won't actually execute these without a game running
-    info!("💡 To test AI Agent, launch Warcraft II Remastered first");
+    info!("✅ AI Agent demonstration completed successfully!");
     
     Ok(())
 }
 
-/// Integrate AI Agent with a running game
-async fn integrate_ai_with_running_game(
-    ai_agent: &mut AIAgent, 
-    processes: &[process::WC2Process]
-) -> Result<()> {
-    info!("🔗 Integrating AI Agent with running game...");
+/// Run default laboratory (original functionality)
+async fn run_default_laboratory() -> Result<()> {
+    info!("🧪 Starting Default Laboratory Mode...");
     
-    // Try to initialize AI Agent with the game
-    let game_title = "Warcraft II: Remastered"; // Adjust based on actual window title
+    // Create laboratory instance
+    let mut laboratory = create_laboratory()?;
     
-    match ai_agent.initialize(game_title) {
-        Ok(_) => {
-            info!("✅ AI Agent successfully connected to game window");
-            
-            // Get game window information
-            if let Some(hwnd) = ai_agent.get_game_window() {
-                info!("🪟 Game window handle: {:?}", hwnd);
-            }
-            
-            let (width, height) = ai_agent.get_screen_resolution();
-            info!("📱 Game window resolution: {}x{}", width, height);
-            
-            // Demonstrate basic AI actions
-            info!("🎬 Demonstrating basic AI actions...");
-            
-            // Example: Navigate to campaign menu
-            let campaign_actions = vec![
-                ai_agent::AIAction::Wait { duration_ms: 1000 },
-                ai_agent::AIAction::NavigateTo { menu: MenuTarget::Campaign },
-                ai_agent::AIAction::Wait { duration_ms: 500 },
-            ];
-            
-            info!("🧭 Executing campaign navigation sequence...");
-            ai_agent.execute_actions(campaign_actions).await?;
-            
-            info!("✅ AI Agent integration demonstration completed");
-            
-        }
-        Err(e) => {
-            warn!("⚠️  Could not initialize AI Agent: {}", e);
-            info!("💡 This is normal if the game window title doesn't match exactly");
-            info!("💡 The AI Agent will still work once the correct window is found");
+    // Start laboratory session
+    laboratory.start_session().await?;
+    
+    info!("🎮 Laboratory session started successfully!");
+    info!("💡 To test with actual game, launch WC2 Remastered and run:");
+    info!("   {} custom-build", env::args().next().unwrap());
+    
+    Ok(())
+}
+
+/// Get WC2 Remastered installation path
+fn get_wc2_installation_path() -> Result<PathBuf> {
+    // Try to get from environment variable first
+    if let Ok(path) = env::var("WC2_INSTALL_PATH") {
+        let path_buf = PathBuf::from(path);
+        if path_buf.exists() {
+            return Ok(path_buf);
         }
     }
     
-    Ok(())
+    // Common installation paths
+    let common_paths = [
+        r"C:\Program Files (x86)\Warcraft II Remastered",
+        r"C:\Program Files\Warcraft II Remastered",
+        r"C:\Games\Warcraft II Remastered",
+        r"D:\Games\Warcraft II Remastered",
+    ];
+    
+    for path in &common_paths {
+        let path_buf = PathBuf::from(path);
+        if path_buf.exists() {
+            return Ok(path_buf);
+        }
+    }
+    
+    // If no path found, ask user to provide one
+    warn!("⚠️ WC2 Remastered installation not found in common locations");
+    warn!("💡 Please set WC2_INSTALL_PATH environment variable or");
+    warn!("💡 provide the installation path manually");
+    
+    // For now, return a default path that the user can modify
+    Ok(PathBuf::from(r"C:\Path\To\Warcraft II Remastered"))
+}
+
+/// Print usage information
+fn print_usage() {
+    println!("WC2 Remastered Headless Laboratory");
+    println!("Version: {}", wc2_remastered_lab::VERSION);
+    println!();
+    println!("Usage:");
+    println!("  {}                    - Run default laboratory with AI Agent", env::args().next().unwrap());
+    println!("  {} custom-build       - Initialize custom game builder for headless WC2", env::args().next().unwrap());
+    println!("  {} ai-demo            - Run AI Agent demonstration mode", env::args().next().unwrap());
+    println!("  {} help               - Show this help message", env::args().next().unwrap());
+    println!();
+    println!("Commands:");
+    println!("  custom-build          - Set up environment for building custom headless WC2");
+    println!("  ai-demo               - Demonstrate AI Agent capabilities without game");
+    println!("  help                  - Show this help message");
+    println!();
+    println!("Environment Variables:");
+    println!("  WC2_INSTALL_PATH     - Path to WC2 Remastered installation");
+    println!();
+    println!("Examples:");
+    println!("  # Set WC2 installation path and run custom builder");
+    println!("  set WC2_INSTALL_PATH=C:\\Games\\Warcraft II Remastered");
+    println!("  {} custom-build", env::args().next().unwrap());
+    println!();
+    println!("  # Run AI Agent demonstration");
+    println!("  {} ai-demo", env::args().next().unwrap());
 }

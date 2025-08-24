@@ -60,6 +60,12 @@ WC2Assets_organized/
 WC2Assets_test/
 extracted_sprites/
 
+# AI Laboratory and Custom Game Build files (NEW - these should NOT be tracked!)
+headlessgames/wc2-remastered-lab/custom_wc2_build/original_files/
+headlessgames/wc2-remastered-lab/output/
+headlessgames/wc2-remastered-lab/target/
+headlessgames/wc2-remastered-lab/Cargo.lock
+
 # Test and temporary files
 test_*.exe
 test_*.pdb

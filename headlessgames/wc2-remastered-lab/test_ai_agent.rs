@@ -1,9 +1,7 @@
 use anyhow::Result;
 use log::info;
-use std::time::Duration;
 
-mod ai_agent;
-use ai_agent::{AIAgent, ActionSequences, MenuTarget, VirtualKey, MouseButton};
+use wc2_remastered_lab::ai_agent::{AIAgent, ActionSequences, MenuTarget, VirtualKey, MouseButton};
 
 #[tokio::main]
 async fn main() -> Result<()> {
