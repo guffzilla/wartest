@@ -15,8 +15,8 @@ export interface GameInfo {
 }
 
 export type InstallationType = 
-  | 'Original'
-  | 'Remastered'
+  | 'Original (DOS)'
+  | 'Remastered (Windows)'
   | 'BattleNet'
   | 'Combat'
   | 'DOS'
@@ -43,11 +43,45 @@ export interface GameLaunchRequest {
   working_directory: string;
 }
 
+// User preferences for default game selection
+export interface UserPreferences {
+  wc1Default: string; // installation_type preference
+  wc2Default: string;
+  wc3Default: string;
+}
+
 // Create stores
 export const games = writable<GameInfo[]>([]);
 export const runningGames = writable<RunningGame[]>([]);
 export const isLoading = writable(false);
 export const scanResult = writable<ScanResult | null>(null);
+
+// User preferences store
+export const userPreferences = writable<UserPreferences>({
+  wc1Default: 'Remastered (Windows)',
+  wc2Default: 'Remastered (Windows)',
+  wc3Default: 'Reforged'
+});
+
+// Load preferences from localStorage on initialization
+if (typeof window !== 'undefined') {
+  const savedPrefs = localStorage.getItem('wartest-preferences');
+  if (savedPrefs) {
+    try {
+      const prefs = JSON.parse(savedPrefs);
+      userPreferences.set({ ...get(userPreferences), ...prefs });
+    } catch (e) {
+      console.warn('Failed to load preferences:', e);
+    }
+  }
+}
+
+// Save preferences to localStorage whenever they change
+userPreferences.subscribe(prefs => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('wartest-preferences', JSON.stringify(prefs));
+  }
+});
 
 // Derived stores for filtered games
 export const wc1Games = derived(games, $games => 
@@ -74,45 +108,78 @@ export const wc3RunningGames = derived(runningGames, $runningGames =>
   $runningGames.filter(game => game.game_type === 'WC3')
 );
 
+// Helper function to get priority score for a game
+function getGamePriority(game: GameInfo, preferredType: string): number {
+  if (game.installation_type === preferredType) return 100;
+  
+  const priorityMap: Record<string, number> = {
+    'Remastered (Windows)': 90,
+    'Reforged': 90,
+    'Remastered': 85,
+    'BattleNet': 80,
+    'Original (DOS)': 70,
+    'DOS': 70,
+    'Combat': 60,
+    'FrozenThrone': 75,
+    'ReignOfChaos': 75,
+    'Original': 50,
+    'Custom': 10
+  };
+  
+  return priorityMap[game.installation_type] || 0;
+}
+
 // Derived stores for default games (automatically reactive)
-export const wc1DefaultGame = derived(games, $games => {
-  const gamesOfType = $games.filter(game => game.game_type === 'WC1');
-  if (gamesOfType.length === 0) return null;
-  
-  // Priority order: Remastered > DOS > BattleNet > Original > Custom
-  const priority = ['Remastered', 'DOS', 'BattleNet', 'Original', 'Custom'];
-  for (const priorityType of priority) {
-    const found = gamesOfType.find(game => game.installation_type === priorityType);
-    if (found) return found;
+export const wc1DefaultGame = derived(
+  [games, userPreferences], 
+  ([$games, $prefs]) => {
+    const gamesOfType = $games.filter(game => game.game_type === 'WC1');
+    if (gamesOfType.length === 0) return null;
+    
+    // Sort by priority (user preference first, then fallback priority)
+    const sortedGames = gamesOfType.sort((a, b) => {
+      const aPriority = getGamePriority(a, $prefs.wc1Default);
+      const bPriority = getGamePriority(b, $prefs.wc2Default);
+      return bPriority - aPriority;
+    });
+    
+    return sortedGames[0] || null;
   }
-  return gamesOfType[0] || null;
-});
+);
 
-export const wc2DefaultGame = derived(games, $games => {
-  const gamesOfType = $games.filter(game => game.game_type === 'WC2');
-  if (gamesOfType.length === 0) return null;
-  
-  // Priority order: Remastered > DOS > BattleNet > Original > Custom
-  const priority = ['Remastered', 'DOS', 'BattleNet', 'Original', 'Custom'];
-  for (const priorityType of priority) {
-    const found = gamesOfType.find(game => game.installation_type === priorityType);
-    if (found) return found;
+export const wc2DefaultGame = derived(
+  [games, userPreferences], 
+  ([$games, $prefs]) => {
+    const gamesOfType = $games.filter(game => game.game_type === 'WC2');
+    if (gamesOfType.length === 0) return null;
+    
+    // Sort by priority (user preference first, then fallback priority)
+    const sortedGames = gamesOfType.sort((a, b) => {
+      const aPriority = getGamePriority(a, $prefs.wc2Default);
+      const bPriority = getGamePriority(b, $prefs.wc2Default);
+      return bPriority - aPriority;
+    });
+    
+    return sortedGames[0] || null;
   }
-  return gamesOfType[0] || null;
-});
+);
 
-export const wc3DefaultGame = derived(games, $games => {
-  const gamesOfType = $games.filter(game => game.game_type === 'WC3');
-  if (gamesOfType.length === 0) return null;
-  
-  // Priority order: Remastered > BattleNet > Original > Custom
-  const priority = ['Remastered', 'BattleNet', 'Original', 'Custom'];
-  for (const priorityType of priority) {
-    const found = gamesOfType.find(game => game.installation_type === priorityType);
-    if (found) return found;
+export const wc3DefaultGame = derived(
+  [games, userPreferences], 
+  ([$games, $prefs]) => {
+    const gamesOfType = $games.filter(game => game.game_type === 'WC3');
+    if (gamesOfType.length === 0) return null;
+    
+    // Sort by priority (user preference first, then fallback priority)
+    const sortedGames = gamesOfType.sort((a, b) => {
+      const aPriority = getGamePriority(a, $prefs.wc3Default);
+      const bPriority = getGamePriority(b, $prefs.wc3Default);
+      return bPriority - aPriority;
+    });
+    
+    return sortedGames[0] || null;
   }
-  return gamesOfType[0] || null;
-});
+);
 
 // Helper function to get default game for each type (for backward compatibility)
 export function getDefaultGame(gameType: 'WC1' | 'WC2' | 'WC3') {
@@ -122,6 +189,18 @@ export function getDefaultGame(gameType: 'WC1' | 'WC2' | 'WC3') {
     case 'WC3': return get(wc3DefaultGame);
     default: return null;
   }
+}
+
+// Function to update user preferences
+export function updateUserPreference(gameType: 'WC1' | 'WC2' | 'WC3', preferredType: string) {
+  userPreferences.update(prefs => {
+    switch (gameType) {
+      case 'WC1': prefs.wc1Default = preferredType; break;
+      case 'WC2': prefs.wc2Default = preferredType; break;
+      case 'WC3': prefs.wc3Default = preferredType; break;
+    }
+    return prefs;
+  });
 }
 
 export async function scanGames() {

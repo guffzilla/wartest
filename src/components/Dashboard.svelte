@@ -2,10 +2,12 @@
   import { 
     wc1Games, wc2Games, wc3Games, 
     wc1DefaultGame, wc2DefaultGame, wc3DefaultGame,
-    scanResult, isLoading, scanGames, launchGame, refreshGames
+    scanResult, isLoading, scanGames, launchGame, refreshGames,
+    userPreferences, updateUserPreference
   } from '../stores/gameStore';
   
   let isScanning = false;
+  let showPaths = false;
   
   async function handleScanGames() {
     isScanning = true;
@@ -41,9 +43,10 @@
   
   function getInstallationTypeIcon(type: string) {
     switch (type) {
-      case 'Remastered': return '✨';
+      case 'Remastered (Windows)': return '✨';
       case 'BattleNet': return '🌐';
       case 'Combat': return '⚔️';
+      case 'Original (DOS)': return '💾';
       case 'DOS': return '💾';
       case 'Reforged': return '🔥';
       case 'FrozenThrone': return '❄️';
@@ -73,6 +76,18 @@
       default: return '🎮';
     }
   }
+  
+  function getAvailableInstallationTypes(games: any[]) {
+    return [...new Set(games.map(g => g.installation_type))];
+  }
+  
+  function handlePreferenceChange(gameType: 'WC1' | 'WC2' | 'WC3', newPreference: string) {
+    updateUserPreference(gameType, newPreference);
+  }
+  
+  function togglePaths() {
+    showPaths = !showPaths;
+  }
 </script>
 
 <div class="dashboard">
@@ -83,6 +98,9 @@
     </button>
     <button class="btn btn-secondary" on:click={handleRefreshGames}>
       🔄 Refresh Status
+    </button>
+    <button class="btn btn-info" on:click={togglePaths}>
+      {showPaths ? '📁 Hide Paths' : '📁 Show Paths'}
     </button>
     <div class="scan-summary">
       {#if $scanResult}
@@ -102,6 +120,22 @@
         <div class="game-count">{$wc1Games.length} installation{$wc1Games.length !== 1 ? 's' : ''}</div>
       </div>
       
+      <!-- Default Game Preference Selector -->
+      {#if $wc1Games.length > 1}
+        <div class="preference-selector">
+          <label for="wc1-preference">Default Version:</label>
+          <select 
+            id="wc1-preference" 
+            value={$userPreferences.wc1Default}
+            on:change={(e) => handlePreferenceChange('WC1', e.target.value)}
+          >
+            {#each getAvailableInstallationTypes($wc1Games) as type}
+              <option value={type}>{type}</option>
+            {/each}
+          </select>
+        </div>
+      {/if}
+      
       {#if $wc1DefaultGame}
         <div class="primary-game">
           <div class="game-info">
@@ -112,6 +146,14 @@
             <div class="game-drive" style="color: {getDriveColor($wc1DefaultGame.drive)}">
               📁 {$wc1DefaultGame.drive}
             </div>
+            {#if showPaths}
+              <div class="game-path">
+                <strong>Installation:</strong> {$wc1DefaultGame.path}
+              </div>
+              <div class="game-executable">
+                <strong>Executable:</strong> {$wc1DefaultGame.executable}
+              </div>
+            {/if}
           </div>
           <div class="game-actions">
             <button class="btn btn-launch" on:click={() => handleLaunchGame($wc1DefaultGame)}>
@@ -132,8 +174,13 @@
               <div class="secondary-list">
                 {#each $wc1Games.filter(g => g !== $wc1DefaultGame) as game}
                   <div class="secondary-game">
-                    <span class="game-type">{getInstallationTypeIcon(game.installation_type)} {game.installation_type}</span>
-                    <span class="game-drive" style="color: {getDriveColor(game.drive)}">{game.drive}</span>
+                    <div class="secondary-game-info">
+                      <span class="game-type">{getInstallationTypeIcon(game.installation_type)} {game.installation_type}</span>
+                      <span class="game-drive" style="color: {getDriveColor(game.drive)}">{game.drive}</span>
+                      {#if showPaths}
+                        <div class="game-path-small">{game.path}</div>
+                      {/if}
+                    </div>
                     <button class="btn btn-small" on:click={() => handleLaunchGame(game)}>Launch</button>
                   </div>
                 {/each}
@@ -157,6 +204,22 @@
         <div class="game-count">{$wc2Games.length} installation{$wc2Games.length !== 1 ? 's' : ''}</div>
       </div>
       
+      <!-- Default Game Preference Selector -->
+      {#if $wc2Games.length > 1}
+        <div class="preference-selector">
+          <label for="wc2-preference">Default Version:</label>
+          <select 
+            id="wc2-preference" 
+            value={$userPreferences.wc2Default}
+            on:change={(e) => handlePreferenceChange('WC2', e.target.value)}
+          >
+            {#each getAvailableInstallationTypes($wc2Games) as type}
+              <option value={type}>{type}</option>
+            {/each}
+          </select>
+        </div>
+      {/if}
+      
       {#if $wc2DefaultGame}
         <div class="primary-game">
           <div class="game-info">
@@ -167,6 +230,14 @@
             <div class="game-drive" style="color: {getDriveColor($wc2DefaultGame.drive)}">
               📁 {$wc2DefaultGame.drive}
             </div>
+            {#if showPaths}
+              <div class="game-path">
+                <strong>Installation:</strong> {$wc2DefaultGame.path}
+              </div>
+              <div class="game-executable">
+                <strong>Executable:</strong> {$wc2DefaultGame.executable}
+              </div>
+            {/if}
           </div>
           <div class="game-actions">
             <button class="btn btn-launch" on:click={() => handleLaunchGame($wc2DefaultGame)}>
@@ -187,8 +258,13 @@
               <div class="secondary-list">
                 {#each $wc2Games.filter(g => g !== $wc2DefaultGame) as game}
                   <div class="secondary-game">
-                    <span class="game-type">{getInstallationTypeIcon(game.installation_type)} {game.installation_type}</span>
-                    <span class="game-drive" style="color: {getDriveColor(game.drive)}">{game.drive}</span>
+                    <div class="secondary-game-info">
+                      <span class="game-type">{getInstallationTypeIcon(game.installation_type)} {game.installation_type}</span>
+                      <span class="game-drive" style="color: {getDriveColor(game.drive)}">{game.drive}</span>
+                      {#if showPaths}
+                        <div class="game-path-small">{game.path}</div>
+                      {/if}
+                    </div>
                     <button class="btn btn-small" on:click={() => handleLaunchGame(game)}>Launch</button>
                   </div>
                 {/each}
@@ -212,6 +288,22 @@
         <div class="game-count">{$wc3Games.length} installation{$wc3Games.length !== 1 ? 's' : ''}</div>
       </div>
       
+      <!-- Default Game Preference Selector -->
+      {#if $wc3Games.length > 1}
+        <div class="preference-selector">
+          <label for="wc3-preference">Default Version:</label>
+          <select 
+            id="wc3-preference" 
+            value={$userPreferences.wc3Default}
+            on:change={(e) => handlePreferenceChange('WC3', e.target.value)}
+          >
+            {#each getAvailableInstallationTypes($wc3Games) as type}
+              <option value={type}>{type}</option>
+            {/each}
+          </select>
+        </div>
+      {/if}
+      
       {#if $wc3DefaultGame}
         <div class="primary-game">
           <div class="game-info">
@@ -222,6 +314,14 @@
             <div class="game-drive" style="color: {getDriveColor($wc3DefaultGame.drive)}">
               📁 {$wc3DefaultGame.drive}
             </div>
+            {#if showPaths}
+              <div class="game-path">
+                <strong>Installation:</strong> {$wc3DefaultGame.path}
+              </div>
+              <div class="game-executable">
+                <strong>Executable:</strong> {$wc3DefaultGame.executable}
+              </div>
+            {/if}
           </div>
           <div class="game-actions">
             <button class="btn btn-launch" on:click={() => handleLaunchGame($wc3DefaultGame)}>
@@ -242,8 +342,13 @@
               <div class="secondary-list">
                 {#each $wc3Games.filter(g => g !== $wc3DefaultGame) as game}
                   <div class="secondary-game">
-                    <span class="game-type">{getInstallationTypeIcon(game.installation_type)} {game.installation_type}</span>
-                    <span class="game-drive" style="color: {getDriveColor(game.drive)}">{game.drive}</span>
+                    <div class="secondary-game-info">
+                      <span class="game-type">{getInstallationTypeIcon(game.installation_type)} {game.installation_type}</span>
+                      <span class="game-drive" style="color: {getDriveColor(game.drive)}">{game.drive}</span>
+                      {#if showPaths}
+                        <div class="game-path-small">{game.path}</div>
+                      {/if}
+                    </div>
                     <button class="btn btn-small" on:click={() => handleLaunchGame(game)}>Launch</button>
                   </div>
                 {/each}
@@ -358,6 +463,16 @@
     box-shadow: 0 8px 25px rgba(240, 147, 251, 0.4);
   }
 
+  .btn-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+  }
+
+  .btn-info:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+  }
+
   .scan-summary {
     margin-left: auto;
     display: flex;
@@ -431,6 +546,38 @@
     border-radius: 20px;
   }
 
+  .preference-selector {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .preference-selector label {
+    display: block;
+    margin-bottom: 8px;
+    color: #9aa0a6;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .preference-selector select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    font-size: 0.9rem;
+  }
+
+  .preference-selector select:focus {
+    outline: none;
+    border-color: #ffd700;
+    box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+  }
+
   .primary-game {
     background: rgba(255, 255, 255, 0.03);
     border-radius: 12px;
@@ -460,7 +607,16 @@
   .game-drive {
     font-size: 0.9rem;
     color: #9aa0a6;
+    margin-bottom: 8px;
     font-weight: 500;
+  }
+
+  .game-path, .game-executable {
+    font-size: 0.8rem;
+    color: #9aa0a6;
+    margin-bottom: 6px;
+    word-break: break-all;
+    line-height: 1.4;
   }
 
   .game-actions {
@@ -524,16 +680,29 @@
     font-size: 0.85rem;
   }
 
+  .secondary-game-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
   .game-type {
     color: #ffd700;
     font-weight: 500;
-    flex: 1;
   }
 
   .game-drive {
     color: #9aa0a6;
     font-weight: 500;
     min-width: 40px;
+  }
+
+  .game-path-small {
+    font-size: 0.75rem;
+    color: #9aa0a6;
+    word-break: break-all;
+    line-height: 1.3;
   }
 
   .btn-small {

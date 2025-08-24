@@ -38,6 +38,10 @@ pub enum InstallationType {
     FrozenThrone,
     ReignOfChaos,
     Custom,
+    #[serde(rename = "Original (DOS)")]
+    OriginalDOS,
+    #[serde(rename = "Remastered (Windows)")]
+    RemasteredWindows,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -292,10 +296,16 @@ fn create_game_info(
     let executable = exe_path.to_string_lossy().to_string(); // Store full executable path
     let maps_folder = find_maps_folder(dir_path);
     
+    // Get parent directory name for better detection
+    let parent_dir_name = dir_path.parent()
+        .and_then(|p| p.file_name())
+        .map(|n| n.to_string_lossy().to_lowercase())
+        .unwrap_or_default();
+    
     let (name, version, installation_type) = match game_type {
-        GameType::WC1 => detect_wc1_details(dir_name, &executable),
-        GameType::WC2 => detect_wc2_details(dir_name, &executable),
-        GameType::WC3 => detect_wc3_details(dir_name, &executable),
+        GameType::WC1 => detect_wc1_details(&parent_dir_name, &executable),
+        GameType::WC2 => detect_wc2_details(&parent_dir_name, &executable),
+        GameType::WC3 => detect_wc3_details(&parent_dir_name, &executable),
     };
     
     GameInfo {
@@ -416,10 +426,10 @@ fn detect_dosbox_warcraft_game(dir_path: &Path, dosbox_exe: &Path, parent_dir_na
 
 /// Detect WC1 specific details
 fn detect_wc1_details(dir_name: &str, executable: &str) -> (String, String, InstallationType) {
-    let (name, version, installation_type) = if dir_name.contains("remastered") {
-        ("Warcraft I: Remastered", "Remastered", InstallationType::Remastered)
+    let (name, version, installation_type) = if dir_name.contains("remastered") || executable.contains("remastered") {
+        ("Warcraft I: Remastered", "Remastered (Windows)", InstallationType::RemasteredWindows)
     } else if dir_name.contains("dos") || executable.to_uppercase().contains("WAR.EXE") || executable.to_uppercase().contains("WAR_EDIT.EXE") {
-        ("Warcraft: Orcs & Humans", "DOS", InstallationType::DOS)
+        ("Warcraft: Orcs & Humans", "Original (DOS)", InstallationType::OriginalDOS)
     } else {
         ("Warcraft: Orcs & Humans", "Original", InstallationType::Original)
     };
@@ -433,10 +443,10 @@ fn detect_wc2_details(dir_name: &str, executable: &str) -> (String, String, Inst
         ("Warcraft II: Battle.net Edition", "Battle.net", InstallationType::BattleNet)
     } else if dir_name.contains("combat") || executable.contains("combat") {
         ("Warcraft II: Combat Edition", "Combat", InstallationType::Combat)
-    } else if dir_name.contains("remastered") {
-        ("Warcraft II: Remastered", "Remastered", InstallationType::Remastered)
+    } else if dir_name.contains("remastered") || executable.contains("remastered") {
+        ("Warcraft II: Remastered", "Remastered (Windows)", InstallationType::RemasteredWindows)
     } else if dir_name.contains("dos") || executable.to_uppercase().contains("WAR2.EXE") || executable.to_uppercase().contains("WAR2_EDIT.EXE") {
-        ("Warcraft II: Tides of Darkness", "DOS", InstallationType::DOS)
+        ("Warcraft II: Tides of Darkness", "Original (DOS)", InstallationType::OriginalDOS)
     } else {
         ("Warcraft II: Tides of Darkness", "Original", InstallationType::Original)
     };
