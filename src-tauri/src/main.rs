@@ -14,18 +14,37 @@ pub struct GameInfo {
     pub version: String,
     pub game_type: GameType,
     pub is_running: bool,
+    pub executable: String,
+    pub maps_folder: Option<String>,
+    pub installation_type: InstallationType,
+    pub drive: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, Hash)]
 pub enum GameType {
     WC1,
     WC2,
     WC3,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub enum InstallationType {
+    Original,
+    Remastered,
+    BattleNet,
+    Combat,
+    DOS,
+    Reforged,
+    FrozenThrone,
+    ReignOfChaos,
+    Custom,
+}
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ScanResult {
     pub games: Vec<GameInfo>,
+    pub total_found: usize,
+    pub drives_scanned: Vec<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -33,45 +52,95 @@ pub struct RunningGame {
     pub name: String,
     pub process_id: u32,
     pub game_type: GameType,
+    pub executable_path: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct GameLaunchRequest {
+    pub executable_path: String,
+    pub working_directory: String,
 }
 
 // Game detection patterns and common installation paths
-const WC1_PATTERNS: &[&str] = &["warcraft.exe", "war.exe", "wc1.exe"];
-const WC2_PATTERNS: &[&str] = &["warcraft2.exe", "war2.exe", "wc2.exe"];
-const WC3_PATTERNS: &[&str] = &["warcraft3.exe", "war3.exe", "wc3.exe", "frozen throne.exe"];
-
-// Common installation directories
-const COMMON_PATHS: &[&str] = &[
-    "C:\\Program Files (x86)\\Warcraft*",
-    "C:\\Program Files\\Warcraft*",
-    "C:\\Games\\Warcraft*",
-    "C:\\Warcraft*",
-    "D:\\Games\\Warcraft*",
-    "D:\\Warcraft*",
+const WC1_PATTERNS: &[&str] = &[
+    "warcraft.exe", "war.exe", "wc1.exe", "warcraft1.exe",
+    "warcraft orcs & humans.exe", "orcs & humans.exe"
 ];
 
-/// Scan for installed Warcraft games
-fn scan_installed_games() -> Vec<GameInfo> {
-    let mut games = Vec::new();
+const WC2_PATTERNS: &[&str] = &[
+    "warcraft2.exe", "war2.exe", "wc2.exe", "warcraft ii.exe",
+    "warcraft ii bne.exe", "warcraft ii bne_dx.exe", "war2launcher.exe",
+    "warcraft ii map editor.exe"
+];
+
+const WC3_PATTERNS: &[&str] = &[
+    "warcraft3.exe", "war3.exe", "wc3.exe", "warcraft iii.exe",
+    "warcraft iii launcher.exe", "world editor.exe"
+];
+
+// Common installation directories to scan
+const COMMON_PATHS: &[&str] = &[
+    "Program Files (x86)\\Warcraft*",
+    "Program Files\\Warcraft*",
+    "Games\\Warcraft*",
+    "Warcraft*",
+    "Blizzard\\Warcraft*",
+    "Battle.net\\Warcraft*",
+    "GOG Games\\Warcraft*",
+    "Steam\\steamapps\\common\\Warcraft*",
+    "Epic Games\\Warcraft*",
+];
+
+/// Get all available drives on Windows
+fn get_available_drives() -> Vec<String> {
+    let mut drives = Vec::new();
     
-    // Scan common installation paths
-    for base_path in COMMON_PATHS {
-        if let Ok(paths) = glob::glob(base_path) {
-            for entry in paths.filter_map(Result::ok) {
-                if let Some(game_info) = detect_game_in_directory(&entry) {
-                    games.push(game_info);
-                }
-            }
+    // Check drives A: through Z:
+    for drive_letter in b'A'..=b'Z' {
+        let drive = format!("{}:", drive_letter as char);
+        let drive_path = Path::new(&drive);
+        if drive_path.exists() {
+            drives.push(drive);
         }
     }
     
-    // Also scan current games directory if it exists
-    if let Ok(games_dir) = std::env::current_dir().map(|p| p.join("games")) {
-        if games_dir.exists() {
-            if let Ok(entries) = fs::read_dir(games_dir) {
-                for entry in entries.filter_map(Result::ok) {
-                    if let Some(game_info) = detect_game_in_directory(&entry.path()) {
+    drives
+}
+
+/// Scan for installed Warcraft games across all drives
+fn scan_installed_games() -> Vec<GameInfo> {
+    let mut games = Vec::new();
+    let drives = get_available_drives();
+    
+    println!("Scanning drives: {:?}", drives);
+    
+    for drive in &drives {
+        // Scan common installation paths on this drive
+        for base_path in COMMON_PATHS {
+            let full_path = format!("{}\\{}", drive, base_path);
+            if let Ok(paths) = glob::glob(&full_path) {
+                for entry in paths.filter_map(Result::ok) {
+                    if let Some(game_info) = detect_game_in_directory(&entry) {
                         games.push(game_info);
+                    }
+                }
+            }
+        }
+        
+        // Also scan the current games directory if it's on this drive
+        if let Ok(current_dir) = std::env::current_dir() {
+            if let Some(current_drive) = current_dir.components().next() {
+                if current_drive.as_os_str().to_string_lossy() == *drive {
+                    if let Ok(games_dir) = std::env::current_dir().map(|p| p.join("games")) {
+                        if games_dir.exists() {
+                            if let Ok(entries) = fs::read_dir(games_dir) {
+                                for entry in entries.filter_map(Result::ok) {
+                                    if let Some(game_info) = detect_game_in_directory(&entry.path()) {
+                                        games.push(game_info);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -87,6 +156,9 @@ fn detect_game_in_directory(dir_path: &Path) -> Option<GameInfo> {
         return None;
     }
     
+    let dir_name = dir_path.file_name()?.to_string_lossy().to_lowercase();
+    let drive = dir_path.components().next()?.as_os_str().to_string_lossy().to_string();
+    
     // Check for executable files
     if let Ok(entries) = fs::read_dir(dir_path) {
         for entry in entries.filter_map(Result::ok) {
@@ -99,35 +171,23 @@ fn detect_game_in_directory(dir_path: &Path) -> Option<GameInfo> {
                             
                             // Check WC1 patterns
                             if WC1_PATTERNS.iter().any(|pattern| file_name_str.contains(pattern)) {
-                                return Some(GameInfo {
-                                    name: "Warcraft I".to_string(),
-                                    path: path.to_string_lossy().to_string(),
-                                    version: detect_game_version(&path),
-                                    game_type: GameType::WC1,
-                                    is_running: false,
-                                });
+                                return Some(create_game_info(
+                                    dir_path, &path, GameType::WC1, &dir_name, &drive
+                                ));
                             }
                             
                             // Check WC2 patterns
                             if WC2_PATTERNS.iter().any(|pattern| file_name_str.contains(pattern)) {
-                                return Some(GameInfo {
-                                    name: "Warcraft II".to_string(),
-                                    path: path.to_string_lossy().to_string(),
-                                    version: detect_game_version(&path),
-                                    game_type: GameType::WC2,
-                                    is_running: false,
-                                });
+                                return Some(create_game_info(
+                                    dir_path, &path, GameType::WC2, &dir_name, &drive
+                                ));
                             }
                             
                             // Check WC3 patterns
                             if WC3_PATTERNS.iter().any(|pattern| file_name_str.contains(pattern)) {
-                                return Some(GameInfo {
-                                    name: "Warcraft III".to_string(),
-                                    path: path.to_string_lossy().to_string(),
-                                    version: detect_game_version(&path),
-                                    game_type: GameType::WC3,
-                                    is_running: false,
-                                });
+                                return Some(create_game_info(
+                                    dir_path, &path, GameType::WC3, &dir_name, &drive
+                                ));
                             }
                         }
                     }
@@ -139,91 +199,212 @@ fn detect_game_in_directory(dir_path: &Path) -> Option<GameInfo> {
     None
 }
 
-/// Detect game version (simplified - could be enhanced with actual version detection)
-fn detect_game_version(_exe_path: &Path) -> String {
-    // TODO: Implement actual version detection from executable
-    // For now, return a placeholder
-    "1.0".to_string()
+/// Create a GameInfo struct with proper detection
+fn create_game_info(
+    dir_path: &Path, 
+    exe_path: &Path, 
+    game_type: GameType, 
+    dir_name: &str, 
+    drive: &str
+) -> GameInfo {
+    let executable = exe_path.file_name().unwrap().to_string_lossy().to_string();
+    let maps_folder = find_maps_folder(dir_path);
+    
+    let (name, version, installation_type) = match game_type {
+        GameType::WC1 => detect_wc1_details(dir_name, &executable),
+        GameType::WC2 => detect_wc2_details(dir_name, &executable),
+        GameType::WC3 => detect_wc3_details(dir_name, &executable),
+    };
+    
+    GameInfo {
+        name,
+        path: dir_path.to_string_lossy().to_string(),
+        version,
+        game_type,
+        is_running: false,
+        executable,
+        maps_folder,
+        installation_type,
+        drive: drive.to_string(),
+    }
+}
+
+/// Find the Maps folder for a game installation
+fn find_maps_folder(game_dir: &Path) -> Option<String> {
+    let maps_paths = ["Maps", "maps", "MAPS", "Maps\\Custom", "maps\\custom"];
+    
+    for maps_path in maps_paths {
+        let full_path = game_dir.join(maps_path);
+        if full_path.exists() && full_path.is_dir() {
+            return Some(full_path.to_string_lossy().to_string());
+        }
+    }
+    
+    None
+}
+
+/// Detect WC1 specific details
+fn detect_wc1_details(dir_name: &str, _executable: &str) -> (String, String, InstallationType) {
+    let name = if dir_name.contains("remastered") {
+        "Warcraft I: Remastered"
+    } else {
+        "Warcraft: Orcs & Humans"
+    };
+    
+    let version = if dir_name.contains("remastered") {
+        "Remastered"
+    } else {
+        "Original"
+    };
+    
+    let installation_type = if dir_name.contains("remastered") {
+        InstallationType::Remastered
+    } else {
+        InstallationType::Original
+    };
+    
+    (name.to_string(), version.to_string(), installation_type)
+}
+
+/// Detect WC2 specific details
+fn detect_wc2_details(dir_name: &str, executable: &str) -> (String, String, InstallationType) {
+    let (name, version, installation_type) = if dir_name.contains("bne") || executable.contains("bne") {
+        ("Warcraft II: Battle.net Edition", "Battle.net", InstallationType::BattleNet)
+    } else if dir_name.contains("combat") || executable.contains("combat") {
+        ("Warcraft II: Combat Edition", "Combat", InstallationType::Combat)
+    } else if dir_name.contains("remastered") {
+        ("Warcraft II: Remastered", "Remastered", InstallationType::Remastered)
+    } else if dir_name.contains("dos") {
+        ("Warcraft II: Tides of Darkness", "DOS", InstallationType::DOS)
+    } else {
+        ("Warcraft II: Tides of Darkness", "Original", InstallationType::Original)
+    };
+    
+    (name.to_string(), version.to_string(), installation_type)
+}
+
+/// Detect WC3 specific details
+fn detect_wc3_details(dir_name: &str, executable: &str) -> (String, String, InstallationType) {
+    let (name, version, installation_type) = if dir_name.contains("reforged") || executable.contains("reforged") {
+        ("Warcraft III: Reforged", "Reforged", InstallationType::Reforged)
+    } else if dir_name.contains("frozen throne") || executable.contains("frozen throne") {
+        ("Warcraft III: The Frozen Throne", "Frozen Throne", InstallationType::FrozenThrone)
+    } else if dir_name.contains("reign of chaos") || executable.contains("reign of chaos") {
+        ("Warcraft III: Reign of Chaos", "Reign of Chaos", InstallationType::ReignOfChaos)
+    } else {
+        ("Warcraft III", "Original", InstallationType::Original)
+    };
+    
+    (name.to_string(), version.to_string(), installation_type)
+}
+
+/// Check if a game is currently running
+fn check_game_running(game_path: &str) -> bool {
+    let mut sys = System::new_all();
+    sys.refresh_all();
+    
+    for (_, process) in sys.processes() {
+        if let Some(exe) = process.exe() {
+            if exe.to_string_lossy().to_lowercase().contains(&game_path.to_lowercase()) {
+                return true;
+            }
+        }
+    }
+    
+    false
 }
 
 #[tauri::command]
 async fn scan_for_games() -> Result<ScanResult, String> {
     let games = scan_installed_games();
+    let drives = get_available_drives();
     
-    // If no games found, provide some helpful information
     if games.is_empty() {
-        return Ok(ScanResult { 
-            games: vec![
-                GameInfo {
-                    name: "No Games Found".to_string(),
-                    path: "".to_string(),
-                    version: "".to_string(),
-                    game_type: GameType::WC2, // Default type
-                    is_running: false,
-                }
-            ] 
+        return Ok(ScanResult {
+            games: vec![GameInfo {
+                name: "No Games Found".to_string(),
+                path: "".to_string(),
+                version: "".to_string(),
+                game_type: GameType::WC2,
+                is_running: false,
+                executable: "".to_string(),
+                maps_folder: None,
+                installation_type: InstallationType::Custom,
+                drive: "".to_string(),
+            }],
+            total_found: 0,
+            drives_scanned: drives,
         });
     }
     
-    Ok(ScanResult { games })
+    // Update running status for found games
+    let mut updated_games = games;
+    for game in &mut updated_games {
+        game.is_running = check_game_running(&game.executable);
+    }
+    
+    let total_found = updated_games.len();
+    
+    Ok(ScanResult {
+        games: updated_games,
+        total_found,
+        drives_scanned: drives,
+    })
 }
 
 #[tauri::command]
 async fn get_running_games() -> Result<Vec<RunningGame>, String> {
-    let mut running_games = Vec::new();
     let mut sys = System::new_all();
     sys.refresh_all();
-
+    
+    let mut running_games = Vec::new();
+    
     for (pid, process) in sys.processes() {
-        let process_name = process.name().to_lowercase();
-        
-        // Check for WC1 patterns
-        if WC1_PATTERNS.iter().any(|pattern| process_name.contains(pattern)) {
-            running_games.push(RunningGame {
-                name: process.name().to_string(),
-                process_id: pid.as_u32(),
-                game_type: GameType::WC1,
-            });
-        }
-        
-        // Check for WC2 patterns
-        if WC2_PATTERNS.iter().any(|pattern| process_name.contains(pattern)) {
-            running_games.push(RunningGame {
-                name: process.name().to_string(),
-                process_id: pid.as_u32(),
-                game_type: GameType::WC2,
-            });
-        }
-        
-        // Check for WC3 patterns
-        if WC3_PATTERNS.iter().any(|pattern| process_name.contains(pattern)) {
-            running_games.push(RunningGame {
-                name: process.name().to_string(),
-                process_id: pid.as_u32(),
-                game_type: GameType::WC3,
-            });
+        if let Some(exe) = process.exe() {
+            let exe_name = exe.file_name().unwrap().to_string_lossy().to_lowercase();
+            
+            // Check if this is a Warcraft game
+            if WC1_PATTERNS.iter().any(|pattern| exe_name.contains(pattern)) {
+                running_games.push(RunningGame {
+                    name: "Warcraft I".to_string(),
+                    process_id: pid.as_u32(),
+                    game_type: GameType::WC1,
+                    executable_path: exe.to_string_lossy().to_string(),
+                });
+            } else if WC2_PATTERNS.iter().any(|pattern| exe_name.contains(pattern)) {
+                running_games.push(RunningGame {
+                    name: "Warcraft II".to_string(),
+                    process_id: pid.as_u32(),
+                    game_type: GameType::WC2,
+                    executable_path: exe.to_string_lossy().to_string(),
+                });
+            } else if WC3_PATTERNS.iter().any(|pattern| exe_name.contains(pattern)) {
+                running_games.push(RunningGame {
+                    name: "Warcraft III".to_string(),
+                    process_id: pid.as_u32(),
+                    game_type: GameType::WC3,
+                    executable_path: exe.to_string_lossy().to_string(),
+                });
+            }
         }
     }
-
+    
     Ok(running_games)
 }
 
 #[tauri::command]
-async fn launch_game(game_path: String) -> Result<(), String> {
-    let path = Path::new(&game_path);
-    
+async fn launch_game(request: GameLaunchRequest) -> Result<(), String> {
+    let path = Path::new(&request.executable_path);
     if !path.exists() {
-        return Err(format!("Game executable not found: {}", game_path));
+        return Err(format!("Game executable not found: {}", request.executable_path));
     }
-    
     if !path.is_file() {
-        return Err(format!("Path is not a file: {}", game_path));
+        return Err(format!("Path is not a file: {}", request.executable_path));
     }
     
-    // Launch the game
-    match Command::new(&game_path)
-        .current_dir(path.parent().unwrap_or(Path::new(".")))
-        .spawn() 
+    match Command::new(&request.executable_path)
+        .current_dir(&request.working_directory)
+        .spawn()
     {
         Ok(_) => Ok(()),
         Err(e) => Err(format!("Failed to launch game: {}", e))
@@ -231,12 +412,16 @@ async fn launch_game(game_path: String) -> Result<(), String> {
 }
 
 #[tauri::command]
-async fn get_game_assets(game_type: GameType, _game_path: String) -> Result<Vec<String>, String> {
-    // TODO: Implement asset scanning
-    match game_type {
-        GameType::WC1 => Ok(vec!["sprites".to_string(), "maps".to_string(), "sounds".to_string()]),
-        GameType::WC2 => Ok(vec!["sprites".to_string(), "maps".to_string(), "sounds".to_string(), "replays".to_string()]),
-        GameType::WC3 => Ok(vec!["sprites".to_string(), "maps".to_string(), "sounds".to_string(), "models".to_string()]),
+async fn get_game_assets(_game_type: String, game_path: String) -> Result<Vec<String>, String> {
+    // This is a stub - we don't want to link to game assets
+    // Just return the maps folder path if available
+    let path = Path::new(&game_path);
+    let maps_folder = find_maps_folder(path);
+    
+    if let Some(maps_path) = maps_folder {
+        Ok(vec![maps_path])
+    } else {
+        Ok(vec![])
     }
 }
 
@@ -246,7 +431,7 @@ fn main() {
             scan_for_games,
             get_running_games,
             launch_game,
-            get_game_assets
+            get_game_assets,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
