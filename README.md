@@ -2,24 +2,23 @@
 
 **Unified Warcraft Management Center**
 
-A comprehensive desktop application built with Tauri and Svelte for managing Warcraft I, II, and III installations, assets, and gameplay features.
+A comprehensive desktop application built with Tauri and Svelte for managing Warcraft I, II, and III installations and gameplay features.
 
 ## 🎮 Features
 
 ### Multi-Game Support
-- **Warcraft I**: Campaign management, asset extraction, sprite management
-- **Warcraft II**: Multiplayer support, replay analysis, map editing
-- **Warcraft III**: Custom maps, Battle.net integration, World Editor support
+- **Warcraft I**: Campaign management and game launching
+- **Warcraft II**: Multiplayer support and game management
+- **Warcraft III**: Custom maps and game management
 
 ### Core Functionality ✅
 - **Game Detection**: Automatic scanning for installed Warcraft games across all drives
 - **Process Monitoring**: Real-time tracking of running game instances
-- **Asset Management**: Cross-game asset organization and management
+- **Game Management**: Launch and manage Warcraft games
 - **Performance Monitoring**: System resource tracking and optimization
 
 ### Advanced Features 🚧
 - **Replay Analysis**: Advanced replay viewing and analysis tools
-- **Asset Extraction**: Extract and manage game assets (maps, sprites, sounds)
 - **Multiplayer Support**: LAN and online multiplayer management
 - **Cross-Game Integration**: Unified interface for all Warcraft versions
 
@@ -62,14 +61,14 @@ npm run tauri build
 
 ### Backend (Rust/Tauri) ✅
 - **Game Detection**: Process monitoring and file system scanning
-- **Asset Management**: File operations and asset extraction
+- **Game Management**: Game launching and process management
 - **Performance Monitoring**: System resource tracking
 - **Cross-Platform Support**: Windows-focused with extensibility
 
 ### Game-Specific Modules 🚧
-- **WC1**: Asset extraction, campaign management
-- **WC2**: Replay system, multiplayer support, map editing
-- **WC3**: Custom map management, Battle.net integration
+- **WC1**: Game management and launching
+- **WC2**: Replay system, multiplayer support
+- **WC3**: Custom map management
 
 ## 📁 Project Structure
 
@@ -91,7 +90,10 @@ wartest/
 │   ├── utils/           # Common utilities
 │   ├── database/        # Database layer
 │   └── ai/              # AI and machine learning
-└── tools/                # Legacy tools and utilities
+├── tools/                # Local development tools (personal use)
+│   ├── asset-extractors/ # Asset extraction tools (local only)
+│   └── analysis-tools/   # Game analysis tools (local only)
+└── ExtractedAssets/      # Local extracted assets (personal use)
 ```
 
 ## 🔧 Configuration
@@ -102,11 +104,11 @@ The application automatically scans for:
 - Warcraft II installations (Remastered, Combat, Battle.net, DOS)
 - Warcraft III installations (Reforged, Frozen Throne, Reign of Chaos)
 
-### Asset Management 🚧
-- **Maps**: Custom and campaign maps
-- **Sprites**: Unit and building graphics
-- **Sounds**: Music and sound effects
-- **Campaigns**: Story missions and custom campaigns
+### Game Management ✅
+- **Game Launching**: Direct game execution with proper working directory
+- **Process Monitoring**: Real-time game status tracking
+- **Installation Management**: Multiple installation type support
+- **Maps Folder Detection**: Automatic discovery of game maps
 
 ## 🎯 Roadmap
 
@@ -123,14 +125,14 @@ The application automatically scans for:
 - [x] Game installation type detection
 - [x] Maps folder detection
 - [x] Game launching functionality
-- [ ] Asset extraction tools
 - [ ] Performance monitoring
+- [ ] Game configuration management
 
 ### Phase 3: Advanced Features 📋
 - [ ] Replay analysis system
-- [ ] Map editing tools
 - [ ] Multiplayer management
-- [ ] Cross-game asset sharing
+- [ ] Cross-game integration
+- [ ] Game statistics and metrics
 
 ### Phase 4: Integration & Polish 📋
 - [ ] Battle.net integration
@@ -152,6 +154,16 @@ The application automatically scans for:
 - **Enhanced Pattern Matching**: More comprehensive executable detection
 - **Better Error Handling**: Improved error handling and user feedback
 - **Performance Optimization**: Faster scanning and better resource management
+
+## 🛠️ Local Development Tools
+
+**Note**: The following tools are for local development and personal use only, not integrated into the main application:
+
+- **Asset Extractors**: Tools for extracting game assets (sprites, sounds, maps)
+- **Analysis Tools**: Game data analysis and research tools
+- **Extracted Assets**: Local collection of game assets for development
+
+These tools are separate from the main WC Arena Core application and are intended for developers and researchers only.
 
 ## 🤝 Contributing
 

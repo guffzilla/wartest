@@ -4,6 +4,8 @@
 
 **WC Arena Core** is a comprehensive desktop application built with Tauri and Svelte that provides unified management for Warcraft I, II, and III games. The project has made significant progress in recent development cycles, with a fully functional core application and enhanced game detection capabilities.
 
+**Note**: Asset extraction and analysis tools are kept as separate local development tools for personal use, not integrated into the main application.
+
 ## **🚀 Recent Major Achievements**
 
 ### **Enhanced Game Scanner (Latest Release)**
@@ -33,7 +35,7 @@
    - Game detection and scanning across all drives
    - Process monitoring and management
    - Game launching functionality
-   - Asset folder detection (maps, etc.)
+   - Maps folder detection
 
 2. **Svelte Frontend**
    - Tab-based navigation between game types
@@ -61,29 +63,33 @@
    - AI integration framework planned
 
 2. **Game-Specific Tools**
-   - WC1 asset extraction (framework exists)
+   - WC1 game management (framework exists)
    - WC2 replay system (moved to games directory)
    - WC3 champions analysis (moved to games directory)
    - Multiplayer monitoring (basic structure)
 
-### **📋 Planned Features**
-1. **Asset Extraction**
-   - Sprite and image extraction
-   - Sound and music extraction
-   - Map and campaign data extraction
-   - Binary file parsing utilities
+3. **Local Development Tools**
+   - Asset extraction tools (separate from main app)
+   - Analysis tools (for personal research)
+   - Research utilities (development use only)
 
-2. **Game Analysis**
+### **📋 Planned Features**
+1. **Game Analysis**
    - Replay analysis and viewing
    - Game statistics and metrics
    - Performance analysis
    - Pattern recognition
 
-3. **Multiplayer Features**
+2. **Multiplayer Features**
    - Real-time game monitoring
    - Battle.net integration
    - LAN game support
    - Community features
+
+3. **Advanced Management**
+   - Game configuration management
+   - Performance optimization
+   - User experience improvements
 
 ## **🔧 Technical Architecture**
 
@@ -129,6 +135,14 @@ shared/
 └── ai/                      # AI and machine learning
 ```
 
+### **Local Development Tools (Separate)**
+```
+tools/
+├── asset-extractors/        # Asset extraction tools (local only)
+├── analysis-tools/          # Game analysis tools (local only)
+└── research-tools/          # Research and development utilities
+```
+
 ## **📊 Project Metrics**
 
 ### **Code Statistics**
@@ -143,7 +157,7 @@ shared/
 - **Game Detection**: 95% complete
 - **Process Monitoring**: 90% complete
 - **User Interface**: 80% complete
-- **Asset Management**: 20% complete
+- **Game Management**: 75% complete
 - **Game Analysis**: 15% complete
 
 ### **Testing Status**
@@ -163,7 +177,7 @@ shared/
 ### **Previous Major Updates**
 - **Project restructuring** and WC Arena Core unification
 - **Enhanced game scanning functionality** across multiple drives
-- **Improved asset extraction logic** and error handling
+- **Improved game management logic** and error handling
 - **Refactored WC2 game management** application
 
 ## **🚨 Current Issues and Challenges**
@@ -178,7 +192,7 @@ shared/
 1. **Shared Libraries**: Framework exists but not fully implemented
 2. **Database Integration**: Planned but not started
 3. **AI Integration**: Framework planned but not implemented
-4. **Asset Extraction**: Basic structure exists but needs content
+4. **Game Analysis**: Basic structure exists but needs content
 
 ### **Documentation Gaps**
 1. **API Documentation**: Limited API documentation
@@ -190,12 +204,12 @@ shared/
 
 ### **Priority 1: Complete Core Features**
 1. **Fix Missing Dependencies**: Ensure all required crates are properly configured
-2. **Implement Asset Extraction**: Basic asset extraction for WC1, WC2, WC3
+2. **Implement Game Analysis**: Basic game analysis for WC1, WC2, WC3
 3. **Improve Error Handling**: Better error messages and user feedback
 4. **Add Basic Testing**: Unit tests for core functionality
 
 ### **Priority 2: Shared Library Development**
-1. **Implement Core Utilities**: File operations, binary parsing, asset extraction
+1. **Implement Core Utilities**: File operations, binary parsing, game utilities
 2. **Create Common Traits**: Shared interfaces for game operations
 3. **Database Schema**: Basic database structure for game data
 4. **Configuration Management**: Centralized configuration handling
@@ -204,19 +218,25 @@ shared/
 1. **WC2 Replay System**: Integrate existing replay analysis
 2. **WC3 Champions Analysis**: Integrate existing analysis tools
 3. **Multiplayer Monitoring**: Basic multiplayer game tracking
-4. **Asset Management**: Game asset organization and management
+4. **Game Management**: Enhanced game configuration and management
+
+### **Priority 4: Local Tools Organization**
+1. **Asset Extraction Tools**: Organize for personal development use
+2. **Analysis Tools**: Organize for research and development
+3. **Research Tools**: Document and organize development utilities
+4. **Clear Separation**: Ensure local tools don't affect main application
 
 ## **📈 Success Metrics**
 
 ### **Short Term (Next 2-4 weeks)**
 - [ ] All core features working without errors
-- [ ] Basic asset extraction functional
+- [ ] Basic game analysis functional
 - [ ] Shared library framework implemented
 - [ ] Improved error handling and user feedback
 
 ### **Medium Term (Next 2-3 months)**
 - [ ] Game-specific tools integrated
-- [ ] Asset management system complete
+- [ ] Game management system complete
 - [ ] Basic multiplayer monitoring working
 - [ ] Database integration started
 
@@ -254,13 +274,43 @@ shared/
 - **TESTING_GUIDE.md**: Testing procedures and guidelines
 - **DEPLOYMENT_GUIDE.md**: Deployment and distribution
 
+## **🛠️ Local Development Tools**
+
+**Important Note**: The following tools are kept separate from the main WC Arena Core application and are intended for personal development and research use only:
+
+### **Asset Extraction Tools**
+- **Purpose**: Extract game assets (sprites, sounds, maps) for research
+- **Location**: `tools/asset-extractors/`
+- **Status**: Framework exists, needs organization
+- **Integration**: Not integrated into main application
+
+### **Analysis Tools**
+- **Purpose**: Game data analysis and research
+- **Location**: `tools/analysis-tools/`
+- **Status**: Basic structure exists
+- **Integration**: Not integrated into main application
+
+### **Research Tools**
+- **Purpose**: Development and testing utilities
+- **Location**: `tools/research-tools/`
+- **Status**: Needs organization and documentation
+- **Integration**: Not integrated into main application
+
+### **Extracted Assets**
+- **Purpose**: Local collection of game assets for development
+- **Location**: `ExtractedAssets/`
+- **Status**: Contains extracted game assets
+- **Integration**: Not accessible through main application
+
 ## **🎉 Conclusion**
 
 **WC Arena Core** has made significant progress and is now a functional desktop application with robust game detection and management capabilities. The project has a solid foundation and clear roadmap for future development. The recent enhancements to the game scanner and backend systems demonstrate active development and commitment to creating a comprehensive Warcraft management solution.
 
+**Key Architectural Decision**: Asset extraction and analysis tools are maintained as separate local development tools, keeping the main application focused on game management and user experience while preserving research capabilities for developers.
+
 **Current Status**: **Phase 2 Complete** - Core application functional, ready for advanced feature development.
 
-**Next Milestone**: Complete asset extraction and shared library implementation.
+**Next Milestone**: Complete game analysis and shared library implementation.
 
 ---
 

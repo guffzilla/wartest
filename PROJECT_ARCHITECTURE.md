@@ -4,7 +4,7 @@
 This is a comprehensive, enterprise-grade system for analyzing and managing Warcraft I, II, and III games. The system is designed to be modular, scalable, and future-proof, with support for local game analysis, multiplayer monitoring, and AI-powered insights.
 
 ## **🎯 Long-Term Vision**
-- **Local Game Analysis**: Extract and analyze game assets, replays, and gameplay data
+- **Local Game Analysis**: Analyze game data, replays, and gameplay metrics
 - **Multiplayer Monitoring**: Track and analyze multiplayer games across all three Warcraft titles
 - **AI Integration**: Machine learning models for pattern recognition and game analysis
 - **Tauri Desktop App**: Cross-platform application integrating all functionality ✅
@@ -17,20 +17,17 @@ This is a comprehensive, enterprise-grade system for analyzing and managing Warc
 wartest/
 ├── **🎮 GAMES/**                    # Game-specific projects 🚧
 │   ├── WC1/                        # Warcraft I projects
-│   │   ├── asset-extractor/         # WC1 asset extraction
 │   │   ├── game-analyzer/           # WC1 game analysis
 │   │   ├── multiplayer-monitor/     # WC1 multiplayer monitoring
 │   │   └── shared/                  # WC1 shared utilities
 │   │
 │   ├── WC2/                        # Warcraft II projects
-│   │   ├── asset-extractor/         # WC2 asset extraction
 │   │   ├── game-analyzer/           # WC2 game analysis
 │   │   ├── multiplayer-monitor/     # WC2 multiplayer monitoring
 │   │   ├── replay-system/           # WC2 replay analysis & viewer
 │   │   └── shared/                  # WC2 shared utilities
 │   │
 │   └── WC3/                        # Warcraft III projects
-│       ├── asset-extractor/         # WC3 asset extraction
 │       ├── game-analyzer/           # WC3 game analysis
 │       ├── multiplayer-monitor/     # WC3 multiplayer monitoring
 │       ├── champions-analysis/      # W3Champions integration analysis
@@ -50,7 +47,7 @@ wartest/
 │   ├── utils/                      # Common utilities
 │   │   ├── file-ops/               # File operations
 │   │   ├── binary-parser/          # Binary file parsing
-│   │   └── asset-extraction/       # Asset extraction utilities
+│   │   └── game-utils/             # Game-specific utilities
 │   │
 │   ├── database/                   # Database layer
 │   │   ├── schemas/                # Database schemas
@@ -67,11 +64,21 @@ wartest/
 │   │   └── App.svelte              # Main application
 │   └── package.json                # Node.js dependencies
 │
-└── **📚 DOCUMENTATION/**            # Project documentation ✅
-    ├── PROJECT_ARCHITECTURE.md     # This file
-    ├── MIGRATION_GUIDE.md          # Migration guide from old structure
-    ├── MULTIPLAYER_ANALYSIS.md     # Multiplayer analysis documentation
-    └── README.md                   # Main project documentation
+├── **🛠️ LOCAL TOOLS/**               # Local development tools (personal use) 🚧
+│   ├── asset-extractors/           # Asset extraction tools (local only)
+│   ├── analysis-tools/             # Game analysis tools (local only)
+│   └── research-tools/             # Research and development tools
+│
+├── **📚 DOCUMENTATION/**            # Project documentation ✅
+│   ├── PROJECT_ARCHITECTURE.md     # This file
+│   ├── MIGRATION_GUIDE.md          # Migration guide from old structure
+│   ├── MULTIPLAYER_ANALYSIS.md     # Multiplayer analysis documentation
+│   └── README.md                   # Main project documentation
+│
+└── **📦 EXTRACTED ASSETS/**         # Local extracted assets (personal use)
+    ├── WC1/                        # Warcraft I extracted assets
+    ├── WC2/                        # Warcraft II extracted assets
+    └── WC3/                        # Warcraft III extracted assets
 ```
 
 ## **🔄 Migration Status**
@@ -103,7 +110,7 @@ wartest/
 - [ ] Integrate with main application
 
 ### **Phase 5: WC1 Projects Migration** 🚧
-- [x] Move WC1 extraction code → `games/WC1/asset-extractor/`
+- [x] Move WC1 code → `games/WC1/` (excluding asset extraction)
 - [ ] Refactor to use shared libraries
 - [ ] Update dependencies and imports
 - [ ] Integrate with main application
@@ -122,6 +129,12 @@ wartest/
 - [ ] Set up database layer
 - [ ] Develop AI integration framework
 
+### **Phase 8: Local Tools Organization** 🚧
+- [x] Asset extraction tools moved to local tools directory
+- [x] Analysis tools organized for personal use
+- [ ] Research tools organized and documented
+- [ ] Clear separation from main application
+
 ## **🏗️ Current Implementation Status**
 
 ### **✅ Completed Features**
@@ -136,8 +149,8 @@ wartest/
 
 ### **🚧 In Progress**
 - **Shared Libraries**: Basic structure created, needs implementation
-- **Asset Extraction**: Framework exists, needs game-specific implementation
 - **Game Analysis**: Basic structure exists, needs content implementation
+- **Local Tools**: Asset extraction and analysis tools for personal use
 
 ### **📋 Planned Features**
 - **Replay Analysis**: WC2 replay system integration
@@ -151,17 +164,20 @@ wartest/
 ### **Modularity**
 - Each game type is self-contained
 - Shared libraries prevent code duplication
+- Local tools separate from main application
 - Easy to add new games or features
 
 ### **Scalability**
 - Workspace-based build system
 - Conditional compilation for specific features
 - Database-ready for future cloud deployment
+- Local development tools don't affect main app
 
 ### **Maintainability**
 - Clear separation of concerns
 - Consistent project structure
 - Shared testing and documentation
+- Local tools for research and development
 
 ### **Future-Proofing**
 - AI integration ready
@@ -174,6 +190,7 @@ wartest/
 2. **Set up shared libraries**: Start with core utilities
 3. **Begin Tauri integration**: Start incorporating game functionality
 4. **Database preparation**: Set up schemas for future integration
+5. **Organize local tools**: Complete separation of development tools
 
 ## **📝 Development Guidelines**
 - Use workspace dependencies for consistency
@@ -181,6 +198,7 @@ wartest/
 - Write comprehensive tests for shared libraries
 - Document all public APIs
 - Use semantic versioning for releases
+- Keep local tools separate from main application
 
 ## **🔧 Current Technical Stack**
 
@@ -202,3 +220,8 @@ wartest/
 - **Utils**: File operations and binary parsing
 - **Database**: Future database integration
 - **AI**: Future machine learning integration
+
+### **Local Development Tools**
+- **Asset Extractors**: For personal research and development
+- **Analysis Tools**: Game data analysis and research
+- **Research Tools**: Development and testing utilities
