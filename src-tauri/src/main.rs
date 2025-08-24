@@ -64,18 +64,21 @@ pub struct GameLaunchRequest {
 // Game detection patterns and common installation paths
 const WC1_PATTERNS: &[&str] = &[
     "warcraft.exe", "war.exe", "wc1.exe", "warcraft1.exe",
-    "warcraft orcs & humans.exe", "orcs & humans.exe"
+    "warcraft orcs & humans.exe", "orcs & humans.exe",
+    "warcraft orcs and humans.exe", "warcraft-orcs.exe"
 ];
 
 const WC2_PATTERNS: &[&str] = &[
     "warcraft2.exe", "war2.exe", "wc2.exe", "warcraft ii.exe",
     "warcraft ii bne.exe", "warcraft ii bne_dx.exe", "war2launcher.exe",
-    "warcraft ii map editor.exe"
+    "warcraft ii map editor.exe", "warcraft2bne.exe", "warcraft2bne_dx.exe",
+    "war2bne.exe", "war2bne_dx.exe", "warcraft2combat.exe", "war2combat.exe"
 ];
 
 const WC3_PATTERNS: &[&str] = &[
     "warcraft3.exe", "war3.exe", "wc3.exe", "warcraft iii.exe",
-    "warcraft iii launcher.exe", "world editor.exe"
+    "warcraft iii launcher.exe", "world editor.exe", "warcraft3launcher.exe",
+    "war3launcher.exe", "warcraft3reforged.exe", "war3reforged.exe"
 ];
 
 // Common installation directories to scan
@@ -159,7 +162,17 @@ fn detect_game_in_directory(dir_path: &Path) -> Option<GameInfo> {
     let dir_name = dir_path.file_name()?.to_string_lossy().to_lowercase();
     let drive = dir_path.components().next()?.as_os_str().to_string_lossy().to_string();
     
-    // Check for executable files
+    // Recursively search for executable files
+    if let Some(game_info) = search_for_executables_recursive(dir_path, &dir_name, &drive) {
+        return Some(game_info);
+    }
+    
+    None
+}
+
+/// Recursively search for Warcraft executables in a directory and its subdirectories
+fn search_for_executables_recursive(dir_path: &Path, dir_name: &str, drive: &str) -> Option<GameInfo> {
+    // First, check the current directory for executables
     if let Ok(entries) = fs::read_dir(dir_path) {
         for entry in entries.filter_map(Result::ok) {
             let path = entry.path();
@@ -169,27 +182,54 @@ fn detect_game_in_directory(dir_path: &Path) -> Option<GameInfo> {
                         if let Some(file_name) = path.file_name() {
                             let file_name_str = file_name.to_string_lossy().to_lowercase();
                             
+                            println!("Checking executable: {} in directory: {}", file_name_str, dir_path.display());
+                            
                             // Check WC1 patterns
                             if WC1_PATTERNS.iter().any(|pattern| file_name_str.contains(pattern)) {
+                                println!("Found WC1 game: {} in {}", file_name_str, dir_path.display());
                                 return Some(create_game_info(
-                                    dir_path, &path, GameType::WC1, &dir_name, &drive
+                                    dir_path, &path, GameType::WC1, dir_name, drive
                                 ));
                             }
                             
                             // Check WC2 patterns
                             if WC2_PATTERNS.iter().any(|pattern| file_name_str.contains(pattern)) {
+                                println!("Found WC2 game: {} in {}", file_name_str, dir_path.display());
                                 return Some(create_game_info(
-                                    dir_path, &path, GameType::WC2, &dir_name, &drive
+                                    dir_path, &path, GameType::WC2, dir_name, drive
                                 ));
                             }
                             
                             // Check WC3 patterns
                             if WC3_PATTERNS.iter().any(|pattern| file_name_str.contains(pattern)) {
+                                println!("Found WC3 game: {} in {}", file_name_str, dir_path.display());
                                 return Some(create_game_info(
-                                    dir_path, &path, GameType::WC3, &dir_name, &drive
+                                    dir_path, &path, GameType::WC3, dir_name, drive
                                 ));
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+    
+    // If no executables found in current directory, search subdirectories
+    if let Ok(entries) = fs::read_dir(dir_path) {
+        for entry in entries.filter_map(Result::ok) {
+            let path = entry.path();
+            if path.is_dir() {
+                // Skip certain system directories to avoid infinite recursion
+                let subdir_name = path.file_name()?.to_string_lossy().to_lowercase();
+                if !subdir_name.starts_with('.') && 
+                   subdir_name != "windows" && 
+                   subdir_name != "system32" && 
+                   subdir_name != "program files" &&
+                   subdir_name != "program files (x86)" {
+                    
+                    println!("Searching subdirectory: {} in {}", subdir_name, dir_path.display());
+                    if let Some(game_info) = search_for_executables_recursive(&path, dir_name, drive) {
+                        return Some(game_info);
                     }
                 }
             }
