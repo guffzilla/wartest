@@ -9,11 +9,13 @@ export interface GameInfo {
   found: boolean;
   is_running: boolean;
   process_id?: number;
+  game_type: 'wc1' | 'wc2' | 'wc3';
 }
 
 export interface RunningGame {
   name: string;
   process_id: number;
+  game_type: 'wc1' | 'wc2' | 'wc3';
 }
 
 export interface ScanResult {
@@ -28,13 +30,23 @@ export const games = writable<GameInfo[]>([]);
 export const runningGames = writable<RunningGame[]>([]);
 export const isLoading = writable(false);
 
-// Initialize default games
+// Initialize default games for all three Warcraft versions
 const defaultGames: GameInfo[] = [
-  { key: 'wc2-remastered', name: 'Warcraft II: Remastered', path: '', version: 'Remastered', found: false, is_running: false },
-  { key: 'wc2-combat', name: 'Warcraft II: Combat Edition', path: '', version: 'Combat', found: false, is_running: false },
-  { key: 'wc2-bnet', name: 'Warcraft II: Battle.net Edition', path: '', version: 'Battle.net', found: false, is_running: false },
-  { key: 'wc2-dos', name: 'Warcraft II: Tides of Darkness (DOS)', path: '', version: 'DOS', found: false, is_running: false },
-  { key: 'wc2-dosx', name: 'Warcraft II: Beyond the Dark Portal (DOS)', path: '', version: 'DOS', found: false, is_running: false },
+  // Warcraft I games
+  { key: 'wc1-original', name: 'Warcraft: Orcs & Humans', path: '', version: 'Original', found: false, is_running: false, game_type: 'wc1' },
+  { key: 'wc1-remastered', name: 'Warcraft I: Remastered', path: '', version: 'Remastered', found: false, is_running: false, game_type: 'wc1' },
+  
+  // Warcraft II games
+  { key: 'wc2-remastered', name: 'Warcraft II: Remastered', path: '', version: 'Remastered', found: false, is_running: false, game_type: 'wc2' },
+  { key: 'wc2-combat', name: 'Warcraft II: Combat Edition', path: '', version: 'Combat', found: false, is_running: false, game_type: 'wc2' },
+  { key: 'wc2-bnet', name: 'Warcraft II: Battle.net Edition', path: '', version: 'Battle.net', found: false, is_running: false, game_type: 'wc2' },
+  { key: 'wc2-dos', name: 'Warcraft II: Tides of Darkness (DOS)', path: '', version: 'DOS', found: false, is_running: false, game_type: 'wc2' },
+  { key: 'wc2-dosx', name: 'Warcraft II: Beyond the Dark Portal (DOS)', path: '', version: 'DOS', found: false, is_running: false, game_type: 'wc2' },
+  
+  // Warcraft III games
+  { key: 'wc3-reforged', name: 'Warcraft III: Reforged', path: '', version: 'Reforged', found: false, is_running: false, game_type: 'wc3' },
+  { key: 'wc3-frozen-throne', name: 'Warcraft III: The Frozen Throne', path: '', version: 'Frozen Throne', found: false, is_running: false, game_type: 'wc3' },
+  { key: 'wc3-reign-of-chaos', name: 'Warcraft III: Reign of Chaos', path: '', version: 'Reign of Chaos', found: false, is_running: false, game_type: 'wc3' },
 ];
 
 // Initialize the store
@@ -48,7 +60,7 @@ export async function scanGames() {
     // Update games with scan results
     games.update(currentGames => {
       return currentGames.map(game => {
-        const result = results[game.key];
+        const result = results[game.game_type];
         if (result) {
           return {
             ...game,
@@ -95,5 +107,25 @@ export async function launchGame(gameName: string) {
     console.error(`Failed to launch game ${gameName}:`, error);
     throw error;
   }
+}
+
+export async function getGameAssets(gameType: 'wc1' | 'wc2' | 'wc3', gamePath: string) {
+  try {
+    const assets = await invoke<string[]>('get_game_assets', { gameType, gamePath });
+    console.log(`Retrieved assets for ${gameType}:`, assets);
+    return assets;
+  } catch (error) {
+    console.error(`Failed to get assets for ${gameType}:`, error);
+    throw error;
+  }
+}
+
+// Helper functions to get games by type
+export function getGamesByType(gameType: 'wc1' | 'wc2' | 'wc3') {
+  return games.map(games => games.filter(game => game.game_type === gameType));
+}
+
+export function getRunningGamesByType(gameType: 'wc1' | 'wc2' | 'wc3') {
+  return runningGames.map(games => games.filter(game => game.game_type === gameType));
 }
 

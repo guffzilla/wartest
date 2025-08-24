@@ -1,34 +1,37 @@
-# Game installations folder - contains actual game installations (not our code)
-games/Warcraft*/
-games/W3Champions/
-games/War2Combat/
+# Rust
+target/
+**/*.rs.bk
+Cargo.lock
 
-# Extracted WC1 assets - contains extracted game data and images
-WC1Assets/
-WC1Assets_test/
-WC1Assets_organized/
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# Extracted WC2 assets - contains extracted game data and images
-WC2Assets/
-WC2Assets_test/
-WC2Assets_organized/
+# Build outputs
+dist/
+build/
+out/
 
-# All extracted asset folders (comprehensive)
-**/WC*Assets*/
-**/WC*Assets*_*/
-**/extracted_*/
-**/assets_*/
+# Environment and configuration
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# Web analysis folders
-WC2WebAnalysis/
-WC2WebAnalysis_test/
-
-# Common files to ignore
-.DS_Store
-Thumbs.db
+# Logs
 *.log
+logs/
 *.tmp
 *.temp
+
+# Cache directories
+.cache/
+*.cache/
 
 # IDE and editor files
 .vscode/
@@ -37,113 +40,56 @@ Thumbs.db
 *.swo
 *~
 
-# Build artifacts
-build/
-dist/
-node_modules/
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-# Environment files
-.env
-.env.local
-.env.*.local
-
-# Added by cargo
-/target
-
-# Rust build artifacts (comprehensive)
-**/target/
-**/*.exe
-**/*.pdb
-**/*.dll
-**/*.so
-**/*.dylib
-**/*.rlib
-**/*.d
-**/*.o
-# Note: We want to track Cargo.lock files for reproducible builds
-# **/*.lock
-
-# Cargo incremental builds
-**/incremental/
-**/dep-graph.bin
-**/query-cache.bin
-**/work-products.bin
-
-# Debug and release builds
-**/debug/
-**/release/
-
-# Test artifacts
-**/test_*.exe
-**/test_*.pdb
-
-# Asset extraction outputs (large generated files)
+# Game installations and assets (keep these ignored!)
+games/
+ExtractedAssets/
+WC1Assets/
+WC1Assets_organized/
+WC1Assets_test/
+WC2Assets/
+WC2Assets_organized/
+WC2Assets_test/
 extracted_sprites/
-WC*Assets*/
-**/extracted/
-**/output/
 
-# Large binary game files (but allow small config/data files)
-games/**/*.bin
-games/**/*.dat
-games/**/*.idx
-games/**/*.grp
-games/**/*.mpq
-games/**/*.pak
+# Test and temporary files
+test_*.exe
+test_*.pdb
+*.exe
+*.pdb
 
-# Large extracted images (but allow small icons/assets in projects)
-**/extracted/**/*.png
-**/extracted/**/*.jpg
-**/extracted/**/*.jpeg
-**/extracted/**/*.gif
-**/extracted/**/*.bmp
+# Analysis and data files (review these for sensitive data)
+# config_analysis.json
+# game_results_test.json
+# multiplayer_data_test.json
 
-# Game asset images (comprehensive)
-**/WC*Assets*/**/*.png
-**/WC*Assets*/**/*.jpg
-**/WC*Assets*/**/*.jpeg
-**/WC*Assets*/**/*.gif
-**/WC*Assets*/**/*.bmp
-**/WC*Assets*/**/*.ico
+# Test and generated data files
+*_test.json
+*_analysis.json
+*_data.json
+config_analysis.json
+game_results_test.json
+multiplayer_data_test.json
 
-# Game installation images
-games/**/Data/**/*.png
-games/**/Data/**/*.jpg
-games/**/Data/**/*.jpeg
-games/**/Data/**/*.gif
-games/**/Data/**/*.bmp
-games/**/Data/**/*.ico
-games/**/data/**/*.png
-games/**/data/**/*.jpg
-games/**/data/**/*.jpeg
-games/**/data/**/*.gif
-games/**/data/**/*.bmp
-games/**/data/**/*.ico
+# Tauri specific
+src-tauri/target/
+src-tauri/Cargo.lock
+src-tauri/gen/
 
-# Allow only small project icons (under 100KB)
-!**/icons/**/*.png
-!**/icons/**/*.ico
-!**/src/**/*.svg
-!**/assets/**/*.svg
-
-# Temporary and cache files
-*.tmp
-*.temp
-*.cache
+# Backup files
 *.bak
+*.backup
 *.old
 
-# AI model files and training data (can be very large)
-**/models/**/*.bin
-**/models/**/*.pt
-**/models/**/*.onnx
-**/training_data/
-
-# Large log files from analysis
-**/logs/*.log
-**/logs/*.out
-
-# Database files (development/testing)
-**/*.db
-**/*.sqlite
-**/*.sqlite3
+# Package lock files (optional - uncomment if you want to ignore them)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml

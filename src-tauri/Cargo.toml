@@ -1,0 +1,24 @@
+[package]
+name = "wc-arena-core"
+version = "0.1.0"
+description = "WC Arena Core - Unified Warcraft Management Center"
+authors = ["you"]
+license = ""
+repository = ""
+edition = "2021"
+
+[[bin]]
+name = "wc-arena-core"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2.0.0", features = [] }
+
+[dependencies]
+tauri = { version = "2.0.0", features = [] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.0", features = ["full"] }
+anyhow = "1.0"
+sysinfo = "0.30"
+winapi = { version = "0.3", features = ["winuser", "processthreadsapi", "psapi"] }

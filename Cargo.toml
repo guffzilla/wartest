@@ -6,28 +6,8 @@ members = [
     "shared/utils", 
     "shared/ai",
     
-    # Warcraft I projects
-    "games/WC1/asset-extractor",
-    "games/WC1/game-analyzer",
-    "games/WC1/multiplayer-monitor",
-    "games/WC1/shared",
-    
-    # Warcraft II projects
-    "games/WC2/asset-extractor",
-    "games/WC2/game-analyzer", 
-    "games/WC2/multiplayer-monitor",
-    "games/WC2/replay-system",
-    "games/WC2/shared",
-    
-    # Warcraft III projects
-    "games/WC3/asset-extractor",
-    "games/WC3/game-analyzer",
-    "games/WC3/multiplayer-monitor", 
-    "games/WC3/champions-analysis",
-    "games/WC3/shared",
-    
-    # Tauri applications
-    "apps/tauri-apps/wcacore/src-tauri",
+    # Main Tauri application
+    "src-tauri",
 ]
 
 [workspace.package]

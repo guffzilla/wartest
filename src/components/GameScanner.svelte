@@ -1,100 +1,70 @@
 <script lang="ts">
-  import { games, runningGames } from '../stores/gameStore';
+  import { games, runningGames, getGamesByType, getRunningGamesByType } from '../stores/gameStore';
   
-  $: wc2Games = $games.filter(game => game.key.startsWith('wc2'));
+  export let gameType: 'wc1' | 'wc2' | 'wc3';
+  
+  $: gamesOfType = getGamesByType(gameType)($games);
+  $: runningGamesOfType = getRunningGamesByType(gameType)($runningGames);
+  
+  function getGameTypeTitle() {
+    switch (gameType) {
+      case 'wc1': return 'Warcraft I';
+      case 'wc2': return 'Warcraft II';
+      case 'wc3': return 'Warcraft III';
+      default: return 'Warcraft';
+    }
+  }
+  
+  function getGameTypeIcon() {
+    switch (gameType) {
+      case 'wc1': return '⚔️';
+      case 'wc2': return '🛡️';
+      case 'wc3': return '⚡';
+      default: return '🎮';
+    }
+  }
 </script>
 
 <div class="game-scanner">
-  <div class="game-grid">
-    <!-- Battle.net Battle Chest -->
-    <div class="game-card battle-chest-card">
-      <div class="game-header">
-        <div class="game-icon">⚔️</div>
-        <div class="game-title">Battle.net Battle Chest</div>
-      </div>
-      <div class="game-versions">
-        <div class="version-item">
-          <div class="version-info">
-            <div class="version-name">Warcraft II: Remastered</div>
-            <div class="version-path">
-              {#if wc2Games.find(g => g.key === 'wc2-remastered')}
-                {wc2Games.find(g => g.key === 'wc2-remastered')?.path || 'Scanning...'}
-              {:else}
-                Scanning...
-              {/if}
-            </div>
-          </div>
-          <div class="version-status">
-            <div class="status-indicator {wc2Games.find(g => g.key === 'wc2-remastered')?.found ? 'status-found' : 'status-not-found'}"></div>
-          </div>
-          <div class="version-actions">
-            <button class="btn btn-secondary btn-small" disabled>Maps</button>
-          </div>
-        </div>
-      </div>
-      <div class="action-buttons">
-        <button class="btn btn-primary btn-small">Locate</button>
-        <button class="btn btn-secondary btn-small">Add Manually</button>
-      </div>
-    </div>
+  <div class="game-header">
+    <div class="game-icon">{getGameTypeIcon()}</div>
+    <div class="game-title">{getGameTypeTitle()} Management</div>
+  </div>
 
-    <!-- Classics & Community Editions -->
-    <div class="game-card">
-      <div class="game-header">
-        <div class="game-icon">🎮</div>
-        <div class="game-title">Classics & Community Editions</div>
-      </div>
-      <div class="game-versions">
-        <div class="version-item">
-          <div class="version-info">
-            <div class="version-name">Warcraft II: Combat Edition</div>
-            <div class="version-path">
-              {#if wc2Games.find(g => g.key === 'wc2-combat')}
-                {wc2Games.find(g => g.key === 'wc2-combat')?.path || 'Scanning...'}
-              {:else}
-                Scanning...
-              {/if}
-            </div>
-          </div>
-          <div class="version-status">
-            <div class="status-indicator {wc2Games.find(g => g.key === 'wc2-combat')?.found ? 'status-found' : 'status-not-found'}"></div>
-          </div>
-          <div class="version-actions">
-            <button class="btn btn-secondary btn-small" disabled>Maps</button>
+  <div class="game-grid">
+    {#each gamesOfType as game}
+      <div class="game-card">
+        <div class="game-info">
+          <div class="game-name">{game.name}</div>
+          <div class="game-version">{game.version}</div>
+          <div class="game-path">
+            {game.path || 'Not found'}
           </div>
         </div>
-        <div class="version-item">
-          <div class="version-info">
-            <div class="version-name">Warcraft II: Battle.net Edition</div>
-            <div class="version-path">
-              {#if wc2Games.find(g => g.key === 'wc2-bnet')}
-                {wc2Games.find(g => g.key === 'wc2-bnet')?.path || 'Scanning...'}
-              {:else}
-                Scanning...
-              {/if}
-            </div>
-          </div>
-          <div class="version-status">
-            <div class="status-indicator {wc2Games.find(g => g.key === 'wc2-bnet')?.found ? 'status-found' : 'status-not-found'}"></div>
-          </div>
-          <div class="version-actions">
-            <button class="btn btn-secondary btn-small" disabled>Maps</button>
+        <div class="game-status">
+          <div class="status-indicator {game.found ? 'status-found' : 'status-not-found'}"></div>
+          <div class="status-text">
+            {game.found ? 'Found' : 'Not Found'}
           </div>
         </div>
+        <div class="game-actions">
+          <button class="btn btn-primary btn-small" disabled={!game.found}>
+            Launch
+          </button>
+          <button class="btn btn-secondary btn-small" disabled={!game.found}>
+            Assets
+          </button>
+        </div>
       </div>
-      <div class="action-buttons">
-        <button class="btn btn-primary btn-small">Locate</button>
-        <button class="btn btn-secondary btn-small">Add Manually</button>
-      </div>
-    </div>
+    {/each}
   </div>
 
   <!-- Running Games Section -->
-  {#if $runningGames.length > 0}
+  {#if runningGamesOfType.length > 0}
     <div class="status-section">
-      <h2>Currently Running Games</h2>
+      <h2>Currently Running {getGameTypeTitle()} Games</h2>
       <div class="running-games">
-        {#each $runningGames as game}
+        {#each runningGamesOfType as game}
           <div class="running-game">
             <h3>{game.name}</h3>
             <div class="process-id">PID: {game.process_id}</div>
@@ -103,6 +73,49 @@
       </div>
     </div>
   {/if}
+
+  <!-- Game Type Specific Features -->
+  <div class="game-features">
+    <h2>{getGameTypeTitle()} Features</h2>
+    <div class="features-grid">
+      {#if gameType === 'wc1'}
+        <div class="feature-item">
+          <h3>Campaign Management</h3>
+          <p>Manage original and custom campaigns</p>
+        </div>
+        <div class="feature-item">
+          <h3>Asset Extraction</h3>
+          <p>Extract sprites, sounds, and maps</p>
+        </div>
+      {:else if gameType === 'wc2'}
+        <div class="feature-item">
+          <h3>Multiplayer Support</h3>
+          <p>LAN and online multiplayer management</p>
+        </div>
+        <div class="feature-item">
+          <h3>Replay Analysis</h3>
+          <p>Advanced replay viewing and analysis</p>
+        </div>
+        <div class="feature-item">
+          <h3>Map Editor</h3>
+          <p>Create and edit custom maps</p>
+        </div>
+      {:else if gameType === 'wc3'}
+        <div class="feature-item">
+          <h3>Custom Maps</h3>
+          <p>Manage custom maps and mods</p>
+        </div>
+        <div class="feature-item">
+          <h3>Battle.net Integration</h3>
+          <p>Online multiplayer and ladder support</p>
+        </div>
+        <div class="feature-item">
+          <h3>World Editor</h3>
+          <p>Advanced map and campaign creation</p>
+        </div>
+      {/if}
+    </div>
+  </div>
 </div>
 
 <style>
@@ -112,6 +125,27 @@
     border-radius: 15px;
     padding: 25px;
     border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .game-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .game-icon {
+    font-size: 2.5rem;
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.6));
+  }
+
+  .game-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #ffd700;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
   }
 
   .game-grid {
@@ -127,6 +161,9 @@
     border-radius: 12px;
     padding: 20px;
     transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
   }
 
   .game-card:hover {
@@ -135,75 +172,44 @@
     transform: translateY(-2px);
   }
 
-  .battle-chest-card {
-    border-color: rgba(255, 215, 0, 0.3);
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.05) 0%, rgba(255, 165, 0, 0.02) 100%);
-  }
-
-  .game-header {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    margin-bottom: 20px;
-  }
-
-  .game-icon {
-    font-size: 2rem;
-    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.3));
-  }
-
-  .game-title {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #ffd700;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-  }
-
-  .game-versions {
-    margin-bottom: 20px;
-  }
-
-  .version-item {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 8px;
-    padding: 12px;
-    margin-bottom: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .version-info {
+  .game-info {
     flex: 1;
   }
 
-  .version-name {
+  .game-name {
     font-weight: 600;
     color: #e8eaed;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
   }
 
-  .version-path {
+  .game-version {
+    font-size: 0.9rem;
+    color: #ffd700;
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  .game-path {
     font-size: 0.85rem;
     color: #9aa0a6;
     font-family: 'Consolas', monospace;
     word-break: break-all;
-    max-width: 200px;
+    max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .version-status {
+  .game-status {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
   }
 
   .status-indicator {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
   }
 
@@ -216,16 +222,15 @@
     background: #ea4335;
   }
 
-  .version-actions {
-    display: flex;
-    gap: 5px;
-    margin-top: 8px;
+  .status-text {
+    font-size: 0.9rem;
+    color: #9aa0a6;
+    font-weight: 500;
   }
 
-  .action-buttons {
+  .game-actions {
     display: flex;
     gap: 8px;
-    margin-top: 15px;
   }
 
   .btn {
@@ -238,6 +243,7 @@
     transition: all 0.2s ease;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    flex: 1;
   }
 
   .btn-primary {
@@ -245,9 +251,14 @@
     color: #1a2332;
   }
 
-  .btn-primary:hover {
+  .btn-primary:hover:not(:disabled) {
     transform: translateY(-1px);
     box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   .btn-secondary {
@@ -267,7 +278,7 @@
   }
 
   .btn-small {
-    padding: 4px 8px;
+    padding: 6px 12px;
     font-size: 0.8rem;
   }
 
@@ -276,7 +287,7 @@
     border: 1px solid rgba(255, 255, 255, 0.05);
     border-radius: 12px;
     padding: 20px;
-    margin-top: 20px;
+    margin-bottom: 25px;
   }
 
   .status-section h2 {
@@ -312,20 +323,68 @@
     font-family: 'Consolas', monospace;
   }
 
+  .game-features {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .game-features h2 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #ffffff;
+    text-align: center;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+  }
+
+  .feature-item {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 15px;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .feature-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 215, 0, 0.3);
+    transform: translateY(-1px);
+  }
+
+  .feature-item h3 {
+    color: #ffd700;
+    margin-bottom: 8px;
+    font-size: 1.1rem;
+  }
+
+  .feature-item p {
+    color: #9aa0a6;
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
   @media (max-width: 768px) {
     .game-grid {
       grid-template-columns: 1fr;
     }
     
-    .version-item {
+    .game-card {
       flex-direction: column;
-      align-items: flex-start;
-      gap: 10px;
     }
     
-    .version-path {
-      max-width: none;
+    .game-path {
       white-space: normal;
+    }
+    
+    .features-grid {
+      grid-template-columns: 1fr;
     }
   }
 </style>

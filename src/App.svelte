@@ -29,11 +29,11 @@
 <main>
   <div class="header">
     <div class="title-container">
-      <div class="gear left-gear">⚙️</div>
-                    <h1 class="robotic-title">WC2 Desktop Manager</h1>
-      <div class="gear right-gear">⚙️</div>
+      <div class="gear left-gear">⚔️</div>
+      <h1 class="robotic-title">WC Arena Core</h1>
+      <div class="gear right-gear">⚔️</div>
     </div>
-                <div class="title-subtitle">Advanced Warcraft II Desktop Management Center</div>
+    <div class="title-subtitle">Unified Warcraft Management Center</div>
   </div>
 
   <div class="control-panel">
@@ -48,22 +48,42 @@
   <TabManager bind:currentTab />
   
   <div class="main-content">
-    {#if currentTab === 'wc2'}
-      <GameScanner />
-    {:else if currentTab === 'wc1'}
+    {#if currentTab === 'wc1'}
       <div class="tab-content">
         <h2>Warcraft I Management</h2>
-        <p>Coming soon...</p>
+        <p>Manage Warcraft I installations, campaigns, and assets</p>
+        <GameScanner gameType="wc1" />
+      </div>
+    {:else if currentTab === 'wc2'}
+      <div class="tab-content">
+        <h2>Warcraft II Management</h2>
+        <p>Manage Warcraft II installations, campaigns, and assets</p>
+        <GameScanner gameType="wc2" />
       </div>
     {:else if currentTab === 'wc3'}
       <div class="tab-content">
         <h2>Warcraft III Management</h2>
-        <p>Coming soon...</p>
+        <p>Manage Warcraft III installations, campaigns, and assets</p>
+        <GameScanner gameType="wc3" />
       </div>
     {:else if currentTab === 'wc-arena'}
       <div class="tab-content">
-        <h2>WCArena Integration</h2>
-        <p>Coming soon...</p>
+        <h2>WC Arena Integration</h2>
+        <p>Advanced features and cross-game management</p>
+        <div class="arena-features">
+          <div class="feature-card">
+            <h3>Replay Analysis</h3>
+            <p>Analyze replays from all Warcraft versions</p>
+          </div>
+          <div class="feature-card">
+            <h3>Asset Management</h3>
+            <p>Cross-game asset organization and management</p>
+          </div>
+          <div class="feature-card">
+            <h3>Performance Monitoring</h3>
+            <p>Monitor game performance and system resources</p>
+          </div>
+        </div>
       </div>
     {/if}
   </div>
@@ -84,7 +104,7 @@
   }
 
   main {
-    max-width: 1200px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 20px;
   }
@@ -223,7 +243,42 @@
   .tab-content p {
     font-size: 1.1rem;
     color: #e8eaed;
+    margin-bottom: 25px;
     text-align: center;
     opacity: 0.8;
+  }
+
+  .arena-features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+
+  .feature-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+
+  .feature-card:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 215, 0, 0.3);
+    transform: translateY(-2px);
+  }
+
+  .feature-card h3 {
+    color: #ffd700;
+    margin-bottom: 10px;
+    font-size: 1.2rem;
+  }
+
+  .feature-card p {
+    color: #9aa0a6;
+    font-size: 0.9rem;
+    margin: 0;
   }
 </style>
