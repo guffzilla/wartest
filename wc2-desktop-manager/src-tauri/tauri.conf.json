@@ -1,0 +1,22 @@
+﻿{
+  "identifier": "com.wc2.desktop-manager",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "security": {
+      "csp": null
+    },
+    "windows": [
+      {
+        "fullscreen": false,
+        "resizable": true,
+        "title": "WC2 Desktop Manager",
+        "width": 1200,
+        "height": 800
+      }
+    ]
+  }
+}

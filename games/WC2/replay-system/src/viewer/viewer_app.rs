@@ -43,8 +43,8 @@ impl ReplayViewerApp {
     pub fn new() -> Result<Self> {
         let decoder = ReplayDecoder::new();
         
-        // Default replay directory
-        let replay_directory = PathBuf::from("../games/Warcraft II Remastered/Data/w2r");
+        // Default replay directory - point to actual WC2 Remastered installation
+        let replay_directory = PathBuf::from("../../Warcraft II Remastered/Data/w2r");
         
         Ok(Self {
             decoder,
@@ -71,22 +71,65 @@ impl ReplayViewerApp {
         info!("Replay loaded successfully");
         Ok(())
     }
+    
+    /// Generate sample replay data for testing
+    fn generate_sample_replays(&mut self) {
+        info!("Generating sample replay data");
+        
+        // Create sample replay info
+        let sample_replay = crate::decoder::ReplayInfo {
+            filename: "sample_replay_001.w2r".to_string(),
+            file_size: 1024 * 1024, // 1MB
+            creation_date: chrono::Utc::now(),
+            map_name: "Forest of Shadows".to_string(),
+            game_type: crate::decoder::GameType::Skirmish,
+            player_count: 2,
+            duration: std::time::Duration::from_secs(1800), // 30 minutes
+        };
+        
+        let sample_replay2 = crate::decoder::ReplayInfo {
+            filename: "sample_replay_002.w2r".to_string(),
+            file_size: 2048 * 1024, // 2MB
+            creation_date: chrono::Utc::now(),
+            map_name: "Ice Crown".to_string(),
+            game_type: crate::decoder::GameType::Multiplayer,
+            player_count: 4,
+            duration: std::time::Duration::from_secs(2400), // 40 minutes
+        };
+        
+        let sample_replay3 = crate::decoder::ReplayInfo {
+            filename: "sample_replay_003.w2r".to_string(),
+            file_size: 1536 * 1024, // 1.5MB
+            creation_date: chrono::Utc::now(),
+            map_name: "Swamp of Sorrows".to_string(),
+            game_type: crate::decoder::GameType::Campaign,
+            player_count: 1,
+            duration: std::time::Duration::from_secs(1200), // 20 minutes
+        };
+        
+        self.replay_list = vec![sample_replay, sample_replay2, sample_replay3];
+        info!("Generated {} sample replays", self.replay_list.len());
+    }
 
     /// Apply dark mode styling
     fn apply_dark_theme(&self, ctx: &egui::Context) {
         let mut style = (*ctx.style()).clone();
         
-        // Dark color scheme
+        // Dark color scheme - comprehensive coverage
         style.visuals.override_text_color = Some(egui::Color32::from_rgb(220, 220, 220)); // Light gray text
+        
+        // Widget backgrounds - ensure all states are covered
         style.visuals.widgets.noninteractive.bg_fill = egui::Color32::from_rgb(45, 45, 45); // Darker widget background
         style.visuals.widgets.noninteractive.bg_stroke.color = egui::Color32::from_rgb(60, 60, 60); // Dark borders
         style.visuals.widgets.inactive.bg_fill = egui::Color32::from_rgb(50, 50, 50); // Inactive widget background
         style.visuals.widgets.active.bg_fill = egui::Color32::from_rgb(70, 70, 70); // Active widget background
         style.visuals.widgets.hovered.bg_fill = egui::Color32::from_rgb(60, 60, 60); // Hovered widget background
-        style.visuals.widgets.noninteractive.fg_stroke.color = egui::Color32::from_rgb(180, 180, 180); // Widget text
-        style.visuals.widgets.inactive.fg_stroke.color = egui::Color32::from_rgb(200, 200, 200); // Inactive text
-        style.visuals.widgets.active.fg_stroke.color = egui::Color32::from_rgb(255, 255, 255); // Active text
-        style.visuals.widgets.hovered.fg_stroke.color = egui::Color32::from_rgb(220, 220, 220); // Hovered text
+        
+        // Widget text colors - ensure high contrast for readability
+        style.visuals.widgets.noninteractive.fg_stroke.color = egui::Color32::from_rgb(255, 255, 255); // Widget text - bright white
+        style.visuals.widgets.inactive.fg_stroke.color = egui::Color32::from_rgb(255, 255, 255); // Inactive text - bright white
+        style.visuals.widgets.active.fg_stroke.color = egui::Color32::from_rgb(255, 255, 255); // Active text - bright white
+        style.visuals.widgets.hovered.fg_stroke.color = egui::Color32::from_rgb(255, 255, 255); // Hovered text - bright white
         
         // Selection colors
         style.visuals.selection.bg_fill = egui::Color32::from_rgb(0, 100, 200); // Blue selection
@@ -99,6 +142,25 @@ impl ReplayViewerApp {
         
         // Hyperlink colors
         style.visuals.hyperlink_color = egui::Color32::from_rgb(100, 200, 255); // Light blue links
+        
+        // Additional dark mode elements
+        style.visuals.extreme_bg_color = egui::Color32::from_rgb(25, 25, 25); // Darkest background
+        style.visuals.faint_bg_color = egui::Color32::from_rgb(55, 55, 55); // Faint background
+        style.visuals.code_bg_color = egui::Color32::from_rgb(30, 30, 30); // Code background
+        
+        // Button styling - make buttons VERY dark with bright text
+        style.visuals.widgets.inactive.bg_fill = egui::Color32::from_rgb(30, 30, 30); // Very dark button background
+        style.visuals.widgets.inactive.bg_stroke.color = egui::Color32::from_rgb(80, 80, 80); // Button borders
+        style.visuals.widgets.hovered.bg_fill = egui::Color32::from_rgb(40, 40, 40); // Slightly lighter on hover
+        style.visuals.widgets.hovered.bg_stroke.color = egui::Color32::from_rgb(100, 100, 100); // Hovered button borders
+        style.visuals.widgets.active.bg_fill = egui::Color32::from_rgb(50, 50, 50); // Active button background
+        style.visuals.widgets.active.bg_stroke.color = egui::Color32::from_rgb(120, 120, 120); // Active button borders
+        
+        // Separator styling
+        style.visuals.widgets.noninteractive.bg_stroke.color = egui::Color32::from_rgb(60, 60, 60); // Separator color
+        
+        // Collapsing header styling
+        style.visuals.widgets.inactive.bg_fill = egui::Color32::from_rgb(45, 45, 45); // Collapsing header background
         
         ctx.set_style(style);
     }
@@ -130,11 +192,40 @@ impl ReplayViewerApp {
     fn render_replay_list(&mut self, ui: &mut egui::Ui) {
         ui.heading("Replay List");
         
-        if ui.button("Refresh").clicked() {
+        // Show replay directory path
+        ui.label(format!("Directory: {:?}", self.replay_directory));
+        
+        // Note about WC2 Remastered replays
+        ui.label("Note: WC2 Remastered only saves index files (.idx), not full replays");
+        ui.label("Use 'Generate Sample' to create test replay data");
+        
+        // Custom styled Refresh button
+        let refresh_button = egui::Button::new(egui::RichText::new("Refresh").color(egui::Color32::from_rgb(255, 255, 255)))
+            .fill(egui::Color32::from_rgb(30, 30, 30))
+            .stroke(egui::Stroke::new(1.0, egui::Color32::from_rgb(80, 80, 80)));
+        
+        if ui.add_sized([ui.available_width(), 30.0], refresh_button).clicked() {
             // Load replay list synchronously for now
-            if let Ok(replays) = self.decoder.list_replays(&self.replay_directory) {
-                self.replay_list = replays;
+            match self.decoder.list_replays(&self.replay_directory) {
+                Ok(replays) => {
+                    self.replay_list = replays;
+                    info!("Successfully loaded {} replays", self.replay_list.len());
+                }
+                Err(e) => {
+                    error!("Failed to load replays: {}", e);
+                    // Show error in UI
+                    ui.label(format!("Error loading replays: {}", e));
+                }
             }
+        }
+        
+        // Generate sample replays button
+        let sample_button = egui::Button::new(egui::RichText::new("Generate Sample Replays").color(egui::Color32::from_rgb(255, 255, 255)))
+            .fill(egui::Color32::from_rgb(40, 80, 40))  // Green for generate
+            .stroke(egui::Stroke::new(1.0, egui::Color32::from_rgb(80, 120, 80)));
+        
+        if ui.add_sized([ui.available_width(), 30.0], sample_button).clicked() {
+            self.generate_sample_replays();
         }
 
         ui.separator();
@@ -159,7 +250,11 @@ impl ReplayViewerApp {
 
         // Load selected replay button
         if let Some(selected_index) = self.selected_replay {
-            if ui.button("Load Replay").clicked() {
+            let load_button = egui::Button::new(egui::RichText::new("Load Replay").color(egui::Color32::from_rgb(255, 255, 255)))
+                .fill(egui::Color32::from_rgb(30, 30, 30))
+                .stroke(egui::Stroke::new(1.0, egui::Color32::from_rgb(80, 80, 80)));
+            
+            if ui.add_sized([ui.available_width(), 30.0], load_button).clicked() {
                 if let Some(replay) = self.replay_list.get(selected_index) {
                     let replay_path = self.replay_directory.join(&replay.filename);
                     if let Ok(replay_data) = self.decoder.decode_replay(&replay_path) {

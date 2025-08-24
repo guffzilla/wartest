@@ -1,72 +1,37 @@
-//! WC2 Remastered Replay System
+//! WC2 Replay System
 //! 
-//! A comprehensive system for automatically recording, managing, and playing back
-//! Warcraft 2 Remastered game replays with a user-friendly interface.
+//! A comprehensive system for analyzing, viewing, and managing Warcraft II replays
+//! across different game versions with unified data formats and enhanced visualization.
 
-pub mod analyzer;
-pub mod structures;
 pub mod decoder;
-pub mod viewer;
+pub mod structures;
+pub mod emulator;
 
 use std::sync::Arc;
-use tracing::{info, error};
+use anyhow::Result;
 
-/// Main replay system manager
+/// Main WC2 replay system
 pub struct WC2ReplaySystem {
-    decoder: decoder::ReplayDecoder,
+    decoder: Arc<decoder::ReplayDecoder>,
 }
 
 impl WC2ReplaySystem {
-    /// Create a new replay system instance
-    pub fn new() -> anyhow::Result<Self> {
-        info!("Initializing WC2 Replay System");
-
-        let decoder = decoder::ReplayDecoder::new();
+    /// Create a new WC2 replay system instance
+    pub fn new() -> Result<Self> {
+        let decoder = Arc::new(decoder::ReplayDecoder::new());
         
         Ok(Self {
             decoder,
         })
     }
-
-    /// Start the replay system
-    pub async fn start(&self) -> anyhow::Result<()> {
-        info!("Starting WC2 Replay System");
-        info!("WC2 Replay System started successfully");
-        Ok(())
-    }
-
-    /// Stop the replay system
-    pub async fn stop(&self) -> anyhow::Result<()> {
-        info!("Stopping WC2 Replay System");
-        info!("WC2 Replay System stopped");
-        Ok(())
-    }
-
-    /// Get system status
-    pub async fn get_status(&self) -> SystemStatus {
-        SystemStatus {
-            decoder_ready: true,
-        }
-    }
-
-    /// Get the decoder
-    pub fn get_decoder(&self) -> &decoder::ReplayDecoder {
-        &self.decoder
-    }
-}
-
-/// System status information
-#[derive(Debug, Clone)]
-pub struct SystemStatus {
-    pub decoder_ready: bool,
-}
-
-/// Error types for the replay system
-#[derive(Debug, thiserror::Error)]
-pub enum ReplayError {
-    #[error("Decoder error: {0}")]
-    Decoder(#[from] anyhow::Error),
     
-    #[error("IO error: {0}")]
-    Io(#[from] std::io::Error),
+    /// Get the replay decoder
+    pub fn get_decoder(&self) -> Arc<decoder::ReplayDecoder> {
+        self.decoder.clone()
+    }
+    
+    /// Create a new replay emulator
+    pub fn create_emulator(&self) -> Result<emulator::WC2ReplayEmulator> {
+        emulator::WC2ReplayEmulator::new()
+    }
 }

@@ -1,14 +1,14 @@
 use eframe::egui;
 use anyhow::Result;
 
-use wc2_replay_system::viewer::viewer_app::ReplayViewerApp;
+use wc2_replay_system::emulator::WC2ReplayEmulator;
 
 fn main() -> Result<()> {
     // Initialize logging
     tracing_subscriber::fmt::init();
 
-    // Create the replay viewer app
-    let app = ReplayViewerApp::new()?;
+    // Create the replay emulator
+    let emulator = WC2ReplayEmulator::new()?;
 
     // Configure egui options
     let options = eframe::NativeOptions {
@@ -22,9 +22,9 @@ fn main() -> Result<()> {
 
     // Run the application
     eframe::run_native(
-        "WC2 Remastered Replay Viewer",
+        "WC2 Remastered Replay Emulator",
         options,
-        Box::new(|_cc| Box::new(app)),
+        Box::new(|_cc| Box::new(emulator)),
     ).map_err(|e| anyhow::anyhow!("Failed to run application: {}", e))?;
 
     Ok(())
