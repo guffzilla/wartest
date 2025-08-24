@@ -13,6 +13,7 @@ pub mod function_hooks;
 pub mod ai_controller;
 pub mod data_exporter;
 pub mod replay_system;
+pub mod input_simulator;
 
 // Re-export main types for easy access
 pub use game_engine::{
@@ -62,6 +63,12 @@ pub use replay_system::{
     GameStats,
 };
 
+pub use input_simulator::{
+    InputSimulator,
+    GameHotkey,
+    MouseAction,
+};
+
 /// System version information
 pub const VERSION: &str = "1.0.0";
 pub const NAME: &str = "Headless WC2 Remastered";
@@ -76,6 +83,7 @@ pub async fn initialize_headless_system() -> anyhow::Result<HeadlessGameEngine> 
     let ai_controller = std::sync::Arc::new(AIController::new().await?);
     let data_exporter = std::sync::Arc::new(DataExporter::new().await?);
     let replay_system = std::sync::Arc::new(ReplaySystem::new().await?);
+    let input_simulator = std::sync::Arc::new(InputSimulator::new());
     
     // Create the main game engine
     let game_engine = HeadlessGameEngine::new_with_components(
@@ -85,6 +93,7 @@ pub async fn initialize_headless_system() -> anyhow::Result<HeadlessGameEngine> 
         ai_controller,
         data_exporter,
         replay_system,
+        input_simulator,
     ).await?;
     
     log::info!("✅ Headless WC2 System initialized successfully");

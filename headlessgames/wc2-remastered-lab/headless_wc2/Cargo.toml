@@ -1,6 +1,6 @@
 [package]
 name = "headless-wc2"
-version = "1.0.0"
+version = "0.1.0"
 edition = "2021"
 authors = ["AI Laboratory Team"]
 description = "Headless Warcraft II Remastered with AI Control and Analytics"
@@ -9,13 +9,24 @@ license = "MIT"
 [workspace]
 
 [dependencies]
+# Core async runtime
 tokio = { version = "1.0", features = ["full"] }
-anyhow = "1.0"
+
+# Serialization and data handling
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+
+# Error handling
+anyhow = "1.0"
+
+# Logging
 log = "0.4"
 env_logger = "0.10"
+
+# Time handling
 chrono = { version = "0.4", features = ["serde"] }
+
+# Data processing
 hex = "0.4"
 md5 = "0.7"
 rand = "0.8"
@@ -28,7 +39,10 @@ windows = { version = "0.52", features = [
     "Win32_System_Diagnostics_ToolHelp",
     "Win32_System_SystemInformation",
     "Win32_System_Registry",
-    "Win32_UI_WindowsAndMessaging"
+    "Win32_System_ProcessStatus",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_UI_Input_KeyboardAndMouse",
+    "Win32_UI_Input_Pointer"
 ]}
 
 [dev-dependencies]

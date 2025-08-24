@@ -9,6 +9,7 @@ use crate::function_hooks::FunctionHookManager;
 use crate::ai_controller::AIController;
 use crate::data_exporter::DataExporter;
 use crate::replay_system::ReplaySystem;
+use crate::input_simulator::InputSimulator;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct HeadlessConfig {
@@ -164,6 +165,7 @@ pub struct HeadlessGameEngine {
     ai_controller: Arc<AIController>,
     data_exporter: Arc<DataExporter>,
     replay_system: Arc<ReplaySystem>,
+    input_simulator: Arc<InputSimulator>,
     game_state: Arc<Mutex<HeadlessGameState>>,
     running: Arc<Mutex<bool>>,
 }
@@ -178,6 +180,7 @@ impl HeadlessGameEngine {
         let ai_controller = Arc::new(AIController::new().await?);
         let data_exporter = Arc::new(DataExporter::new().await?);
         let replay_system = Arc::new(ReplaySystem::new().await?);
+        let input_simulator = Arc::new(InputSimulator::new());
         
         let game_state = Arc::new(Mutex::new(HeadlessGameState::default()));
         let running = Arc::new(Mutex::new(false));
@@ -191,6 +194,7 @@ impl HeadlessGameEngine {
             ai_controller,
             data_exporter,
             replay_system,
+            input_simulator,
             game_state,
             running,
         })
@@ -203,6 +207,7 @@ impl HeadlessGameEngine {
         ai_controller: Arc<AIController>,
         data_exporter: Arc<DataExporter>,
         replay_system: Arc<ReplaySystem>,
+        input_simulator: Arc<InputSimulator>,
     ) -> Result<Self> {
         info!("🔧 Initializing Headless Game Engine with components...");
         
@@ -218,6 +223,7 @@ impl HeadlessGameEngine {
             ai_controller,
             data_exporter,
             replay_system,
+            input_simulator,
             game_state,
             running,
         })
@@ -249,6 +255,12 @@ impl HeadlessGameEngine {
         // Initialize function hooks - these are already initialized when created
         // We just need to install the hooks
         self.function_hooks.install_all_hooks().await?;
+        
+        // Initialize input simulator for AI control
+        // Note: We need to get a mutable reference to initialize it
+        if let Some(simulator) = Arc::get_mut(&mut self.input_simulator) {
+            simulator.initialize().await?;
+        }
         
         // Note: These components are already initialized when created
         // We don't need to call initialize() on Arc-wrapped components
@@ -355,6 +367,103 @@ impl HeadlessGameEngine {
             GameStatus::Error => true,
             _ => false,
         }
+    }
+    
+    // **AI CONTROL METHODS USING INPUT SIMULATOR**
+    
+    /// Execute a game hotkey through the input simulator
+    pub async fn execute_game_hotkey(&self, hotkey: crate::input_simulator::GameHotkey) -> Result<()> {
+        info!("🎯 AI executing hotkey: {:?}", hotkey);
+        
+        // Execute the hotkey
+        self.input_simulator.execute_hotkey(hotkey.clone()).await?;
+        
+        // Record the action
+        if self.config.enable_replay_recording {
+            self.replay_system.record_ai_action(&format!("Hotkey: {:?}", hotkey)).await?;
+        }
+        
+        Ok(())
+    }
+    
+    /// Execute a mouse action through the input simulator
+    pub async fn execute_mouse_action(&self, action: crate::input_simulator::MouseAction) -> Result<()> {
+        info!("🖱️ AI executing mouse action: {:?}", action);
+        
+        // Execute the mouse action
+        self.input_simulator.execute_mouse_action(action.clone()).await?;
+        
+        // Record the action
+        if self.config.enable_replay_recording {
+            self.replay_system.record_ai_action(&format!("Mouse: {:?}", action)).await?;
+        }
+        
+        Ok(())
+    }
+    
+    /// Build a building at specific coordinates
+    pub async fn ai_build_building(&self, building_type: &str, x: i32, y: i32) -> Result<()> {
+        info!("🏗️ AI building {} at ({}, {})", building_type, x, y);
+        
+        // Use the input simulator to build
+        self.input_simulator.build_building(building_type, x, y).await?;
+        
+        // Record the action
+        if self.config.enable_replay_recording {
+            self.replay_system.record_ai_action(&format!("Build: {} at ({}, {})", building_type, x, y)).await?;
+        }
+        
+        Ok(())
+    }
+    
+    /// Train a unit
+    pub async fn ai_train_unit(&self, unit_type: &str) -> Result<()> {
+        info!("⚔️ AI training {}", unit_type);
+        
+        // Use the input simulator to train
+        self.input_simulator.train_unit(unit_type).await?;
+        
+        // Record the action
+        if self.config.enable_replay_recording {
+            self.replay_system.record_ai_action(&format!("Train: {}", unit_type)).await?;
+        }
+        
+        Ok(())
+    }
+    
+    /// Attack move to a location
+    pub async fn ai_attack_move(&self, x: i32, y: i32) -> Result<()> {
+        info!("⚔️ AI attack moving to ({}, {})", x, y);
+        
+        // Use the input simulator to attack move
+        self.input_simulator.attack_move(x, y).await?;
+        
+        // Record the action
+        if self.config.enable_replay_recording {
+            self.replay_system.record_ai_action(&format!("Attack Move: ({}, {})", x, y)).await?;
+        }
+        
+        Ok(())
+    }
+    
+    /// Select specific units by area
+    pub async fn ai_select_units(&self, start_x: i32, start_y: i32, end_x: i32, end_y: i32) -> Result<()> {
+        info!("👆 AI selecting units in area ({}, {}) to ({}, {})", start_x, start_y, end_x, end_y);
+
+        // Execute the selection
+        self.input_simulator.select_units(start_x, start_y, end_x, end_y).await?;
+
+        // Record the action
+        if self.config.enable_replay_recording {
+            self.replay_system.record_ai_action(&format!("Select units: ({}, {}) to ({}, {})", start_x, start_y, end_x, end_y)).await?;
+        }
+
+        Ok(())
+    }
+    
+    /// Get the current status of the input simulator
+    pub fn get_input_status(&self) -> crate::input_simulator::InputSimulatorStatus {
+        self.input_simulator.get_status()
     }
     
     async fn cleanup_game(&self) -> Result<()> {
