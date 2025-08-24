@@ -45,6 +45,7 @@ pub enum GameHotkey {
     BuildCatapult,
     BuildBallista,
     BuildPeasant,    // Human worker
+    BuildScoutTower, // Scout tower for scouting
     
     // Game commands
     PauseGame,
@@ -291,6 +292,16 @@ impl InputSimulator {
                 self.send_key(VK_P.0, false).await?;  // Press P
                 sleep(Duration::from_millis(50)).await;
                 self.send_key(VK_P.0, true).await?;   // Release P
+            }
+            GameHotkey::BuildScoutTower => {
+                self.send_key(VK_T.0, false).await?;  // Press T
+                sleep(Duration::from_millis(50)).await;
+                self.send_key(VK_T.0, true).await?;   // Release T
+            }
+            GameHotkey::BuildTower => {
+                self.send_key(VK_T.0, false).await?;  // Press T
+                sleep(Duration::from_millis(50)).await;
+                self.send_key(VK_T.0, true).await?;   // Release T
             }
             // Add more hotkeys as needed...
             _ => {
@@ -647,6 +658,7 @@ impl InputSimulator {
             "workshop" => GameHotkey::BuildWorkshop,
             "mine" => GameHotkey::BuildMine,
             "oil well" => GameHotkey::BuildOilWell,
+            "scout tower" => GameHotkey::BuildScoutTower,
             _ => return Err(anyhow!("Unknown building type: {}", building_type)),
         };
         

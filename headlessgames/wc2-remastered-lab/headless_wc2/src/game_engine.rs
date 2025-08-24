@@ -75,7 +75,7 @@ pub struct PlayerResources {
     pub population: u32,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
 pub struct UnitInfo {
     pub id: u32,
     pub unit_type: String,
@@ -319,8 +319,8 @@ impl HeadlessGameEngine {
         // Get current game state
         let game_state = self.game_state.lock().await.clone();
         
-        // Let AI make decisions
-        let actions = self.ai_controller.make_decisions(&game_state).await?;
+        // Let AI make enhanced decisions with advanced behaviors
+        let actions = self.ai_controller.make_enhanced_decisions(&game_state).await?;
         
         // Execute AI actions
         if !actions.is_empty() {
@@ -392,6 +392,46 @@ impl HeadlessGameEngine {
                     // Slow economic expansion
                     self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildFarm).await?;
                 }
+                // Formation actions
+                action if action.starts_with("formation_line_") => {
+                    self.execute_formation_action(&action).await?;
+                }
+                action if action.starts_with("formation_wedge_") => {
+                    self.execute_formation_action(&action).await?;
+                }
+                action if action.starts_with("formation_circle_") => {
+                    self.execute_formation_action(&action).await?;
+                }
+                // Advanced combat tactics
+                "scout_expand" => {
+                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildScoutTower).await?;
+                }
+                "defensive_positioning" => {
+                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildTower).await?;
+                }
+                "emergency_defense" => {
+                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildTower).await?;
+                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildTower).await?;
+                }
+                "formation_attack" => {
+                    self.ai_attack_move(250, 250).await?;
+                }
+                // Resource optimization actions
+                "expand_production" => {
+                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildBarracks).await?;
+                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildWorkshop).await?;
+                }
+                "balance_economy" => {
+                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildFarm).await?;
+                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildMine).await?;
+                }
+                "emergency_economy" => {
+                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildFarm).await?;
+                }
+                "optimize_building_layout" => {
+                    // This would involve analyzing current building positions and optimizing
+                    debug!("🏗️ Optimizing building layout...");
+                }
                 _ => {
                     // Unknown action - log and skip
                     debug!("⚠️ Unknown AI action: {}", action);
@@ -412,6 +452,42 @@ impl HeadlessGameEngine {
         Ok(())
     }
     
+    /// Execute formation-based actions
+    async fn execute_formation_action(&self, action: &str) -> Result<()> {
+        // Parse formation action string (e.g., "formation_line_100_100_0")
+        let parts: Vec<&str> = action.split('_').collect();
+        if parts.len() >= 4 {
+            let formation_type = parts[1];
+            let center_x: i32 = parts[2].parse().unwrap_or(100);
+            let center_y: i32 = parts[3].parse().unwrap_or(100);
+            
+            match formation_type {
+                "line" => {
+                    debug!("📏 Executing line formation at ({}, {})", center_x, center_y);
+                    // In real implementation, this would select units and move them to line formation
+                    self.ai_attack_move(center_x, center_y).await?;
+                }
+                "wedge" => {
+                    debug!("🔺 Executing wedge formation at ({}, {})", center_x, center_y);
+                    // In real implementation, this would create a wedge formation
+                    self.ai_attack_move(center_x, center_y).await?;
+                }
+                "circle" => {
+                    if let Some(unit_count) = parts.get(4).and_then(|s| s.parse::<i32>().ok()) {
+                        debug!("⭕ Executing circle formation at ({}, {}) with {} units", center_x, center_y, unit_count);
+                        // In real implementation, this would arrange units in a circle
+                        self.ai_attack_move(center_x, center_y).await?;
+                    }
+                }
+                _ => {
+                    debug!("❓ Unknown formation type: {}", formation_type);
+                }
+            }
+        }
+        
+        Ok(())
+    }
+
     async fn export_game_data(&self) -> Result<()> {
         let game_state = self.game_state.lock().await;
         let game_state_json = serde_json::to_string(&*game_state)?;

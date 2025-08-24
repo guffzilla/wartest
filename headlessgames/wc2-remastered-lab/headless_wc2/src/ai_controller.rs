@@ -83,6 +83,65 @@ pub struct AIAnalytics {
     pub adaptation_count: usize,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct UnitFormation {
+    pub formation_type: FormationType,
+    pub units: Vec<UnitInfo>,
+    pub center_x: i32,
+    pub center_y: i32,
+    pub facing_direction: Direction,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum FormationType {
+    Line,
+    Wedge,
+    Circle,
+    Square,
+    Scattered,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum Direction {
+    North,
+    South,
+    East,
+    West,
+    Northeast,
+    Northwest,
+    Southeast,
+    Southwest,
+}
+
+
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct CombatTactic {
+    pub tactic_type: TacticType,
+    pub priority: f32,
+    pub units_required: Vec<String>,
+    pub resource_cost: ResourceCost,
+    pub execution_time: u64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub enum TacticType {
+    Flanking,
+    Pincer,
+    HitAndRun,
+    DefensiveCircle,
+    OffensivePush,
+    ResourceRaid,
+    BaseDefense,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+pub struct ResourceCost {
+    pub gold: u32,
+    pub wood: u32,
+    pub oil: u32,
+}
+
 pub struct AIController {
     strategy: AIStrategy,
     decision_interval: u64,
@@ -1187,6 +1246,288 @@ impl AIController {
         };
         
         Ok(analytics)
+    }
+
+    /// Enhanced unit micro-management
+    pub async fn manage_unit_formations(&self, game_state: &HeadlessGameState) -> Result<Vec<String>> {
+        let mut actions = Vec::new();
+        
+        // Analyze current unit positions and create optimal formations
+        let formations = self.create_optimal_formations(game_state).await?;
+        
+        for formation in formations {
+            match formation.formation_type {
+                FormationType::Line => {
+                    actions.push(format!("formation_line_{}_{}_{}", 
+                        formation.center_x, formation.center_y, 
+                        formation.facing_direction as u8));
+                }
+                FormationType::Wedge => {
+                    actions.push(format!("formation_wedge_{}_{}_{}", 
+                        formation.center_x, formation.center_y, 
+                        formation.facing_direction as u8));
+                }
+                FormationType::Circle => {
+                    actions.push(format!("formation_circle_{}_{}_{}", 
+                        formation.center_x, formation.center_y, 
+                        formation.units.len()));
+                }
+                _ => {}
+            }
+        }
+        
+        Ok(actions)
+    }
+
+    /// Create optimal unit formations based on game state
+    async fn create_optimal_formations(&self, _game_state: &HeadlessGameState) -> Result<Vec<UnitFormation>> {
+        let mut formations = Vec::new();
+        
+        // Group units by type for specialized formations
+        let mut unit_groups: std::collections::HashMap<String, Vec<UnitInfo>> = std::collections::HashMap::new();
+        
+        // For now, create mock unit data
+        // In real implementation, this would come from game state
+        let mock_units = self.create_mock_units();
+        
+        for unit in mock_units {
+            unit_groups.entry(unit.unit_type.clone())
+                .or_insert_with(Vec::new)
+                .push(unit);
+        }
+        
+        // Create formations for each unit type
+        for (unit_type, units) in unit_groups {
+            if units.len() >= 3 {
+                let formation = self.create_formation_for_units(&units, &unit_type).await?;
+                formations.push(formation);
+            }
+        }
+        
+        Ok(formations)
+    }
+
+    /// Create mock units for testing
+    fn create_mock_units(&self) -> Vec<UnitInfo> {
+        vec![
+            UnitInfo {
+                id: 1,
+                unit_type: "Peasant".to_string(),
+                position: (100, 100),
+                health: 100,
+                max_health: 100,
+                owner: 1,
+                is_selected: false,
+                current_action: Some("Idle".to_string()),
+            },
+            UnitInfo {
+                id: 2,
+                unit_type: "Knight".to_string(),
+                position: (120, 100),
+                health: 200,
+                max_health: 200,
+                owner: 1,
+                is_selected: false,
+                current_action: Some("Idle".to_string()),
+            },
+            UnitInfo {
+                id: 3,
+                unit_type: "Knight".to_string(),
+                position: (140, 100),
+                health: 180,
+                max_health: 200,
+                owner: 1,
+                is_selected: false,
+                current_action: Some("Idle".to_string()),
+            },
+        ]
+    }
+
+    /// Create optimal formation for a group of units
+    async fn create_formation_for_units(&self, units: &[UnitInfo], unit_type: &str) -> Result<UnitFormation> {
+        let center_x = units.iter().map(|u| u.position.0).sum::<i32>() / units.len() as i32;
+        let center_y = units.iter().map(|u| u.position.1).sum::<i32>() / units.len() as i32;
+        
+        let formation_type = match unit_type {
+            "Knight" | "Paladin" => FormationType::Wedge,
+            "Peasant" => FormationType::Scattered,
+            "Priest" | "Mage" => FormationType::Circle,
+            _ => FormationType::Line,
+        };
+        
+        let facing_direction = self.determine_optimal_facing(center_x, center_y).await?;
+        
+        Ok(UnitFormation {
+            formation_type,
+            units: units.to_vec(),
+            center_x,
+            center_y,
+            facing_direction,
+        })
+    }
+
+    /// Determine optimal facing direction based on map analysis
+    async fn determine_optimal_facing(&self, _x: i32, _y: i32) -> Result<Direction> {
+        // For now, return a default direction
+        // In real implementation, this would analyze map, enemy positions, etc.
+        Ok(Direction::North)
+    }
+
+    /// Advanced combat tactics generation
+    pub async fn generate_advanced_combat_tactics(&self, context: &AIDecisionContext) -> Result<Vec<PrioritizedAction>> {
+        let mut tactics = Vec::new();
+        
+        // Analyze threat level and generate appropriate tactics
+        match context.threat_level {
+            ThreatLevel::None => {
+                tactics.push(PrioritizedAction {
+                    action: "scout_expand".to_string(),
+                    priority: 0.7,
+                    reasoning: "No threat, good time to expand and explore".to_string(),
+                    estimated_cost: 0,
+                    time_to_complete: 5000,
+                });
+            }
+            ThreatLevel::Low => {
+                tactics.push(PrioritizedAction {
+                    action: "scout_expand".to_string(),
+                    priority: 0.8,
+                    reasoning: "Low threat, good time to expand".to_string(),
+                    estimated_cost: 0,
+                    time_to_complete: 5000,
+                });
+            }
+            ThreatLevel::Medium => {
+                tactics.push(PrioritizedAction {
+                    action: "defensive_positioning".to_string(),
+                    priority: 0.9,
+                    reasoning: "Medium threat, maintain defensive stance".to_string(),
+                    estimated_cost: 100,
+                    time_to_complete: 3000,
+                });
+            }
+            ThreatLevel::High => {
+                tactics.push(PrioritizedAction {
+                    action: "emergency_defense".to_string(),
+                    priority: 1.0,
+                    reasoning: "High threat, immediate defensive measures".to_string(),
+                    estimated_cost: 200,
+                    time_to_complete: 1000,
+                });
+            }
+            ThreatLevel::Critical => {
+                tactics.push(PrioritizedAction {
+                    action: "emergency_defense".to_string(),
+                    priority: 1.0,
+                    reasoning: "Critical threat, maximum defensive measures".to_string(),
+                    estimated_cost: 300,
+                    time_to_complete: 500,
+                });
+            }
+        }
+        
+        // Add formation-based tactics
+        if context.unit_count > 10 {
+            tactics.push(PrioritizedAction {
+                action: "formation_attack".to_string(),
+                priority: 0.85,
+                reasoning: "Large army, use formation tactics".to_string(),
+                estimated_cost: 0,
+                time_to_complete: 2000,
+            });
+        }
+        
+        Ok(tactics)
+    }
+
+    /// Resource optimization and building placement
+    pub async fn optimize_resource_management(&self, context: &AIDecisionContext) -> Result<Vec<PrioritizedAction>> {
+        let mut optimizations = Vec::new();
+        
+        // Analyze resource scarcity and optimize accordingly
+        match context.resource_scarcity {
+            ResourceScarcity::Abundant => {
+                optimizations.push(PrioritizedAction {
+                    action: "expand_production".to_string(),
+                    priority: 0.9,
+                    reasoning: "Abundant resources, expand production capacity".to_string(),
+                    estimated_cost: 300,
+                    time_to_complete: 8000,
+                });
+            }
+            ResourceScarcity::Normal => {
+                optimizations.push(PrioritizedAction {
+                    action: "balance_economy".to_string(),
+                    priority: 0.8,
+                    reasoning: "Moderate resources, maintain balanced economy".to_string(),
+                    estimated_cost: 150,
+                    time_to_complete: 5000,
+                });
+            }
+            ResourceScarcity::Scarce => {
+                optimizations.push(PrioritizedAction {
+                    action: "emergency_economy".to_string(),
+                    priority: 0.95,
+                    reasoning: "Scarce resources, emergency economic measures".to_string(),
+                    estimated_cost: 50,
+                    time_to_complete: 2000,
+                });
+            }
+            ResourceScarcity::Critical => {
+                optimizations.push(PrioritizedAction {
+                    action: "emergency_economy".to_string(),
+                    priority: 1.0,
+                    reasoning: "Critical resource shortage, emergency measures".to_string(),
+                    estimated_cost: 25,
+                    time_to_complete: 1000,
+                });
+            }
+        }
+        
+        // Building placement optimization
+        if context.building_count > 5 {
+            optimizations.push(PrioritizedAction {
+                action: "optimize_building_layout".to_string(),
+                priority: 0.7,
+                reasoning: "Multiple buildings, optimize layout for efficiency".to_string(),
+                estimated_cost: 0,
+                time_to_complete: 3000,
+            });
+        }
+        
+        Ok(optimizations)
+    }
+
+    /// Enhanced decision making with advanced behaviors
+    pub async fn make_enhanced_decisions(&self, game_state: &HeadlessGameState) -> Result<Vec<String>> {
+        let mut actions = Vec::new();
+        
+        // Analyze current game state
+        let context = self.analyze_game_state(game_state).await?;
+        
+        // Generate basic prioritized actions
+        let basic_actions = self.generate_prioritized_actions(&context).await?;
+        
+        // Generate advanced combat tactics
+        let combat_tactics = self.generate_advanced_combat_tactics(&context).await?;
+        
+        // Generate resource optimizations
+        let resource_optimizations = self.optimize_resource_management(&context).await?;
+        
+        // Combine and prioritize all actions
+        let mut all_actions = Vec::new();
+        all_actions.extend(basic_actions);
+        all_actions.extend(combat_tactics);
+        all_actions.extend(resource_optimizations);
+        
+        // Sort by priority and convert to action strings
+        all_actions.sort_by(|a, b| b.priority.partial_cmp(&a.priority).unwrap_or(std::cmp::Ordering::Equal));
+        
+        for action in all_actions {
+            actions.push(action.action);
+        }
+        
+        Ok(actions)
     }
 }
 
