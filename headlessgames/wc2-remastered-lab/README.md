@@ -11,6 +11,8 @@ This laboratory is designed to:
 3. **Monitor Game Processes** - Track running WC2 Remastered instances and their memory usage
 4. **Generate Replay Data** - Create replay files from captured game events
 5. **Research Game Mechanics** - Understand unit behavior, resource management, and game flow
+6. **🤖 AI-Driven Game Interaction** - Automate game testing and data collection through AI agent
+7. **🎮 Automated Gameplay Analysis** - Use AI to trigger game events and monitor responses
 
 ## 🏗️ Architecture
 
@@ -22,12 +24,39 @@ This laboratory is designed to:
 - **`GameStateTracker`** - Tracks changes in game state over time
 - **`EventRecorder`** - Records game events for replay generation
 - **`Analysis`** - Performs data analysis and pattern recognition
+- **`AIAgent`** - 🤖 AI-driven game interaction and automation system
 
 ### Data Flow
 
 ```
 Process Detection → Memory Analysis → Game State Tracking → Event Recording → Analysis → Results
 ```
+
+## 📊 Current Status
+
+### ✅ Completed Features
+
+- **AI Agent Framework** - Complete AI agent system for game interaction
+- **Windows API Integration** - Full Windows input simulation and window management
+- **Memory Analysis System** - Comprehensive memory structure analysis
+- **Process Monitoring** - WC2 Remastered process detection and monitoring
+- **Game State Tracking** - Real-time game state monitoring and analysis
+- **Event Recording** - Game event capture and replay generation system
+- **Compilation & Build** - Project compiles successfully with all dependencies
+
+### 🔄 In Development
+
+- **Screen Analysis** - Advanced menu recognition and UI element detection
+- **Mission Selection Logic** - Intelligent campaign mission selection
+- **Map Loading Automation** - Automated custom scenario loading
+- **Real-time Data Extraction** - Live gameplay data collection during AI interaction
+
+### 🎯 Next Milestones
+
+- **AI Agent Testing** - Test AI agent with actual WC2 Remastered gameplay
+- **Data Collection Pipeline** - Establish automated data collection workflow
+- **Replay Generation** - Generate replay files from AI-driven gameplay
+- **Advanced Analytics** - Machine learning integration for pattern recognition
 
 ## 🚀 Getting Started
 
@@ -90,6 +119,30 @@ output/
 │   ├── session_summary.json       # Session summary
 │   └── memory_dumps/              # Memory snapshots
 ```
+
+## 🤖 AI Agent Capabilities
+
+### Game Interaction System
+
+- **🖱️ Mouse Control** - Precise mouse clicks and movements at specified coordinates
+- **⌨️ Keyboard Input** - Simulate keyboard presses for menu navigation
+- **🧭 Menu Navigation** - Automated navigation through game menus
+- **🎮 Game Type Selection** - Start campaigns, custom scenarios, and tutorials
+- **⏱️ Realistic Timing** - Human-like delays between actions for natural gameplay
+
+### Action Sequences
+
+- **Campaign Mission Starting** - Automated campaign mission selection and loading
+- **Custom Scenario Loading** - Load and start custom maps automatically
+- **Menu Navigation** - Return to main menu and navigate between options
+- **Game State Monitoring** - Track game responses to AI actions
+
+### Integration Features
+
+- **Window Detection** - Automatically find and connect to WC2 Remastered windows
+- **Screen Resolution Detection** - Adapt to different game window sizes
+- **Process Monitoring** - Integrate with running game processes
+- **Memory Analysis Integration** - Combine AI actions with memory analysis
 
 ## 🔬 Analysis Capabilities
 
@@ -200,6 +253,21 @@ MemorySignature {
 cargo test
 ```
 
+### AI Agent Testing
+
+```bash
+# Test AI Agent without game running (demonstration mode)
+cargo run
+
+# Test AI Agent with WC2 Remastered running
+# 1. Launch Warcraft II Remastered
+# 2. Run the laboratory
+cargo run
+
+# Test specific AI Agent functionality
+cargo test --test ai_agent_tests
+```
+
 ### Integration Tests
 
 ```bash
@@ -212,6 +280,14 @@ cargo test --test integration_tests
 cargo bench
 ```
 
+### AI Agent Manual Testing
+
+1. **Launch WC2 Remastered** - Start the game and navigate to main menu
+2. **Run Laboratory** - Execute `cargo run` in the laboratory directory
+3. **Monitor AI Actions** - Watch the AI agent interact with the game
+4. **Check Logs** - Monitor console output for AI agent actions and responses
+5. **Verify Integration** - Confirm AI agent successfully connects to game window
+
 ## 📚 API Reference
 
 ### Core Functions
@@ -222,12 +298,30 @@ cargo bench
 - `GameStateTracker::track_state()` - Track game state changes
 - `EventRecorder::record_events()` - Record game events
 
+### AI Agent Functions
+
+- `AIAgent::new()` - Create new AI agent instance
+- `AIAgent::initialize(game_title)` - Connect to game window
+- `AIAgent::execute_actions(actions)` - Execute sequence of AI actions
+- `AIAgent::mouse_click(x, y, button)` - Perform mouse click
+- `AIAgent::key_press(key)` - Simulate keyboard input
+- `ActionSequences::start_campaign_mission(name)` - Campaign mission sequence
+- `ActionSequences::start_custom_scenario(map)` - Custom scenario sequence
+
 ### Data Structures
 
 - `GameState` - Complete game state snapshot
 - `GameEvent` - Individual game event
 - `AnalysisResult` - Analysis output
 - `MemoryRegion` - Memory region information
+
+### AI Agent Data Structures
+
+- `AIAction` - Individual AI action (click, key press, wait, etc.)
+- `MouseButton` - Mouse button types (left, right, middle)
+- `VirtualKey` - Keyboard key types (enter, escape, arrow keys, etc.)
+- `MenuTarget` - Menu navigation targets (campaign, custom game, etc.)
+- `GameType` - Game type specifications (campaign, custom scenario, etc.)
 
 ## 🤝 Contributing
 
@@ -260,6 +354,23 @@ This project is licensed under the MIT License - see the LICENSE file for detail
    - Clear analysis caches
    - Use release builds
 
+### AI Agent Issues
+
+4. **Game Window Not Found**
+   - Verify WC2 Remastered is running
+   - Check window title matches exactly
+   - Ensure game is not minimized
+
+5. **Input Simulation Fails**
+   - Run as Administrator for input privileges
+   - Check Windows security settings
+   - Verify game window is in foreground
+
+6. **AI Actions Not Working**
+   - Check game is responsive (not paused)
+   - Verify screen coordinates are correct
+   - Ensure game is in expected menu state
+
 ### Debug Mode
 
 Enable detailed logging:
@@ -276,6 +387,26 @@ cargo run
 - **Real-time Visualization** - Live display of game state
 - **Machine Learning Integration** - Advanced pattern recognition
 - **Cross-platform Support** - Linux and macOS compatibility
+
+## 🧪 AI Agent Testing Workflow
+
+### Phase 1: Basic Functionality Testing
+1. **Window Detection** - Test AI agent can find WC2 Remastered windows
+2. **Input Simulation** - Verify mouse clicks and keyboard input work
+3. **Menu Navigation** - Test basic menu navigation sequences
+4. **Action Sequences** - Execute predefined action sequences
+
+### Phase 2: Game Integration Testing
+1. **Campaign Navigation** - Test AI agent can navigate to campaign menu
+2. **Mission Selection** - Verify AI can select and start missions
+3. **Custom Game Loading** - Test custom scenario loading
+4. **Game State Monitoring** - Monitor game responses to AI actions
+
+### Phase 3: Data Collection Testing
+1. **Event Recording** - Capture game events during AI interaction
+2. **Memory Analysis** - Analyze memory changes during AI actions
+3. **Replay Generation** - Generate replay data from AI gameplay
+4. **Performance Monitoring** - Track AI agent performance and accuracy
 
 ## 📞 Support
 

@@ -1,0 +1,71 @@
+# AI Agent Test Configuration
+[ai_agent]
+# Game window title to search for
+game_title = "Warcraft II: Remastered"
+
+# Test coordinates (1920x1080 resolution)
+[coordinates]
+# Center of screen
+center_x = 960
+center_y = 540
+
+# Menu button positions (approximate)
+campaign_button_x = 800
+campaign_button_y = 400
+custom_game_button_x = 800
+custom_game_button_y = 500
+multiplayer_button_x = 800
+multiplayer_button_y = 600
+
+# Action timing
+[timing]
+# Delay between actions (milliseconds)
+action_delay = 100
+# Wait time for game responses (milliseconds)
+response_wait = 1000
+# Menu navigation delay (milliseconds)
+menu_delay = 200
+
+# Test sequences
+[test_sequences]
+# Campaign mission test
+campaign_test = [
+    "Wait 1000ms",
+    "Navigate to Campaign menu",
+    "Wait 500ms",
+    "Click center of screen",
+    "Wait 200ms",
+    "Press Enter",
+    "Wait 1000ms"
+]
+
+# Custom scenario test
+custom_test = [
+    "Wait 1000ms",
+    "Navigate to Custom Game menu",
+    "Wait 500ms",
+    "Click center of screen",
+    "Wait 200ms",
+    "Press Enter",
+    "Wait 1000ms"
+]
+
+# Menu navigation test
+menu_test = [
+    "Press Escape",
+    "Wait 200ms",
+    "Press Escape",
+    "Wait 200ms",
+    "Press Escape",
+    "Wait 500ms"
+]
+
+# Logging configuration
+[logging]
+level = "info"
+# Enable detailed AI agent logging
+ai_agent_logging = true
+# Log all input actions
+log_inputs = true
+# Log game responses
+log_responses = true

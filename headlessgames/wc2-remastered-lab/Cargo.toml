@@ -24,3 +24,7 @@ edition = "2021"
 
 [dev-dependencies]
 criterion = "0.5"
+
+[[bin]]
+name = "test_ai_agent"
+path = "test_ai_agent.rs"
