@@ -42,6 +42,28 @@
     }
   }
   
+  // Function to toggle between different installations of the same game type
+  function toggleFeaturedInstallation(gameType: 'WC1' | 'WC2' | 'WC3') {
+    const games = gameType === 'WC1' ? $wc1Games : gameType === 'WC2' ? $wc2Games : $wc3Games;
+    const currentFeatured = featuredInstallations[gameType];
+    
+    if (games.length > 1) {
+      // Find the current featured game index
+      const currentIndex = games.findIndex(g => g.path === currentFeatured.path);
+      // Move to next game, or back to first if at end
+      const nextIndex = (currentIndex + 1) % games.length;
+      featuredInstallations[gameType] = games[nextIndex];
+      
+      console.log(`Switched ${gameType} featured installation to:`, featuredInstallations[gameType]);
+    }
+  }
+  
+  // Function to set a specific installation as featured
+  function setFeaturedInstallation(gameType: 'WC1' | 'WC2' | 'WC3', game: any) {
+    featuredInstallations[gameType] = game;
+    console.log(`Set ${gameType} featured installation to:`, game);
+  }
+  
   async function handleScanGames() {
     isScanning = true;
     try {
@@ -98,7 +120,8 @@
       'G:': '#F44336',
       'H:': '#00BCD4'
     };
-    return colors[drive as keyof typeof colors] || '#607D8B';
+    
+    return colors[drive] || '#9aa0a6';
   }
   
   function getGameTypeIcon(gameType: string) {
@@ -110,40 +133,20 @@
     }
   }
   
-  // Function to change featured installation
-  function setFeaturedInstallation(gameType: 'WC1' | 'WC2' | 'WC3', game: any) {
-    console.log(`Setting featured installation for ${gameType}:`, game);
-    if (!game) {
-      console.error('No game provided to setFeaturedInstallation');
-      return;
-    }
-    
-    // Update the featured installation
-    featuredInstallations[gameType] = game;
-    
-    // Force reactivity by creating a new object
-    featuredInstallations = { ...featuredInstallations };
-    
-    console.log(`Updated featured installations for ${gameType}:`, featuredInstallations[gameType]);
-    console.log('Full featured installations object:', featuredInstallations);
-  }
-  
-  // Function to get available installations for a game type
-  function getAvailableInstallations(gameType: 'WC1' | 'WC2' | 'WC3') {
-    switch (gameType) {
-      case 'WC1': return $wc1Games;
-      case 'WC2': return $wc2Games;
-      case 'WC3': return $wc3Games;
-      default: return [];
-    }
-  }
-  
   // Function to get installation display name
-  function getInstallationDisplayName(game: any) {
-    if (game.installation_type === 'Remastered (Windows)') return 'Remastered';
-    if (game.installation_type === 'Original (DOS)') return 'DOS Version';
-    if (game.installation_type === 'Reforged') return 'Reforged';
-    return game.installation_type;
+  function getInstallationDisplayName(type: string) {
+    switch (type) {
+      case 'Remastered (Windows)': return 'Remastered';
+      case 'BattleNet': return 'Battle.net';
+      case 'Combat': return 'Combat';
+      case 'Original (DOS)': return 'DOS';
+      case 'DOS': return 'DOS';
+      case 'Reforged': return 'Reforged';
+      case 'FrozenThrone': return 'Frozen Throne';
+      case 'ReignOfChaos': return 'Reign of Chaos';
+      case 'Original': return 'Original';
+      default: return type;
+    }
   }
   
   // Debug function to check current state

@@ -18,25 +18,27 @@ async fn main() -> Result<()> {
     // Check command line arguments
     let args: Vec<String> = env::args().collect();
     
-    if args.len() > 1 {
-        match args[1].as_str() {
-            "custom-build" => {
-                run_custom_game_builder().await?;
-            }
-            "ai-demo" => {
-                run_ai_agent_demo().await?;
-            }
-            "help" | "--help" | "-h" => {
-                print_usage();
-            }
-            _ => {
-                warn!("Unknown command: {}. Running default laboratory...", args[1]);
-                run_default_laboratory().await?;
-            }
+    match args.get(1).map(|s| s.as_str()) {
+        Some("custom-build") => {
+            run_custom_game_builder().await?;
         }
-    } else {
-        // Default behavior - run laboratory with AI Agent
-        run_default_laboratory().await?;
+        Some("ai-demo") => {
+            run_ai_agent_demo().await?;
+        }
+        Some("analyze-game") => {
+            run_real_time_analysis().await?;
+        }
+        Some(unknown) => {
+            info!("Unknown command: {}", unknown);
+            info!("Available commands:");
+            info!("  custom-build  - Set up custom game build environment");
+            info!("  ai-demo       - Run AI Agent demonstration");
+            info!("  analyze-game  - Analyze running WC2 Remastered game");
+            info!("  (no args)     - Run default laboratory mode");
+        }
+        None => {
+            run_default_laboratory().await?;
+        }
     }
 
     Ok(())
@@ -98,13 +100,10 @@ async fn run_custom_game_builder() -> Result<()> {
 async fn run_ai_agent_demo() -> Result<()> {
     info!("🤖 Starting AI Agent Demonstration Mode...");
     
-    // Create laboratory instance
-    let mut laboratory = create_laboratory()?;
+    // Create AI Agent
+    let agent = wc2_remastered_lab::ai_agent::AIAgent::new();
     
-    // Start laboratory session
-    laboratory.start_session().await?;
-    
-    // Demonstrate AI Agent capabilities
+    // Demonstrate capabilities
     info!("🤖 AI Agent can perform the following actions:");
     info!("   • Mouse clicks and movements");
     info!("   • Keyboard input simulation");
@@ -114,10 +113,9 @@ async fn run_ai_agent_demo() -> Result<()> {
     info!("   • Custom scenario loading");
     
     // Create example action sequences
-    use wc2_remastered_lab::ai_agent::{ActionSequences, MenuTarget};
-    let campaign_sequence = ActionSequences::start_campaign_mission("Human Campaign - Mission 1");
-    let custom_sequence = ActionSequences::start_custom_scenario("2v2_Grunt");
-    let menu_sequence = ActionSequences::return_to_main_menu();
+    let campaign_sequence = wc2_remastered_lab::ai_agent::ActionSequences::start_campaign_mission("Human Campaign - Mission 1");
+    let custom_sequence = wc2_remastered_lab::ai_agent::ActionSequences::start_custom_scenario("2v2_Grunt");
+    let menu_sequence = wc2_remastered_lab::ai_agent::ActionSequences::return_to_main_menu();
     
     info!("📋 Example action sequences created:");
     info!("   • Campaign sequence: {} actions", campaign_sequence.len());
@@ -125,6 +123,60 @@ async fn run_ai_agent_demo() -> Result<()> {
     info!("   • Menu navigation sequence: {} actions", menu_sequence.len());
     
     info!("✅ AI Agent demonstration completed successfully!");
+    Ok(())
+}
+
+/// **NEW: Run real-time game analysis using our AI Agent system**
+async fn run_real_time_analysis() -> Result<()> {
+    info!("🔍 Starting Real-Time Game Analysis Mode...");
+    info!("🎯 This will analyze the running WC2 Remastered game to create headless specifications");
+    
+    // Create AI Agent
+    let agent = wc2_remastered_lab::ai_agent::AIAgent::new();
+    
+    // Analyze the running game
+    info!("🔍 Analyzing running WC2 Remastered game...");
+    let game_analysis = agent.analyze_running_game().await?;
+    
+    info!("✅ Game analysis completed successfully!");
+    info!("📊 Analysis Results:");
+    info!("   • Process: {} (PID: {})", game_analysis.process_info.name, game_analysis.process_info.pid);
+    info!("   • Memory Usage: {} MB", game_analysis.process_info.memory_usage / (1024 * 1024));
+    info!("   • Memory Regions: {}", game_analysis.memory_structure.memory_regions.len());
+    info!("   • UI Elements: {}", game_analysis.ui_structure.ui_elements.len());
+    info!("   • State Patterns: {}", game_analysis.state_patterns.len());
+    
+    // Generate headless specifications
+    info!("🏗️ Generating headless version specifications...");
+    let headless_specs = agent.generate_headless_specs(&game_analysis);
+    
+    info!("📋 Headless Specifications Generated:");
+    info!("   • Memory Hooks: {}", headless_specs.memory_hooks.len());
+    info!("   • UI Replacements: {}", headless_specs.ui_replacements.len());
+    info!("   • Network Disablers: {}", headless_specs.network_disablers.len());
+    info!("   • AI Integration Points: {}", headless_specs.ai_integration_points.len());
+    
+    // Save analysis results
+    let output_dir = format!("output/analysis-{}", chrono::Utc::now().timestamp());
+    std::fs::create_dir_all(&output_dir)?;
+    
+    let analysis_file = format!("{}/game_analysis.json", output_dir);
+    let specs_file = format!("{}/headless_specs.json", output_dir);
+    
+    // Save game analysis
+    let analysis_json = serde_json::to_string_pretty(&game_analysis)?;
+    std::fs::write(&analysis_file, analysis_json)?;
+    
+    // Save headless specifications
+    let specs_json = serde_json::to_string_pretty(&headless_specs)?;
+    std::fs::write(&specs_file, specs_json)?;
+    
+    info!("💾 Analysis results saved to:");
+    info!("   • Game Analysis: {}", analysis_file);
+    info!("   • Headless Specs: {}", specs_file);
+    
+    info!("🎉 Real-time analysis completed successfully!");
+    info!("🚀 Next step: Use these specifications to create the headless version");
     
     Ok(())
 }

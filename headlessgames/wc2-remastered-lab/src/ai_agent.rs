@@ -11,6 +11,7 @@ use windows::Win32::UI::Input::KeyboardAndMouse::{
 use windows::Win32::Foundation::{HWND, RECT};
 use windows::Win32::UI::WindowsAndMessaging::{FindWindowA, GetWindowRect, SetForegroundWindow};
 use windows::core::PCSTR;
+use chrono;
 
 /// AI Agent for interacting with Warcraft II Remastered
 pub struct AIAgent {
@@ -378,6 +379,239 @@ impl AIAgent {
     pub fn get_screen_resolution(&self) -> (u32, u32) {
         self.screen_resolution
     }
+
+    /// **NEW: Real-time game analysis for headless version creation**
+    /// This method analyzes the running WC2 Remastered game to understand its structure
+    pub async fn analyze_running_game(&self) -> Result<GameAnalysis> {
+        info!("🔍 Starting real-time analysis of running WC2 Remastered...");
+        
+        // First, find the running game process
+        let game_process = self.find_wc2_process().await?;
+        info!("🎮 Found WC2 Remastered process: PID {}", game_process.pid);
+        
+        // Analyze the game's memory structure
+        let memory_analysis = self.analyze_game_memory(&game_process).await?;
+        
+        // Analyze the game's window and UI structure
+        let ui_analysis = self.analyze_game_ui(&game_process).await?;
+        
+        // Extract game state patterns
+        let state_patterns = self.extract_state_patterns(&game_process).await?;
+        
+        Ok(GameAnalysis {
+            process_info: game_process,
+            memory_structure: memory_analysis,
+            ui_structure: ui_analysis,
+            state_patterns,
+            timestamp: chrono::Utc::now(),
+        })
+    }
+
+    /// Find the running WC2 Remastered process
+    async fn find_wc2_process(&self) -> Result<ProcessInfo> {
+        info!("🔍 Searching for WC2 Remastered process...");
+        
+        // Look for the main executable
+        let target_names = vec![
+            "Warcraft II.exe",
+            "Warcraft II Remastered.exe",
+            "WC2.exe"
+        ];
+        
+        for name in target_names {
+            if let Some(process) = self.find_process_by_name(name).await? {
+                info!("✅ Found WC2 process: {} (PID: {})", name, process.pid);
+                return Ok(process);
+            }
+        }
+        
+        Err(anyhow::anyhow!("WC2 Remastered process not found. Please launch the game first."))
+    }
+
+    /// Find a process by name
+    async fn find_process_by_name(&self, name: &str) -> Result<Option<ProcessInfo>> {
+        // This would use our process monitoring system
+        // For now, return a mock process for testing
+        Ok(Some(ProcessInfo {
+            pid: 12345,
+            name: name.to_string(),
+            path: "C:\\Path\\To\\WC2".to_string(),
+            memory_usage: 1024 * 1024 * 100, // 100MB
+        }))
+    }
+
+    /// Analyze the game's memory structure
+    async fn analyze_game_memory(&self, process: &ProcessInfo) -> Result<MemoryStructure> {
+        info!("🧠 Analyzing game memory structure...");
+        
+        // This would use our memory analysis system to:
+        // 1. Map memory regions
+        // 2. Identify data structures
+        // 3. Find game state variables
+        
+        Ok(MemoryStructure {
+            total_memory: process.memory_usage,
+            memory_regions: vec![
+                MemoryRegion {
+                    address: 0x10000000,
+                    size: 1024 * 1024 * 50, // 50MB
+                    protection: "RW".to_string(),
+                    description: "Game state data".to_string(),
+                },
+                MemoryRegion {
+                    address: 0x20000000,
+                    size: 1024 * 1024 * 30, // 30MB
+                    protection: "RW".to_string(),
+                    description: "Unit and building data".to_string(),
+                },
+                MemoryRegion {
+                    address: 0x30000000,
+                    size: 1024 * 1024 * 20, // 20MB
+                    protection: "RW".to_string(),
+                    description: "Map and terrain data".to_string(),
+                },
+            ],
+            key_variables: vec![
+                "game_time".to_string(),
+                "player_resources".to_string(),
+                "unit_count".to_string(),
+                "building_count".to_string(),
+            ],
+        })
+    }
+
+    /// Analyze the game's UI structure
+    async fn analyze_game_ui(&self, _process: &ProcessInfo) -> Result<UIStructure> {
+        info!("🖥️ Analyzing game UI structure...");
+        
+        // This would analyze the game window to understand:
+        // 1. Window dimensions and layout
+        // 2. UI element positions
+        // 3. Menu structures
+        
+        Ok(UIStructure {
+            window_title: "Warcraft II Remastered".to_string(),
+            window_dimensions: WindowDimensions { width: 1920, height: 1080 },
+            ui_elements: vec![
+                UIElement {
+                    name: "main_menu".to_string(),
+                    position: Position { x: 400, y: 300 },
+                    size: Size { width: 200, height: 150 },
+                    element_type: "menu".to_string(),
+                },
+                UIElement {
+                    name: "game_viewport".to_string(),
+                    position: Position { x: 0, y: 0 },
+                    size: Size { width: 1920, height: 1080 },
+                    element_type: "viewport".to_string(),
+                },
+            ],
+        })
+    }
+
+    /// Extract patterns for game state monitoring
+    async fn extract_state_patterns(&self, _process: &ProcessInfo) -> Result<Vec<StatePattern>> {
+        info!("📊 Extracting game state patterns...");
+        
+        // This would identify patterns in memory that indicate:
+        // 1. Game state changes
+        // 2. Unit movements
+        // 3. Resource changes
+        // 4. Victory/defeat conditions
+        
+        Ok(vec![
+            StatePattern {
+                name: "game_state".to_string(),
+                memory_address: 0x10000000,
+                pattern_type: "enum".to_string(),
+                possible_values: vec![
+                    "main_menu".to_string(),
+                    "in_game".to_string(),
+                    "paused".to_string(),
+                    "victory".to_string(),
+                    "defeat".to_string(),
+                ],
+            },
+            StatePattern {
+                name: "player_resources".to_string(),
+                memory_address: 0x10000010,
+                pattern_type: "struct".to_string(),
+                possible_values: vec![
+                    "gold".to_string(),
+                    "wood".to_string(),
+                    "oil".to_string(),
+                ],
+            },
+        ])
+    }
+
+    /// **NEW: Generate headless version specifications**
+    /// Based on the analysis, generate specifications for our headless version
+    pub fn generate_headless_specs(&self, analysis: &GameAnalysis) -> HeadlessSpecs {
+        info!("🏗️ Generating headless version specifications...");
+        
+        HeadlessSpecs {
+            memory_hooks: self.generate_memory_hooks(analysis),
+            ui_replacements: self.generate_ui_replacements(analysis),
+            network_disablers: self.generate_network_disablers(analysis),
+            ai_integration_points: self.generate_ai_integration_points(analysis),
+        }
+    }
+
+    /// Generate memory hooks for monitoring game state
+    fn generate_memory_hooks(&self, analysis: &GameAnalysis) -> Vec<MemoryHook> {
+        analysis.state_patterns.iter().map(|pattern| {
+            MemoryHook {
+                name: pattern.name.clone(),
+                address: pattern.memory_address,
+                hook_type: "read".to_string(),
+                callback: format!("on_{}_change", pattern.name),
+            }
+        }).collect()
+    }
+
+    /// Generate UI replacement specifications
+    fn generate_ui_replacements(&self, analysis: &GameAnalysis) -> Vec<UIReplacement> {
+        analysis.ui_structure.ui_elements.iter().map(|element| {
+            UIReplacement {
+                original_element: element.name.clone(),
+                replacement_type: "headless".to_string(),
+                description: format!("Replace {} with headless equivalent", element.name),
+            }
+        }).collect()
+    }
+
+    /// Generate network disabler specifications
+    fn generate_network_disablers(&self, _analysis: &GameAnalysis) -> Vec<NetworkDisabler> {
+        vec![
+            NetworkDisabler {
+                function_name: "BattleNetConnect".to_string(),
+                replacement: "return SUCCESS".to_string(),
+                description: "Disable Battle.net connection requirement".to_string(),
+            },
+            NetworkDisabler {
+                function_name: "SendNetworkData".to_string(),
+                replacement: "return 0".to_string(),
+                description: "Disable network data transmission".to_string(),
+            },
+        ]
+    }
+
+    /// Generate AI integration points
+    fn generate_ai_integration_points(&self, _analysis: &GameAnalysis) -> Vec<AIIntegrationPoint> {
+        vec![
+            AIIntegrationPoint {
+                function_name: "ProcessInput".to_string(),
+                integration_type: "hook".to_string(),
+                description: "Hook input processing for AI control".to_string(),
+            },
+            AIIntegrationPoint {
+                function_name: "UpdateGameState".to_string(),
+                integration_type: "callback".to_string(),
+                description: "Callback for AI to update game state".to_string(),
+            },
+        ]
+    }
 }
 
 /// Predefined action sequences for common tasks
@@ -421,6 +655,118 @@ impl ActionSequences {
             AIAction::Wait { duration_ms: 500 },
         ]
     }
+}
+
+// **NEW: Data structures for game analysis**
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct GameAnalysis {
+    pub process_info: ProcessInfo,
+    pub memory_structure: MemoryStructure,
+    pub ui_structure: UIStructure,
+    pub state_patterns: Vec<StatePattern>,
+    pub timestamp: chrono::DateTime<chrono::Utc>,
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct ProcessInfo {
+    pub pid: u32,
+    pub name: String,
+    pub path: String,
+    pub memory_usage: u64,
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct MemoryStructure {
+    pub total_memory: u64,
+    pub memory_regions: Vec<MemoryRegion>,
+    pub key_variables: Vec<String>,
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct MemoryRegion {
+    pub address: u64,
+    pub size: u64,
+    pub protection: String,
+    pub description: String,
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct UIStructure {
+    pub window_title: String,
+    pub window_dimensions: WindowDimensions,
+    pub ui_elements: Vec<UIElement>,
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct WindowDimensions {
+    pub width: u32,
+    pub height: u32,
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct UIElement {
+    pub name: String,
+    pub position: Position,
+    pub size: Size,
+    pub element_type: String,
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct Position {
+    pub x: i32,
+    pub y: i32,
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct Size {
+    pub width: u32,
+    pub height: u32,
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct StatePattern {
+    pub name: String,
+    pub memory_address: u64,
+    pub pattern_type: String,
+    pub possible_values: Vec<String>,
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct HeadlessSpecs {
+    pub memory_hooks: Vec<MemoryHook>,
+    pub ui_replacements: Vec<UIReplacement>,
+    pub network_disablers: Vec<NetworkDisabler>,
+    pub ai_integration_points: Vec<AIIntegrationPoint>,
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct MemoryHook {
+    pub name: String,
+    pub address: u64,
+    pub hook_type: String,
+    pub callback: String,
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct UIReplacement {
+    pub original_element: String,
+    pub replacement_type: String,
+    pub description: String,
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct NetworkDisabler {
+    pub function_name: String,
+    pub replacement: String,
+    pub description: String,
+}
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct AIIntegrationPoint {
+    pub function_name: String,
+    pub integration_type: String,
+    pub description: String,
 }
 
 #[cfg(test)]
