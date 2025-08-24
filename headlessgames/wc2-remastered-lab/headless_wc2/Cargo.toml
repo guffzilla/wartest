@@ -20,6 +20,17 @@ hex = "0.4"
 md5 = "0.7"
 rand = "0.8"
 
+# Windows API for real game integration
+windows = { version = "0.52", features = [
+    "Win32_Foundation",
+    "Win32_System_Threading",
+    "Win32_System_Memory",
+    "Win32_System_Diagnostics_ToolHelp",
+    "Win32_System_SystemInformation",
+    "Win32_System_Registry",
+    "Win32_UI_WindowsAndMessaging"
+]}
+
 [dev-dependencies]
 tokio-test = "0.4"
 criterion = "0.5"

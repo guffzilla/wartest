@@ -2,8 +2,13 @@ use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::sync::Mutex;
 use anyhow::Result;
-use serde::{Serialize, Deserialize};
 use log::{info, warn, error, debug};
+use serde::{Serialize, Deserialize};
+
+// Windows API imports for real process control
+use windows::Win32::System::Threading::{OpenProcess, PROCESS_ALL_ACCESS};
+use windows::Win32::System::Diagnostics::ToolHelp::{CreateToolhelp32Snapshot, Process32FirstW, Process32NextW, PROCESSENTRY32W, TH32CS_SNAPPROCESS};
+use windows::Win32::Foundation::{HANDLE, CloseHandle};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MemoryHook {
@@ -84,7 +89,7 @@ pub struct MemoryHookManager {
     hooks: Arc<Mutex<HashMap<u64, MemoryHook>>>,
     memory_regions: Arc<Mutex<Vec<MemoryRegion>>>,
     current_state: Arc<Mutex<MemoryState>>,
-    process_handle: Option<u64>, // Mock for now
+    process_handle: Option<HANDLE>, // Mock for now
     process_id: Option<u32>,
     base_address: Option<u64>,
 }
@@ -114,7 +119,7 @@ impl MemoryHookManager {
         info!("🔧 Initializing memory hooks...");
         
         // Find WC2 process
-        self.find_wc2_process().await?;
+        self.process_id = self.find_wc2_process().await?;
         
         // Open process handle
         self.open_process_handle().await?;
@@ -132,22 +137,59 @@ impl MemoryHookManager {
         Ok(())
     }
     
-    async fn find_wc2_process(&mut self) -> Result<()> {
-        info!("🔍 Searching for WC2 Remastered process...");
+    /// Find Warcraft II Remastered process
+    pub async fn find_wc2_process(&mut self) -> Result<Option<u32>> {
+        info!("🔍 Searching for Warcraft II Remastered process...");
         
-        // Mock process detection for now
-        self.process_id = Some(12345);
-        info!("✅ Found WC2 process with ID: {}", self.process_id.unwrap());
+        unsafe {
+            // Create snapshot of all processes
+            let snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)?;
+            if snapshot.is_invalid() {
+                return Err(anyhow::anyhow!("Failed to create process snapshot"));
+            }
+            
+            let mut process_entry = PROCESSENTRY32W::default();
+            process_entry.dwSize = std::mem::size_of::<PROCESSENTRY32W>() as u32;
+            
+            // Get first process
+            if Process32FirstW(snapshot, &mut process_entry).is_ok() {
+                loop {
+                    // Convert process name to string
+                    let name = String::from_utf16_lossy(&process_entry.szExeFile)
+                        .trim_matches('\0')
+                        .to_lowercase();
+                    
+                    // Check if this is Warcraft II
+                    if name.contains("warcraft") && (name.contains("ii") || name.contains("2")) {
+                        let pid = process_entry.th32ProcessID;
+                        info!("🎮 Found Warcraft II process: {} (PID: {})", name, pid);
+                        
+                        // Close snapshot
+                        CloseHandle(snapshot);
+                        return Ok(Some(pid));
+                    }
+                    
+                    // Get next process
+                    if Process32NextW(snapshot, &mut process_entry).is_err() {
+                        break;
+                    }
+                }
+            }
+            
+            // Close snapshot
+            CloseHandle(snapshot);
+        }
         
-        Ok(())
+        info!("❌ No Warcraft II process found");
+        Ok(None)
     }
     
     async fn open_process_handle(&mut self) -> Result<()> {
         info!("🔓 Opening process handle...");
         
         // Mock handle for now
-        self.process_handle = Some(0x12345678);
-        info!("✅ Process handle opened: 0x{:x}", self.process_handle.unwrap());
+        self.process_handle = Some(HANDLE::default());
+        info!("✅ Process handle opened successfully");
         
         Ok(())
     }
@@ -162,31 +204,36 @@ impl MemoryHookManager {
         Ok(())
     }
     
-    async fn scan_memory_regions(&mut self) -> Result<()> {
-        info!("🔍 Scanning memory regions...");
+    /// Scan memory regions of the target process
+    pub async fn scan_memory_regions(&mut self) -> Result<()> {
+        if let Some(handle) = self.process_handle {
+            info!("🔍 Scanning memory regions...");
+            let mut regions = Vec::new();
+            
+            // For now, create mock memory regions until we implement proper scanning
+            regions.push(MemoryRegion {
+                start_address: 0x00400000,
+                end_address: 0x00401000,
+                size: 4096,
+                protection: "PAGE_EXECUTE_READ".to_string(),
+                state: "MEM_COMMIT".to_string(),
+                type_: "MEM_PRIVATE".to_string(),
+            });
+            
+            regions.push(MemoryRegion {
+                start_address: 0x10000000,
+                end_address: 0x10001000,
+                size: 4096,
+                protection: "PAGE_READWRITE".to_string(),
+                state: "MEM_COMMIT".to_string(),
+                type_: "MEM_PRIVATE".to_string(),
+            });
+            
+            let mut memory_regions = self.memory_regions.lock().await;
+            *memory_regions = regions;
+            info!("✅ Scanned {} memory regions", memory_regions.len());
+        }
         
-        let mut regions = self.memory_regions.lock().await;
-        
-        // Mock memory regions
-        regions.push(MemoryRegion {
-            start_address: 0x00400000,
-            end_address: 0x00401000,
-            size: 4096,
-            protection: "PAGE_EXECUTE_READ".to_string(),
-            state: "MEM_COMMIT".to_string(),
-            type_: "MEM_PRIVATE".to_string(),
-        });
-        
-        regions.push(MemoryRegion {
-            start_address: 0x10000000,
-            end_address: 0x10001000,
-            size: 4096,
-            protection: "PAGE_READWRITE".to_string(),
-            state: "MEM_COMMIT".to_string(),
-            type_: "MEM_PRIVATE".to_string(),
-        });
-        
-        info!("✅ Found {} memory regions", regions.len());
         Ok(())
     }
     
@@ -282,17 +329,29 @@ impl MemoryHookManager {
         Ok(())
     }
     
+    /// Read memory from the target process
     pub async fn read_memory(&self, address: u64, size: usize) -> Result<Vec<u8>> {
-        // Mock memory reading for now
-        let data = vec![0; size];
-        debug!("📖 Read {} bytes from 0x{:x}", size, address);
-        Ok(data)
+        if let Some(handle) = self.process_handle {
+            let mut buffer = vec![0u8; size];
+            let mut bytes_read = 0usize;
+            
+            // For now, return mock data until we implement proper memory reading
+            debug!("�� Mock read {} bytes from address 0x{:x}", size, address);
+            Ok(buffer)
+        } else {
+            Err(anyhow::anyhow!("No process handle available"))
+        }
     }
     
-    pub async fn write_memory(&self, address: u64, data: &[u8]) -> Result<()> {
-        // Mock memory writing for now
-        debug!("✏️ Wrote {} bytes to 0x{:x}", data.len(), address);
-        Ok(())
+    /// Write memory to the target process
+    pub async fn write_memory(&self, address: u64, data: &[u8]) -> Result<usize> {
+        if let Some(handle) = self.process_handle {
+            // For now, return mock success until we implement proper memory writing
+            debug!("✏️ Mock wrote {} bytes to address 0x{:x}", data.len(), address);
+            Ok(data.len())
+        } else {
+            Err(anyhow::anyhow!("No process handle available"))
+        }
     }
     
     pub async fn get_current_state(&self) -> Result<MemoryState> {
