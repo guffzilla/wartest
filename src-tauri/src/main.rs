@@ -385,6 +385,12 @@ async fn scan_for_games() -> Result<ScanResult, String> {
     
     let total_found = updated_games.len();
     
+    // Debug logging
+    println!("Total games found: {}", total_found);
+    for (i, game) in updated_games.iter().enumerate() {
+        println!("Game {}: {:?} - {:?} - {:?}", i, game.name, game.game_type, game.installation_type);
+    }
+    
     Ok(ScanResult {
         games: updated_games,
         total_found,

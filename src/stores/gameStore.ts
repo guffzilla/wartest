@@ -1,4 +1,4 @@
-import { writable, derived } from 'svelte/store';
+import { writable, derived, get } from 'svelte/store';
 import { invoke } from '@tauri-apps/api/core';
 
 // Types matching the backend
@@ -74,27 +74,54 @@ export const wc3RunningGames = derived(runningGames, $runningGames =>
   $runningGames.filter(game => game.game_type === 'WC3')
 );
 
-// Helper function to get default game for each type
-export function getDefaultGame(gameType: 'WC1' | 'WC2' | 'WC3') {
-  let currentGames: GameInfo[] = [];
-  games.subscribe(value => {
-    currentGames = value;
-  })();
-  
-  const gamesOfType = currentGames.filter((game: GameInfo) => game.game_type === gameType);
+// Derived stores for default games (automatically reactive)
+export const wc1DefaultGame = derived(games, $games => {
+  const gamesOfType = $games.filter(game => game.game_type === 'WC1');
+  if (gamesOfType.length === 0) return null;
   
   // Priority order: Remastered > BattleNet > Original > Custom
   const priority = ['Remastered', 'BattleNet', 'Original', 'Custom'];
-  
   for (const priorityType of priority) {
-    const found = gamesOfType.find((game: GameInfo) => 
-      game.installation_type === priorityType
-    );
+    const found = gamesOfType.find(game => game.installation_type === priorityType);
     if (found) return found;
   }
-  
-  // Return first found if no priority match
   return gamesOfType[0] || null;
+});
+
+export const wc2DefaultGame = derived(games, $games => {
+  const gamesOfType = $games.filter(game => game.game_type === 'WC2');
+  if (gamesOfType.length === 0) return null;
+  
+  // Priority order: Remastered > BattleNet > Original > Custom
+  const priority = ['Remastered', 'BattleNet', 'Original', 'Custom'];
+  for (const priorityType of priority) {
+    const found = gamesOfType.find(game => game.installation_type === priorityType);
+    if (found) return found;
+  }
+  return gamesOfType[0] || null;
+});
+
+export const wc3DefaultGame = derived(games, $games => {
+  const gamesOfType = $games.filter(game => game.game_type === 'WC3');
+  if (gamesOfType.length === 0) return null;
+  
+  // Priority order: Remastered > BattleNet > Original > Custom
+  const priority = ['Remastered', 'BattleNet', 'Original', 'Custom'];
+  for (const priorityType of priority) {
+    const found = gamesOfType.find(game => game.installation_type === priorityType);
+    if (found) return found;
+  }
+  return gamesOfType[0] || null;
+});
+
+// Helper function to get default game for each type (for backward compatibility)
+export function getDefaultGame(gameType: 'WC1' | 'WC2' | 'WC3') {
+  switch (gameType) {
+    case 'WC1': return get(wc1DefaultGame);
+    case 'WC2': return get(wc2DefaultGame);
+    case 'WC3': return get(wc3DefaultGame);
+    default: return null;
+  }
 }
 
 export async function scanGames() {
@@ -110,6 +137,10 @@ export async function scanGames() {
     
     console.log('Games scanned successfully:', results);
     console.log(`Found ${results.total_found} games across ${results.drives_scanned.length} drives`);
+    console.log('Games data:', results.games);
+    console.log('WC1 games:', results.games.filter(g => g.game_type === 'WC1'));
+    console.log('WC2 games:', results.games.filter(g => g.game_type === 'WC2'));
+    console.log('WC3 games:', results.games.filter(g => g.game_type === 'WC3'));
   } catch (error) {
     console.error('Failed to scan games:', error);
     throw error;

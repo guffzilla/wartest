@@ -2,7 +2,8 @@
   import { 
     wc1Games, wc2Games, wc3Games, 
     wc1RunningGames, wc2RunningGames, wc3RunningGames,
-    scanResult, isLoading, scanGames, launchGame, getDefaultGame
+    wc1DefaultGame, wc2DefaultGame, wc3DefaultGame,
+    scanResult, isLoading, scanGames, launchGame
   } from '../stores/gameStore';
   
   export let gameType: 'wc1' | 'wc2' | 'wc3';
@@ -15,7 +16,9 @@
                           gameType === 'wc2' ? $wc2RunningGames : 
                           $wc3RunningGames;
   
-  $: defaultGame = getDefaultGame(gameType.toUpperCase() as 'WC1' | 'WC2' | 'WC3');
+  $: defaultGame = gameType === 'wc1' ? $wc1DefaultGame : 
+                   gameType === 'wc2' ? $wc2DefaultGame : 
+                   $wc3DefaultGame;
   
   function getGameTypeTitle() {
     switch (gameType) {
