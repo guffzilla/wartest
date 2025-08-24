@@ -66,14 +66,23 @@ const WC1_PATTERNS: &[&str] = &[
     "warcraft.exe", "war.exe", "wc1.exe", "warcraft1.exe",
     "warcraft orcs & humans.exe", "orcs & humans.exe",
     "warcraft orcs and humans.exe", "warcraft-orcs.exe",
-    "war.exe"  // Original WC1 executable
+    "war.exe",  // Original WC1 executable
+    "WAR.EXE",  // DOS WC1 executable (uppercase)
+    "war_edit.exe", "WAR_EDIT.EXE"  // DOS WC1 editor
+];
+
+// DOSBox launcher patterns for DOS versions
+const DOSBOX_PATTERNS: &[&str] = &[
+    "dosbox.exe", "DOSBox.exe", "dosbox", "DOSBox"
 ];
 
 const WC2_PATTERNS: &[&str] = &[
     "warcraft2.exe", "war2.exe", "wc2.exe", "warcraft ii.exe",
     "warcraft ii bne.exe", "warcraft ii bne_dx.exe", "war2launcher.exe",
     "warcraft ii map editor.exe", "warcraft2bne.exe", "warcraft2bne_dx.exe",
-    "war2bne.exe", "war2bne_dx.exe", "warcraft2combat.exe", "war2combat.exe"
+    "war2bne.exe", "war2bne_dx.exe", "warcraft2combat.exe", "war2combat.exe",
+    "WAR2.EXE",  // DOS WC2 executable (uppercase)
+    "war2_edit.exe", "WAR2_EDIT.EXE"  // DOS WC2 editor
 ];
 
 const WC3_PATTERNS: &[&str] = &[
@@ -96,6 +105,8 @@ const COMMON_PATHS: &[&str] = &[
     "Epic Games\\Warcraft*",
     "W3Champions*",
     "W3C*",
+    "*dos*",  // DOS versions often have "dos" in path
+    "*DOS*",  // Case variations
 ];
 
 /// Get all available drives on Windows
@@ -218,6 +229,26 @@ fn search_for_executables_recursive(dir_path: &Path, dir_name: &str, drive: &str
                                     dir_path, &path, GameType::WC3, dir_name, drive
                                 ));
                             }
+                            
+                            // Check for DOSBox launchers in Warcraft-related directories
+                            if DOSBOX_PATTERNS.iter().any(|pattern| file_name_str.contains(pattern)) {
+                                println!("Found DOSBox executable: {} in directory: {}", file_name_str, dir_path.display());
+                                println!("Directory name: '{}', checking if it's a Warcraft game...", dir_name);
+                                
+                                // Get parent directory name for better Warcraft detection
+                                let parent_dir_name = dir_path.parent()
+                                    .and_then(|p| p.file_name())
+                                    .map(|n| n.to_string_lossy().to_lowercase())
+                                    .unwrap_or_default();
+                                println!("Parent directory name: '{}'", parent_dir_name);
+                                
+                                if let Some(dos_game_info) = detect_dosbox_warcraft_game(dir_path, &path, &parent_dir_name, drive) {
+                                    println!("Found DOSBox Warcraft game: {} in {}", file_name_str, dir_path.display());
+                                    return Some(dos_game_info);
+                                } else {
+                                    println!("DOSBox found but not identified as Warcraft game");
+                                }
+                            }
                         }
                     }
                 }
@@ -239,7 +270,7 @@ fn search_for_executables_recursive(dir_path: &Path, dir_name: &str, drive: &str
                    subdir_name != "program files (x86)" {
                     
                     println!("Searching subdirectory: {} in {}", subdir_name, dir_path.display());
-                    if let Some(game_info) = search_for_executables_recursive(&path, dir_name, drive) {
+                    if let Some(game_info) = search_for_executables_recursive(&path, &subdir_name, drive) {
                         return Some(game_info);
                     }
                 }
@@ -299,24 +330,98 @@ fn find_maps_folder(game_dir: &Path) -> Option<String> {
     None
 }
 
+/// Detect if a DOSBox executable is actually a Warcraft game by checking the directory structure
+fn detect_dosbox_warcraft_game(dir_path: &Path, dosbox_exe: &Path, parent_dir_name: &str, drive: &str) -> Option<GameInfo> {
+    // Get current directory name for additional checks
+    let dir_name = dir_path.file_name()
+        .and_then(|n| n.to_string_lossy().into_owned().into())
+        .unwrap_or_default()
+        .to_lowercase();
+    
+    // Get parent directory name (already passed in, but let's verify)
+    let parent_dir_name_lower = parent_dir_name.to_lowercase();
+    
+    println!("DOS detection - Current dir: '{}', Parent dir: '{}'", dir_name, parent_dir_name);
+    
+    // 🔎 Check current & parent dir names for Warcraft indicators (from your pseudocode)
+    if dir_name.contains("warcraft") || 
+       dir_name.contains("war") || 
+       dir_name.contains("orcs") || 
+       dir_name.contains("humans") ||
+       parent_dir_name_lower.contains("warcraft") || 
+       parent_dir_name_lower.contains("war") || 
+       parent_dir_name_lower.contains("orcs") || 
+       parent_dir_name_lower.contains("humans") ||
+       parent_dir_name_lower.contains("tides") ||
+       parent_dir_name_lower.contains("darkness") {
+        
+        println!("Warcraft indicators found, checking for game files...");
+        
+        // 🔎 Look inside for WAR.EXE in WARCRAFT subdirectory (from your pseudocode)
+        let war_exe = dir_path.join("WARCRAFT").join("WAR.EXE");
+        let war2_exe = dir_path.join("WARCRAFT").join("WAR2.EXE");
+        
+        println!("Checking for WAR.EXE at: {}", war_exe.display());
+        println!("Checking for WAR2.EXE at: {}", war2_exe.display());
+        
+        if war_exe.exists() {
+            println!("Found WAR.EXE - This is Warcraft 1 DOS!");
+            return Some(create_game_info(
+                dir_path, dosbox_exe, GameType::WC1, parent_dir_name, drive
+            ));
+        } else if war2_exe.exists() {
+            println!("Found WAR2.EXE - This is Warcraft 2 DOS!");
+            return Some(create_game_info(
+                dir_path, dosbox_exe, GameType::WC2, parent_dir_name, drive
+            ));
+        }
+        
+        // Also check for other common DOS game file patterns
+        let warcraft_subdir = dir_path.join("WARCRAFT");
+        if warcraft_subdir.exists() && warcraft_subdir.is_dir() {
+            println!("WARCRAFT subdirectory exists, scanning for executables...");
+            if let Ok(entries) = fs::read_dir(&warcraft_subdir) {
+                for entry in entries.filter_map(Result::ok) {
+                    let path = entry.path();
+                    if path.is_file() {
+                        if let Some(extension) = path.extension() {
+                            if extension == "exe" {
+                                if let Some(file_name) = path.file_name() {
+                                    let file_name_str = file_name.to_string_lossy().to_lowercase();
+                                    println!("Found executable in WARCRAFT: {}", file_name_str);
+                                    
+                                    if file_name_str.contains("war.exe") || file_name_str.contains("war_edit.exe") {
+                                        println!("Found Warcraft 1 executable: {}", file_name_str);
+                                        return Some(create_game_info(
+                                            dir_path, dosbox_exe, GameType::WC1, parent_dir_name, drive
+                                        ));
+                                    } else if file_name_str.contains("war2.exe") || file_name_str.contains("war2_edit.exe") {
+                                        println!("Found Warcraft 2 executable: {}", file_name_str);
+                                        return Some(create_game_info(
+                                            dir_path, dosbox_exe, GameType::WC2, parent_dir_name, drive
+                                        ));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    println!("No Warcraft DOS game detected");
+    None
+}
+
 /// Detect WC1 specific details
-fn detect_wc1_details(dir_name: &str, _executable: &str) -> (String, String, InstallationType) {
-    let name = if dir_name.contains("remastered") {
-        "Warcraft I: Remastered"
+fn detect_wc1_details(dir_name: &str, executable: &str) -> (String, String, InstallationType) {
+    let (name, version, installation_type) = if dir_name.contains("remastered") {
+        ("Warcraft I: Remastered", "Remastered", InstallationType::Remastered)
+    } else if dir_name.contains("dos") || executable.to_uppercase().contains("WAR.EXE") || executable.to_uppercase().contains("WAR_EDIT.EXE") {
+        ("Warcraft: Orcs & Humans", "DOS", InstallationType::DOS)
     } else {
-        "Warcraft: Orcs & Humans"
-    };
-    
-    let version = if dir_name.contains("remastered") {
-        "Remastered"
-    } else {
-        "Original"
-    };
-    
-    let installation_type = if dir_name.contains("remastered") {
-        InstallationType::Remastered
-    } else {
-        InstallationType::Original
+        ("Warcraft: Orcs & Humans", "Original", InstallationType::Original)
     };
     
     (name.to_string(), version.to_string(), installation_type)
@@ -330,7 +435,7 @@ fn detect_wc2_details(dir_name: &str, executable: &str) -> (String, String, Inst
         ("Warcraft II: Combat Edition", "Combat", InstallationType::Combat)
     } else if dir_name.contains("remastered") {
         ("Warcraft II: Remastered", "Remastered", InstallationType::Remastered)
-    } else if dir_name.contains("dos") {
+    } else if dir_name.contains("dos") || executable.to_uppercase().contains("WAR2.EXE") || executable.to_uppercase().contains("WAR2_EDIT.EXE") {
         ("Warcraft II: Tides of Darkness", "DOS", InstallationType::DOS)
     } else {
         ("Warcraft II: Tides of Darkness", "Original", InstallationType::Original)
