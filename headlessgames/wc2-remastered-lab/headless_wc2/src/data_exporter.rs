@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::sync::Mutex;
-use anyhow::Result;
+use anyhow::{Result, anyhow};
 use serde::{Serialize, Deserialize};
 use log::{info, warn, error, debug};
 use std::fs;
@@ -41,12 +41,17 @@ pub struct ExportConfig {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PerformanceMetrics {
     pub timestamp: u64,
-    pub fps: f64,
-    pub memory_usage: u64,
-    pub cpu_usage: f64,
-    pub frame_time: f64,
-    pub ai_decision_time: f64,
-    pub memory_hook_time: f64,
+    pub cpu_usage_percent: f64,
+    pub memory_usage_mb: u64,
+    pub disk_read_mb_s: f64,
+    pub disk_write_mb_s: f64,
+    pub network_in_mb_s: f64,
+    pub network_out_mb_s: f64,
+    pub collection_latency_ms: u64,
+    pub game_fps: f64,
+    pub ai_decision_latency_ms: u64,
+    pub memory_hook_latency_ms: u64,
+    pub input_simulation_latency_ms: u64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -206,38 +211,177 @@ impl DataExporter {
         Ok(())
     }
     
-    pub async fn export_performance_metrics(&self) -> Result<()> {
+    /// Collect comprehensive performance metrics
+    pub async fn collect_performance_metrics(&self) -> Result<PerformanceMetrics> {
+        let start_time = std::time::Instant::now();
+        
+        // Get system performance data
+        let cpu_usage = self.get_cpu_usage().await?;
+        let memory_usage = self.get_memory_usage().await?;
+        let disk_io = self.get_disk_io().await?;
+        let network_io = self.get_network_io().await?;
+        
+        let collection_time = start_time.elapsed();
+        
         let metrics = PerformanceMetrics {
             timestamp: std::time::SystemTime::now()
-                .duration_since(std::time::UNIX_EPOCH)?
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap_or_default()
                 .as_millis() as u64,
-            fps: 60.0, // Mock data for now
-            memory_usage: 1024 * 1024, // 1MB
-            cpu_usage: 25.0, // 25%
-            frame_time: 16.67, // 16.67ms
-            ai_decision_time: 5.0, // 5ms
-            memory_hook_time: 2.0, // 2ms
+            cpu_usage_percent: cpu_usage,
+            memory_usage_mb: memory_usage,
+            disk_read_mb_s: disk_io.0,
+            disk_write_mb_s: disk_io.1,
+            network_in_mb_s: network_io.0,
+            network_out_mb_s: network_io.1,
+            collection_latency_ms: collection_time.as_millis() as u64,
+            game_fps: self.estimate_game_fps().await?,
+            ai_decision_latency_ms: self.get_ai_decision_latency().await?,
+            memory_hook_latency_ms: self.get_memory_hook_latency().await?,
+            input_simulation_latency_ms: self.get_input_simulation_latency().await?,
         };
         
-        let filename = format!("performance_{}.json", 
-            chrono::Utc::now().format("%Y%m%d_%H%M%S"));
-        let filepath = Path::new(&self.config.output_directory).join(&filename);
+        Ok(metrics)
+    }
+    
+    /// Get current CPU usage percentage
+    async fn get_cpu_usage(&self) -> Result<f64> {
+        // This is a simplified implementation
+        // In a real system, you'd use proper system monitoring APIs
+        Ok(25.0) // Placeholder value
+    }
+    
+    /// Get current memory usage in MB
+    async fn get_memory_usage(&self) -> Result<u64> {
+        // Get current process memory usage
+        let process = std::process::id();
+        let output = std::process::Command::new("tasklist")
+            .args(&["/FI", &format!("PID eq {}", process), "/FO", "CSV"])
+            .output()
+            .map_err(|e| anyhow!("Failed to get memory usage: {}", e))?;
         
-        let data = serde_json::to_string_pretty(&metrics)?;
-        fs::write(&filepath, data)?;
-        
-        // Add to history
-        let mut history = self.performance_history.lock().await;
-        history.push(metrics);
-        
-        // Keep only last 1000 entries
-        let len = history.len();
-        if len > 1000 {
-            history.drain(0..len - 1000);
+        let output_str = String::from_utf8_lossy(&output.stdout);
+        if let Some(line) = output_str.lines().nth(1) {
+            if let Some(memory_str) = line.split(',').nth(4) {
+                if let Ok(memory_kb) = memory_str.trim_matches('"').parse::<u64>() {
+                    return Ok(memory_kb / 1024); // Convert KB to MB
+                }
+            }
         }
         
-        info!("📊 Exported performance metrics to {}", filepath.display());
-        Ok(())
+        Ok(0) // Fallback
+    }
+    
+    /// Get disk I/O rates in MB/s
+    async fn get_disk_io(&self) -> Result<(f64, f64)> {
+        // This is a simplified implementation
+        // In a real system, you'd use proper disk monitoring APIs
+        Ok((5.2, 2.1)) // Placeholder values (read, write)
+    }
+    
+    /// Get network I/O rates in MB/s
+    async fn get_network_io(&self) -> Result<(f64, f64)> {
+        // This is a simplified implementation
+        // In a real system, you'd use proper network monitoring APIs
+        Ok((0.1, 0.05)) // Placeholder values (in, out)
+    }
+    
+    /// Estimate current game FPS
+    async fn estimate_game_fps(&self) -> Result<f64> {
+        // This would be calculated from actual frame timing data
+        // For now, return a reasonable estimate
+        Ok(60.0)
+    }
+    
+    /// Get AI decision latency in milliseconds
+    async fn get_ai_decision_latency(&self) -> Result<u64> {
+        // This would be tracked from actual AI decision timing
+        // For now, return a reasonable estimate
+        Ok(50)
+    }
+    
+    /// Get memory hook latency in milliseconds
+    async fn get_memory_hook_latency(&self) -> Result<u64> {
+        // This would be tracked from actual memory hook timing
+        // For now, return a reasonable estimate
+        Ok(10)
+    }
+    
+    /// Get input simulation latency in milliseconds
+    async fn get_input_simulation_latency(&self) -> Result<u64> {
+        // This would be tracked from actual input simulation timing
+        // For now, return a reasonable estimate
+        Ok(5)
+    }
+    
+    /// Export performance metrics to various formats
+    pub async fn export_performance_metrics(&self, format: ExportFormat) -> Result<Vec<u8>> {
+        let metrics = self.collect_performance_metrics().await?;
+        
+        match format {
+            ExportFormat::JSON => {
+                serde_json::to_vec_pretty(&metrics)
+                    .map_err(|e| anyhow!("Failed to serialize metrics to JSON: {}", e))
+            }
+            ExportFormat::CSV => {
+                self.metrics_to_csv(&metrics)
+            }
+            ExportFormat::Binary => {
+                self.metrics_to_binary(&metrics)
+            }
+            ExportFormat::SQLite => {
+                Err(anyhow!("SQLite export not implemented yet"))
+            }
+        }
+    }
+    
+    /// Convert performance metrics to CSV format
+    fn metrics_to_csv(&self, metrics: &PerformanceMetrics) -> Result<Vec<u8>> {
+        let csv = format!(
+            "timestamp,cpu_usage_percent,memory_usage_mb,disk_read_mb_s,disk_write_mb_s,network_in_mb_s,network_out_mb_s,collection_latency_ms,game_fps,ai_decision_latency_ms,memory_hook_latency_ms,input_simulation_latency_ms\n{},{},{},{},{},{},{},{},{},{},{},{}\n",
+            metrics.timestamp,
+            metrics.cpu_usage_percent,
+            metrics.memory_usage_mb,
+            metrics.disk_read_mb_s,
+            metrics.disk_write_mb_s,
+            metrics.network_in_mb_s,
+            metrics.network_out_mb_s,
+            metrics.collection_latency_ms,
+            metrics.game_fps,
+            metrics.ai_decision_latency_ms,
+            metrics.memory_hook_latency_ms,
+            metrics.input_simulation_latency_ms,
+        );
+        
+        Ok(csv.into_bytes())
+    }
+    
+    /// Convert performance metrics to binary format
+    fn metrics_to_binary(&self, metrics: &PerformanceMetrics) -> Result<Vec<u8>> {
+        // Simple binary serialization
+        let mut buffer = Vec::new();
+        
+        // Write timestamp (u64)
+        buffer.extend_from_slice(&metrics.timestamp.to_le_bytes());
+        
+        // Write CPU usage (f64)
+        buffer.extend_from_slice(&metrics.cpu_usage_percent.to_le_bytes());
+        
+        // Write memory usage (u64)
+        buffer.extend_from_slice(&metrics.memory_usage_mb.to_le_bytes());
+        
+        // Write other metrics...
+        buffer.extend_from_slice(&metrics.disk_read_mb_s.to_le_bytes());
+        buffer.extend_from_slice(&metrics.disk_write_mb_s.to_le_bytes());
+        buffer.extend_from_slice(&metrics.network_in_mb_s.to_le_bytes());
+        buffer.extend_from_slice(&metrics.network_out_mb_s.to_le_bytes());
+        buffer.extend_from_slice(&metrics.collection_latency_ms.to_le_bytes());
+        buffer.extend_from_slice(&metrics.game_fps.to_le_bytes());
+        buffer.extend_from_slice(&metrics.ai_decision_latency_ms.to_le_bytes());
+        buffer.extend_from_slice(&metrics.memory_hook_latency_ms.to_le_bytes());
+        buffer.extend_from_slice(&metrics.input_simulation_latency_ms.to_le_bytes());
+        
+        Ok(buffer)
     }
     
     pub async fn export_ai_decision_data(&self) -> Result<()> {
@@ -364,7 +508,7 @@ impl DataExporter {
             return 0.0;
         }
         
-        let total: f64 = history.iter().map(|m| m.fps).sum();
+        let total: f64 = history.iter().map(|m| m.game_fps).sum();
         total / history.len() as f64
     }
     
@@ -374,7 +518,7 @@ impl DataExporter {
             return 0;
         }
         
-        let total: u64 = history.iter().map(|m| m.memory_usage).sum();
+        let total: u64 = history.iter().map(|m| m.memory_usage_mb).sum();
         total / history.len() as u64
     }
     

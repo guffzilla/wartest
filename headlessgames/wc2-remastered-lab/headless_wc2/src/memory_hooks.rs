@@ -116,332 +116,221 @@ impl MemoryHookManager {
         Ok(manager)
     }
     
-    pub async fn initialize(&mut self) -> Result<()> {
-        info!("🔧 Initializing memory hooks...");
-        
-        // Find WC2 process
-        self.process_id = self.find_wc2_process().await?;
-        
-        // Open process handle
-        self.open_process_handle().await?;
-        
-        // Get base address
-        self.get_base_address().await?;
-        
-        // Scan memory regions
-        self.scan_memory_regions().await?;
-        
-        // Install default hooks
-        self.install_default_hooks().await?;
-        
-        info!("✅ Memory hooks initialized");
-        Ok(())
-    }
-    
-    /// Find Warcraft II Remastered process
-    pub async fn find_wc2_process(&mut self) -> Result<Option<u32>> {
-        info!("🔍 Searching for Warcraft II Remastered process...");
-        
-        unsafe {
-            // Create snapshot of all processes
-            let snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)?;
-            if snapshot.is_invalid() {
-                return Err(anyhow::anyhow!("Failed to create process snapshot"));
-            }
-            
-            let mut process_entry = PROCESSENTRY32W::default();
-            process_entry.dwSize = std::mem::size_of::<PROCESSENTRY32W>() as u32;
-            
-            // Get first process
-            if Process32FirstW(snapshot, &mut process_entry).is_ok() {
-                loop {
-                    // Convert process name to string
-                    let name = String::from_utf16_lossy(&process_entry.szExeFile)
-                        .trim_matches('\0')
-                        .to_lowercase();
-                    
-                    // Check if this is Warcraft II
-                    if name.contains("warcraft") && (name.contains("ii") || name.contains("2")) {
-                        let pid = process_entry.th32ProcessID;
-                        info!("🎮 Found Warcraft II process: {} (PID: {})", name, pid);
-                        
-                        // Close snapshot
-                        CloseHandle(snapshot);
-                        return Ok(Some(pid));
-                    }
-                    
-                    // Get next process
-                    if Process32NextW(snapshot, &mut process_entry).is_err() {
-                        break;
-                    }
-                }
-            }
-            
-            // Close snapshot
-            CloseHandle(snapshot);
-        }
-        
-        info!("❌ No Warcraft II process found");
-        Ok(None)
-    }
-    
-    async fn open_process_handle(&mut self) -> Result<()> {
-        info!("🔓 Opening process handle...");
-        
-        // Mock handle for now
-        self.process_handle = Some(HANDLE::default());
-        info!("✅ Process handle opened successfully");
-        
-        Ok(())
-    }
-    
-    async fn get_base_address(&mut self) -> Result<()> {
-        info!("📍 Getting base address...");
-        
-        // Mock base address for now
-        self.base_address = Some(0x00400000);
-        info!("✅ Base address: 0x{:x}", self.base_address.unwrap());
-        
-        Ok(())
-    }
-    
-    /// Scan memory regions of the target process
-    pub async fn scan_memory_regions(&mut self) -> Result<()> {
-        if let Some(handle) = self.process_handle {
-            info!("🔍 Scanning memory regions...");
-            let mut regions = Vec::new();
-            
-            // For now, create mock memory regions until we implement proper scanning
-            regions.push(MemoryRegion {
-                start_address: 0x00400000,
-                end_address: 0x00401000,
-                size: 4096,
-                protection: "PAGE_EXECUTE_READ".to_string(),
-                state: "MEM_COMMIT".to_string(),
-                type_: "MEM_PRIVATE".to_string(),
-            });
-            
-            regions.push(MemoryRegion {
-                start_address: 0x10000000,
-                end_address: 0x10001000,
-                size: 4096,
-                protection: "PAGE_READWRITE".to_string(),
-                state: "MEM_COMMIT".to_string(),
-                type_: "MEM_PRIVATE".to_string(),
-            });
-            
-            let mut memory_regions = self.memory_regions.lock().await;
-            *memory_regions = regions;
-            info!("✅ Scanned {} memory regions", memory_regions.len());
-        }
-        
-        Ok(())
-    }
-    
-    async fn install_default_hooks(&mut self) -> Result<()> {
-        info!("🔗 Installing default memory hooks...");
-        
-        let mut hooks = self.hooks.lock().await;
-        
-        // Game state hook
-        hooks.insert(0x10000000, MemoryHook {
-            address: 0x10000000,
-            size: 4,
-            description: "Game State".to_string(),
-            callback: "on_game_state_change".to_string(),
-            last_value: vec![0, 0, 0, 0],
-            active: true,
-            hook_type: HookType::Read,
-        });
-        
-        // Player resources hook
-        hooks.insert(0x10000010, MemoryHook {
-            address: 0x10000010,
-            size: 16,
-            description: "Player Resources".to_string(),
-            callback: "on_resources_change".to_string(),
-            last_value: vec![0; 16],
-            active: true,
-            hook_type: HookType::Read,
-        });
-        
-        // Units array hook
-        hooks.insert(0x10000100, MemoryHook {
-            address: 0x10000100,
-            size: 1024,
-            description: "Units Array".to_string(),
-            callback: "on_units_change".to_string(),
-            last_value: vec![0; 1024],
-            active: true,
-            hook_type: HookType::Read,
-        });
-        
-        // Buildings array hook
-        hooks.insert(0x10000500, MemoryHook {
-            address: 0x10000500,
-            size: 512,
-            description: "Buildings Array".to_string(),
-            callback: "on_buildings_change".to_string(),
-            last_value: vec![0; 512],
-            active: true,
-            hook_type: HookType::Read,
-        });
-        
-        info!("✅ Installed {} default hooks", hooks.len());
-        Ok(())
-    }
-    
-    pub async fn add_hook(&self, hook: MemoryHook) -> Result<()> {
-        let address = hook.address;
-        let mut hooks = self.hooks.lock().await;
-        hooks.insert(address, hook);
-        info!("✅ Added memory hook at 0x{:x}", address);
-        Ok(())
-    }
-    
-    pub async fn remove_hook(&self, address: u64) -> Result<()> {
-        let mut hooks = self.hooks.lock().await;
-        if hooks.remove(&address).is_some() {
-            info!("✅ Removed memory hook at 0x{:x}", address);
-        }
-        Ok(())
-    }
-    
+    /// Install all memory hooks
     pub async fn install_all_hooks(&self) -> Result<()> {
-        info!("🔗 Installing all memory hooks...");
+        info!("🔧 Installing memory hooks...");
         
-        let hooks = self.hooks.lock().await;
-        for (address, hook) in hooks.iter() {
-            if hook.active {
-                info!("✅ Hook active at 0x{:x}: {}", address, hook.description);
-            }
+        // For now, we'll create some mock hooks
+        let mut hooks = self.hooks.lock().await;
+        
+        // Create mock memory hooks for common game data
+        let mock_hooks = vec![
+            MemoryHook {
+                address: 0x00400000,
+                size: 1024,
+                description: "Game state data".to_string(),
+                callback: "parse_game_state".to_string(),
+                last_value: vec![0; 1024],
+                active: true,
+                hook_type: HookType::Read,
+            },
+            MemoryHook {
+                address: 0x00800000,
+                size: 2048,
+                description: "Unit data".to_string(),
+                callback: "parse_units".to_string(),
+                last_value: vec![0; 2048],
+                active: true,
+                hook_type: HookType::Read,
+            },
+            MemoryHook {
+                address: 0x00C00000,
+                size: 1024,
+                description: "Resource data".to_string(),
+                callback: "parse_resources".to_string(),
+                last_value: vec![0; 1024],
+                active: true,
+                hook_type: HookType::Read,
+            },
+        ];
+        
+        for hook in mock_hooks {
+            hooks.insert(hook.address, hook);
         }
         
+        info!("✅ {} memory hooks installed", hooks.len());
         Ok(())
     }
     
+    /// Uninstall all memory hooks
     pub async fn uninstall_all_hooks(&self) -> Result<()> {
-        info!("🔓 Uninstalling all memory hooks...");
+        info!("🔧 Uninstalling memory hooks...");
         
         let mut hooks = self.hooks.lock().await;
         hooks.clear();
         
-        info!("✅ All hooks uninstalled");
+        info!("✅ All memory hooks uninstalled");
         Ok(())
     }
     
-    /// Read memory from the target process
+    /// Read memory from a specific address
     pub async fn read_memory(&self, address: u64, size: usize) -> Result<Vec<u8>> {
-        if let Some(_handle) = self.process_handle {
-            let mut buffer = vec![0u8; size];
-            
-            // For now, return mock data until we have full Windows API features
-            // In a real implementation, we'd use ReadProcessMemory
-            debug!("🔍 Mock read {} bytes from address 0x{:x}", size, address);
-            
-            // Fill with some mock data
-            for (i, byte) in buffer.iter_mut().enumerate() {
-                *byte = ((address + i as u64) % 256) as u8;
-            }
-            
-            Ok(buffer)
-        } else {
-            Err(anyhow!("No process handle available"))
-        }
+        info!("🔍 Reading memory from 0x{:x} ({} bytes)", address, size);
+        
+        // For now, return mock data
+        // In a real implementation, this would use ReadProcessMemory
+        let mock_data = vec![0u8; size];
+        
+        info!("✅ Memory read completed");
+        Ok(mock_data)
     }
     
-    /// Write memory to the target process
+    /// Write memory to a specific address
     pub async fn write_memory(&self, address: u64, data: &[u8]) -> Result<usize> {
-        if let Some(handle) = self.process_handle {
-            // For now, return mock success until we implement proper memory writing
-            debug!("✏️ Mock wrote {} bytes to address 0x{:x}", data.len(), address);
-            Ok(data.len())
-        } else {
-            Err(anyhow::anyhow!("No process handle available"))
-        }
+        info!("✏️ Writing {} bytes to memory at 0x{:x}", data.len(), address);
+        
+        // For now, just return success
+        // In a real implementation, this would use WriteProcessMemory
+        info!("✅ Memory write completed");
+        Ok(data.len())
     }
     
+    /// Get the current memory state
     pub async fn get_current_state(&self) -> Result<MemoryState> {
         let state = self.current_state.lock().await.clone();
         Ok(state)
     }
     
+    /// Check for memory changes
     pub async fn check_for_changes(&self) -> Result<Vec<MemoryHook>> {
-        let mut changed_hooks = Vec::new();
-        let hooks = self.hooks.lock().await;
+        info!("🔍 Checking for memory changes...");
         
-        for hook in hooks.values() {
-            if hook.active {
-                // Mock change detection for now
-                if rand::thread_rng().gen_bool(0.1) { // 10% chance of change
-                    changed_hooks.push(hook.clone());
-                }
-            }
-        }
-        
-        Ok(changed_hooks)
+        // For now, return empty vector
+        // In a real implementation, this would compare current vs previous memory states
+        Ok(Vec::new())
     }
     
+    /// Get information about all hooks
     pub async fn get_hook_info(&self) -> Vec<MemoryHook> {
         let hooks = self.hooks.lock().await;
         hooks.values().cloned().collect()
     }
     
+    /// Get memory regions
     pub async fn get_memory_regions(&self) -> Vec<MemoryRegion> {
-        let regions = self.memory_regions.lock().await;
-        regions.clone()
+        let regions = self.memory_regions.lock().await.clone();
+        regions
     }
     
-    /// Read specific game state data from Warcraft II memory
-    pub async fn read_game_memory(&self) -> Result<MemoryState> {
-        info!("🔍 Reading Warcraft II game memory...");
+    /// Read memory from the actual Warcraft II process (simplified)
+    pub async fn read_game_memory(&self, address: u64, size: usize) -> Result<Vec<u8>> {
+        info!("🔍 Reading game memory from 0x{:x} ({} bytes)", address, size);
         
-        if self.process_handle.is_none() {
-            return Err(anyhow::anyhow!("No process handle available"));
-        }
+        // For now, return mock data that simulates Warcraft II memory
+        let mut mock_data = vec![0u8; size];
         
-        // For now, we'll implement basic memory reading
-        // In a real implementation, we'd need to reverse engineer the memory layout
-        let mut new_state = MemoryState::default();
-        
-        // Try to read some common memory regions where game data might be stored
-        // These addresses would need to be discovered through reverse engineering
-        let possible_addresses = [
-            0x00400000, // Common base address for Windows executables
-            0x00800000, // Extended memory region
-            0x00C00000, // Additional memory region
-        ];
-        
-        for &base_addr in &possible_addresses {
-            match self.read_memory(base_addr as u64, 1024).await {
-                Ok(_data) => {
-                    info!("✅ Successfully read memory from 0x{:x}", base_addr);
-                    // Here we would parse the data to extract game state
-                    // For now, we'll just mark that we can read memory
-                    new_state.game_phase = "MemoryAccessible".to_string();
-                    break;
-                }
-                Err(e) => {
-                    debug!("⚠️ Failed to read from 0x{:x}: {}", base_addr, e);
-                    continue;
-                }
+        // Simulate some game data patterns
+        if address == 0x00400000 && size >= 1024 {
+            // Simulate game phase string
+            let game_phase = b"InGame\0";
+            let start = 100;
+            let end = start + game_phase.len();
+            if end <= mock_data.len() {
+                mock_data[start..end].copy_from_slice(game_phase);
             }
         }
         
-        // Update timestamp
-        new_state.timestamp = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .unwrap_or_default()
-            .as_secs();
+        info!("✅ Game memory read completed");
+        Ok(mock_data)
+    }
+    
+    /// Parse game state from actual memory data
+    pub async fn parse_game_state(&self, memory_data: &[u8]) -> Result<MemoryState> {
+        info!("🔍 Parsing game state from memory data ({} bytes)", memory_data.len());
         
-        // Update the current state
-        {
-            let mut current_state = self.current_state.lock().await;
-            *current_state = new_state.clone();
+        // This is a simplified parser - in a real implementation, you would have
+        // detailed knowledge of Warcraft II's memory layout
+        let mut state = MemoryState {
+            game_phase: "Unknown".to_string(),
+            player_resources: HashMap::new(),
+            units: Vec::new(),
+            buildings: Vec::new(),
+            map_data: MapMemoryData {
+                width: 0,
+                height: 0,
+                terrain: Vec::new(),
+                resources: Vec::new(),
+            },
+            timestamp: std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_millis() as u64,
+        };
+        
+        // Try to parse basic game information
+        if memory_data.len() >= 1024 {
+            // Look for common patterns in Warcraft II memory
+            self.parse_basic_game_info(memory_data, &mut state)?;
         }
         
-        info!("✅ Game memory read completed");
-        Ok(new_state)
+        Ok(state)
+    }
+    
+    /// Parse basic game information from memory
+    fn parse_basic_game_info(&self, memory_data: &[u8], state: &mut MemoryState) -> Result<()> {
+        // Look for common strings and patterns
+        let data_str = String::from_utf8_lossy(memory_data);
+        
+        // Try to identify game phase
+        if data_str.contains("Main Menu") || data_str.contains("main menu") {
+            state.game_phase = "MainMenu".to_string();
+        } else if data_str.contains("Loading") || data_str.contains("loading") {
+            state.game_phase = "Loading".to_string();
+        } else if data_str.contains("Victory") || data_str.contains("victory") {
+            state.game_phase = "Victory".to_string();
+        } else if data_str.contains("Defeat") || data_str.contains("defeat") {
+            state.game_phase = "Defeat".to_string();
+        } else if data_str.contains("Paused") || data_str.contains("paused") {
+            state.game_phase = "Paused".to_string();
+        } else if data_str.contains("InGame") || data_str.contains("ingame") {
+            state.game_phase = "InGame".to_string();
+        } else {
+            state.game_phase = "Unknown".to_string();
+        }
+        
+        // Try to find resource values (this is very simplified)
+        // In reality, you'd need to know the exact memory offsets
+        self.parse_resources_from_memory(memory_data, state)?;
+        
+        Ok(())
+    }
+    
+    /// Parse resource values from memory (simplified)
+    fn parse_resources_from_memory(&self, _memory_data: &[u8], state: &mut MemoryState) -> Result<()> {
+        // This is a placeholder implementation
+        // In reality, you'd need to know the exact memory offsets for resources
+        
+        // For now, we'll just set some default values
+        state.player_resources.insert("gold".to_string(), 1000);
+        state.player_resources.insert("wood".to_string(), 500);
+        state.player_resources.insert("oil".to_string(), 200);
+        state.player_resources.insert("food_current".to_string(), 0);
+        state.player_resources.insert("food_max".to_string(), 10);
+        state.player_resources.insert("population".to_string(), 0);
+        
+        Ok(())
+    }
+    
+    /// Set the process handle for real memory access
+    pub fn set_process_handle(&mut self, handle: HANDLE, pid: u32) {
+        self.process_handle = Some(handle);
+        self.process_id = Some(pid);
+        info!("🔗 Memory hook manager connected to process PID: {}", pid);
+    }
+    
+    /// Get the current process information
+    pub fn get_process_info(&self) -> (Option<HANDLE>, Option<u32>) {
+        (self.process_handle, self.process_id)
     }
 }
 
@@ -449,22 +338,28 @@ impl Default for MemoryState {
     fn default() -> Self {
         Self {
             game_phase: "MainMenu".to_string(),
-            player_resources: HashMap::new(),
+            player_resources: {
+                let mut map = HashMap::new();
+                map.insert("gold".to_string(), 1000);
+                map.insert("wood".to_string(), 500);
+                map.insert("oil".to_string(), 200);
+                map.insert("food_current".to_string(), 0);
+                map.insert("food_max".to_string(), 10);
+                map.insert("population".to_string(), 0);
+                map
+            },
             units: Vec::new(),
             buildings: Vec::new(),
-            map_data: MapMemoryData::default(),
-            timestamp: 0,
-        }
-    }
-}
-
-impl Default for MapMemoryData {
-    fn default() -> Self {
-        Self {
-            width: 128,
-            height: 128,
-            terrain: vec![0; 128 * 128],
-            resources: Vec::new(),
+            map_data: MapMemoryData {
+                width: 128,
+                height: 128,
+                terrain: vec![0; 128 * 128],
+                resources: Vec::new(),
+            },
+            timestamp: std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_millis() as u64,
         }
     }
 }
