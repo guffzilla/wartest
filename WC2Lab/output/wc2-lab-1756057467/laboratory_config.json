@@ -1,0 +1,7 @@
+{
+  "headless_mode": true,
+  "memory_scan_interval": 100,
+  "event_recording": true,
+  "extraction_depth": "Detailed",
+  "output_format": "JSON"
+}

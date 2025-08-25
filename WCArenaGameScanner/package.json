@@ -1,0 +1,24 @@
+{
+  "name": "wc-arena-scanner",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^2.5.0",
+    "@tauri-apps/cli": "^2.0.0",
+    "@tsconfig/svelte": "^5.0.5",
+    "svelte": "^4.2.7",
+    "typescript": "^5.0.2",
+    "vite": "^4.5.0"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.0.0"
+  },
+  "description": "WC Arena Scanner - Warcraft Game Management and Scanning Tool"
+}

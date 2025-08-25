@@ -1,0 +1,52 @@
+{
+  "memory_hooks": [
+    {
+      "name": "game_state",
+      "address": 268435456,
+      "hook_type": "read",
+      "callback": "on_game_state_change"
+    },
+    {
+      "name": "player_resources",
+      "address": 268435472,
+      "hook_type": "read",
+      "callback": "on_player_resources_change"
+    }
+  ],
+  "ui_replacements": [
+    {
+      "original_element": "main_menu",
+      "replacement_type": "headless",
+      "description": "Replace main_menu with headless equivalent"
+    },
+    {
+      "original_element": "game_viewport",
+      "replacement_type": "headless",
+      "description": "Replace game_viewport with headless equivalent"
+    }
+  ],
+  "network_disablers": [
+    {
+      "function_name": "BattleNetConnect",
+      "replacement": "return SUCCESS",
+      "description": "Disable Battle.net connection requirement"
+    },
+    {
+      "function_name": "SendNetworkData",
+      "replacement": "return 0",
+      "description": "Disable network data transmission"
+    }
+  ],
+  "ai_integration_points": [
+    {
+      "function_name": "ProcessInput",
+      "integration_type": "hook",
+      "description": "Hook input processing for AI control"
+    },
+    {
+      "function_name": "UpdateGameState",
+      "integration_type": "callback",
+      "description": "Callback for AI to update game state"
+    }
+  ]
+}
