@@ -1,8 +1,8 @@
 {
-  "name": "map-extraction-tool",
+  "name": "wc-arena-map-extractor",
   "private": true,
   "version": "0.1.0",
-  "description": "Warcraft II Map Extraction and Analysis Tool",
+  "description": "WC Arena Map Extractor - Warcraft II Map Analysis Tool",
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -106,7 +106,7 @@ wartest/                                    # 🎯 Main Project Root
 ├── 🤖 Headless WC2 Lab (Advanced Research)
 │   ├── headlessgames/
 │   │   └── wc2-remastered-lab/
-│   │       ├── headless_wc2/              # Headless game control
+│   │       ├── WC2AI/                     # Advanced AI system
 │   │       │   ├── src/                   # Rust source code
 │   │       │   │   ├── main.rs            # Main entry point
 │   │       │   │   ├── lib.rs             # Library definitions
@@ -507,7 +507,7 @@ npm run tauri dev
 
 ### **Headless WC2 Lab**
 ```bash
-cd wartest/headlessgames/wc2-remastered-lab/headless_wc2
+cd wartest/WC2Lab/WC2AI
 cargo run
 ```
 

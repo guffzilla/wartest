@@ -125,7 +125,7 @@ A headless version of Warcraft II Remastered controlled by an AI system for auto
 ```bash
 # Clone and setup
 git clone <repository>
-cd headlessgames/wc2-remastered-lab/headless_wc2
+cd WC2Lab/WC2AI
 
 # Build and test
 cargo build
@@ -136,9 +136,9 @@ cargo run --bin headless-wc2       # Run main system
 ### Configuration
 ```bash
 # Environment variables
-HEADLESS_WC2_LOG_LEVEL=debug
-HEADLESS_WC2_AI_DECISION_INTERVAL=100
-HEADLESS_WC2_MEMORY_HOOK_INTERVAL=50
+WC2AI_LOG_LEVEL=debug
+WC2AI_AI_DECISION_INTERVAL=100
+WC2AI_MEMORY_HOOK_INTERVAL=50
 ```
 
 ## 📊 Performance Metrics

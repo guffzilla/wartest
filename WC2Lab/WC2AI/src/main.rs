@@ -4,7 +4,7 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use chrono::Utc;
 
-use headless_wc2::{initialize_headless_system, get_system_info, VERSION, NAME};
+use wc2_ai::{initialize_headless_system, get_system_info, VERSION, NAME};
 
 fn log_to_json(level: &str, message: &str) {
     let log_entry = serde_json::json!({

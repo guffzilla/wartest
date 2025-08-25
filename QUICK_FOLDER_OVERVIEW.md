@@ -9,7 +9,7 @@ wartest/                    # Project root
 │   ├── package.json        # Dependencies
 │   └── [build files]
 
-├── map-extraction/         # Map Extraction Tool
+├── WCArenaMapExtractor/    # WC Arena Map Extractor
 │   ├── src/                # Frontend code  
 │   ├── map-extraction-backend/ # Rust backend
 │   ├── package.json        # Dependencies
@@ -19,7 +19,7 @@ wartest/                    # Project root
 ## 🤖 **Research Labs**
 ```
 WC2Lab/                     # WC2 Research & Development Lab
-├── headless_wc2/           # Advanced headless implementation
+├── WC2AI/                  # Advanced AI implementation
 ├── custom_wc2_build/       # Game modification research
 ├── analysis/               # Analysis tools
 ├── data/                   # Research data
@@ -71,9 +71,9 @@ dist/                       # Frontend builds
 # WC Arena Scanner
 cd WCArenaGameScanner && npm run tauri dev
 
-# Map Extraction Tool  
-cd map-extraction && npm run tauri dev
+# WC Arena Map Extractor  
+cd WCArenaMapExtractor && npm run tauri dev
 
-# WC2 Lab (Headless Research)
-cd WC2Lab/headless_wc2 && cargo run
+# WC2 AI Lab (AI Research)
+cd WC2Lab/WC2AI && cargo run
 ```

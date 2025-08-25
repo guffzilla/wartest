@@ -44,7 +44,7 @@ wartest/                                    # 🎯 Main Project Root
 ├── 🤖 Headless WC2 Lab (Advanced Research)
 │   ├── headlessgames/
 │   │   └── wc2-remastered-lab/
-│   │       ├── headless_wc2/              # Headless game control
+│   │       ├── WC2AI/                     # Advanced AI system
 │   │       ├── custom_wc2_build/          # Game modification research
 │   │       ├── analysis/                  # Game analysis tools
 │   │       ├── data/                      # Analysis data
@@ -146,7 +146,7 @@ cd wartest && npm run tauri dev
 cd wartest/map-extraction && npm run tauri dev
 
 # Headless WC2 Lab
-cd wartest/headlessgames/wc2-remastered-lab/headless_wc2 && cargo run
+cd wartest/WC2Lab/WC2AI && cargo run
 ```
 
 ---

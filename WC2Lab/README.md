@@ -1,4 +1,4 @@
-# Headless WC2 Remastered - AI Laboratory
+# WC2 AI Laboratory - Advanced AI System
 
 A sophisticated headless version of Warcraft II Remastered controlled by an AI system, designed for autonomous gameplay, data collection, and advanced analytics.
 

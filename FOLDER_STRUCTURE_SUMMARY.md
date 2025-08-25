@@ -22,7 +22,7 @@
 ### **Headless WC2 Lab**
 - **Location**: `headlessgames/wc2-remastered-lab/`
 - **Components**:
-  - `headless_wc2/` - Headless game control system
+  - `WC2AI/` - Advanced AI system for autonomous gameplay
   - `custom_wc2_build/` - Game modification research
   - `analysis/`, `data/`, `logs/`, `output/` - Research data
   - `tools/` - Analysis utilities
@@ -114,7 +114,7 @@ cd wartest && npm run tauri dev
 cd wartest/map-extraction && npm run tauri dev
 
 # Headless WC2 Lab
-cd wartest/headlessgames/wc2-remastered-lab/headless_wc2 && cargo run
+cd wartest/WC2Lab/WC2AI && cargo run
 ```
 
 ---

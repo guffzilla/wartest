@@ -1,6 +1,6 @@
-# 🗺️ Map Extraction Tool
+# 🗺️ WC Arena Map Extractor
 
-**Warcraft II Map Analysis and Visualization Tool**
+**WC Arena Map Extractor - Warcraft II Map Analysis and Visualization Tool**
 
 A Tauri-based desktop application for analyzing Warcraft II map files (.w2m, .w2x) with advanced visualization and resource analysis.
 
@@ -40,13 +40,13 @@ npm run tauri build
 ## 📁 Project Structure
 
 ```
-map-extraction/
+WCArenaMapExtractor/
 ├── src/                    # Svelte frontend
-├── src-tauri/             # Rust backend
+├── map-extraction-backend/ # Rust backend
 ├── public/                # Static assets
 └── README.md             # This file
 ```
 
 ---
 
-**This is the Map Extraction Tool - NOT the main Warcraft II headless project!**
+**This is the WC Arena Map Extractor - NOT the main Warcraft II headless project!**

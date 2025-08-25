@@ -1,9 +1,9 @@
 [package]
-name = "headless-wc2"
+name = "wc2-ai"
 version = "0.1.0"
 edition = "2021"
 authors = ["AI Laboratory Team"]
-description = "Headless Warcraft II Remastered with AI Control and Analytics"
+description = "WC2 AI - Advanced AI System for Warcraft II Autonomous Gameplay"
 license = "MIT"
 
 [workspace]
@@ -53,11 +53,11 @@ tokio-test = "0.4"
 criterion = "0.5"
 
 [[bin]]
-name = "headless-wc2"
+name = "wc2-ai"
 path = "src/main.rs"
 
 [[bin]]
-name = "headless-wc2-test"
+name = "wc2-ai-test"
 path = "src/test.rs"
 
 [profile.release]

@@ -34,7 +34,7 @@ wartest/                                    # 🎯 Main Project Root
 ├── 🤖 Headless WC2 Lab (Advanced Research)
 │   └── headlessgames/
 │       └── wc2-remastered-lab/
-│           ├── headless_wc2/              # Headless game control
+│           ├── WC2AI/                     # Advanced AI system
 │           ├── custom_wc2_build/          # Custom game modifications
 │           ├── analysis/                  # Game analysis tools
 │           └── tools/                     # Research utilities

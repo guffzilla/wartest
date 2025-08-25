@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Map Extraction Tool",
+  "productName": "WC Arena Map Extractor",
   "version": "0.1.0",
-  "identifier": "com.garet.map-extraction",
+  "identifier": "com.wc-arena.map-extractor",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -13,7 +13,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "🗺️ Map Extraction Tool - Warcraft II",
+        "title": "🗺️ WC Arena Map Extractor - Warcraft II",
         "width": 1200,
         "height": 800,
         "resizable": true,

@@ -1,8 +1,8 @@
-# 🗺️ Map Extraction Project - Implementation Plan
+# 🗺️ WC Arena Map Extractor - Implementation Plan
 
 ## 🎯 Project Overview
 
-**Project Name**: Map Extraction  
+**Project Name**: WC Arena Map Extractor  
 **Technology Stack**: Tauri + Svelte + Rust  
 **Primary Goal**: Create a map analysis tool for Warcraft II maps with advanced visualization  
 **Scope**: Warcraft II maps initially, expandable to WC1 and WC3  
@@ -35,8 +35,8 @@
 ## 🏗️ Project Structure
 
 ```
-map-extraction/
-├── src-tauri/                 # Rust backend
+WCArenaMapExtractor/
+├── map-extraction-backend/     # Rust backend
 │   ├── src/
 │   │   ├── main.rs           # Tauri app entry point
 │   │   ├── map_parser.rs     # Warcraft II map parsing

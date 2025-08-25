@@ -21,13 +21,13 @@ npm run tauri dev
 
 ---
 
-### 2. **Map Extraction Tool** (Separate App)
-**Location**: `wartest/map-extraction/`  
+### 2. **WC Arena Map Extractor** (Separate App)
+**Location**: `wartest/WCArenaMapExtractor/`  
 **Purpose**: Warcraft II map analysis and visualization  
-**Window Title**: "🗺️ Map Extraction Tool - Warcraft II"  
+**Window Title**: "🗺️ WC Arena Map Extractor - Warcraft II"  
 **Launch Command**: 
 ```bash
-cd wartest/map-extraction
+cd wartest/WCArenaMapExtractor
 npm run tauri dev
 ```
 
@@ -48,15 +48,15 @@ cd wartest/WCArenaGameScanner
 npm run tauri dev
 ```
 
-### **Map Extraction Tool**
+### **WC Arena Map Extractor**
 ```bash
-cd wartest/map-extraction
+cd wartest/WCArenaMapExtractor
 npm run tauri dev
 ```
 
-### **WC2 Lab (Headless Research)**
+### **WC2 AI Lab (AI Research)**
 ```bash
-cd wartest/WC2Lab/headless_wc2
+cd wartest/WC2Lab/WC2AI
 cargo run
 ```
 
@@ -75,14 +75,14 @@ wartest/                                    # 🎯 Main Project Root
 │   ├── svelte.config.js                   # Svelte configuration
 │   └── index.html                         # HTML entry point
 │
-├── map-extraction/                        # 🗺️ Map Extraction Tool
+├── WCArenaMapExtractor/                   # 🗺️ WC Arena Map Extractor
 │   ├── src/                               # Frontend (Svelte + TypeScript)
 │   ├── map-extraction-backend/            # Rust Backend
 │   ├── package.json                       # Frontend dependencies
 │   └── ...                                # Build configuration
 │
 ├── WC2Lab/                                # 🤖 WC2 Research & Development Lab
-│   ├── headless_wc2/                      # Advanced headless implementation
+│   ├── WC2AI/                             # Advanced AI implementation
 │   ├── custom_wc2_build/                  # Game modification research
 │   ├── analysis/                          # Analysis tools
 │   ├── data/                              # Research data

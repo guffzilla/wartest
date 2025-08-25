@@ -15,37 +15,37 @@ async fn main() -> Result<()> {
     
     // Test 2: Configuration
     info!("⚙️ Test 2: Configuration");
-    let config = headless_wc2::game_engine::HeadlessConfig::default();
+    let config = wc2_ai::game_engine::HeadlessConfig::default();
     info!("✅ Configuration loaded: {:?}", config);
     
     // Test 3: Game state
     info!("🎮 Test 3: Game State");
-    let game_state = headless_wc2::game_engine::HeadlessGameState::default();
+    let game_state = wc2_ai::game_engine::HeadlessGameState::default();
     info!("✅ Game state initialized: {:?}", game_state.game_phase);
     
     // Test 4: AI Controller
     info!("🤖 Test 4: AI Controller");
-    let ai_controller = headless_wc2::ai_controller::AIController::new().await?;
+    let ai_controller = wc2_ai::ai_controller::AIController::new().await?;
     info!("✅ AI Controller initialized");
     
     // Test 5: Memory Hooks
     info!("🔗 Test 5: Memory Hooks");
-    let memory_hooks = headless_wc2::memory_hooks::MemoryHookManager::new().await?;
+    let memory_hooks = wc2_ai::memory_hooks::MemoryHookManager::new().await?;
     info!("✅ Memory Hooks initialized");
     
     // Test 6: Function Hooks
     info!("🔧 Test 6: Function Hooks");
-    let function_hooks = headless_wc2::function_hooks::FunctionHookManager::new().await?;
+    let function_hooks = wc2_ai::function_hooks::FunctionHookManager::new().await?;
     info!("✅ Function Hooks initialized");
     
     // Test 7: Data Exporter
     info!("📊 Test 7: Data Exporter");
-    let data_exporter = headless_wc2::data_exporter::DataExporter::new().await?;
+    let data_exporter = wc2_ai::data_exporter::DataExporter::new().await?;
     info!("✅ Data Exporter initialized");
     
     // Test 8: Replay System
     info!("🎬 Test 8: Replay System");
-    let replay_system = headless_wc2::replay_system::ReplaySystem::new().await?;
+    let replay_system = wc2_ai::replay_system::ReplaySystem::new().await?;
     info!("✅ Replay System initialized");
     
     info!("🎉 All tests completed successfully!");

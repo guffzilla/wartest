@@ -1,7 +1,7 @@
 [package]
-name = "map-extraction"
+name = "wc-arena-map-extractor"
 version = "0.1.0"
-description = "Warcraft II Map Extraction Tool"
+description = "WC Arena Map Extractor - Warcraft II Map Analysis Tool"
 authors = ["you"]
 edition = "2021"
 
