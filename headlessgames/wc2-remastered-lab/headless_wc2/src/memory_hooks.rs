@@ -222,26 +222,55 @@ impl MemoryHookManager {
         regions
     }
     
-    /// Read memory from the actual Warcraft II process (simplified)
+    /// Initialize connection to Warcraft II process
+    pub async fn initialize_process_connection(&mut self) -> Result<()> {
+        info!("🔌 Initializing connection to Warcraft II process...");
+        
+        if self.process_handle.is_none() {
+            self.find_warcraft_process().await?;
+        }
+        
+        info!("✅ Process connection initialized");
+        Ok(())
+    }
+    
+    /// Read memory from the actual Warcraft II process using Windows API
     pub async fn read_game_memory(&self, address: u64, size: usize) -> Result<Vec<u8>> {
         info!("🔍 Reading game memory from 0x{:x} ({} bytes)", address, size);
         
-        // For now, return mock data that simulates Warcraft II memory
-        let mut mock_data = vec![0u8; size];
+        // Check if we have a valid process handle
+        let process_handle = match self.process_handle {
+            Some(handle) => handle,
+            None => {
+                return Err(anyhow!("No process handle available. Call initialize_process_connection() first."));
+            }
+        };
         
-        // Simulate some game data patterns
-        if address == 0x00400000 && size >= 1024 {
-            // Simulate game phase string
-            let game_phase = b"InGame\0";
-            let start = 100;
-            let end = start + game_phase.len();
-            if end <= mock_data.len() {
-                mock_data[start..end].copy_from_slice(game_phase);
+        // Use Windows API to read process memory
+        let mut buffer = vec![0u8; size];
+        let mut bytes_read: usize = 0;
+        
+        unsafe {
+            let result = windows::Win32::System::Diagnostics::Debug::ReadProcessMemory(
+                process_handle,
+                address as *const std::ffi::c_void,
+                buffer.as_mut_ptr() as *mut std::ffi::c_void,
+                size,
+                Some(&mut bytes_read as *mut usize)
+            );
+            
+            if result.is_err() {
+                let error = format!("Failed to read memory at 0x{:x}: {:?}", address, result);
+                error!("❌ {}", error);
+                return Err(anyhow!(error));
             }
         }
         
-        info!("✅ Game memory read completed");
-        Ok(mock_data)
+        // Resize buffer to actual bytes read
+        buffer.truncate(bytes_read);
+        
+        info!("✅ Game memory read completed: {} bytes from 0x{:x}", bytes_read, address);
+        Ok(buffer)
     }
     
     /// Parse game state from actual memory data
@@ -331,6 +360,64 @@ impl MemoryHookManager {
     /// Get the current process information
     pub fn get_process_info(&self) -> (Option<HANDLE>, Option<u32>) {
         (self.process_handle, self.process_id)
+    }
+
+    /// Find and open the Warcraft II process using Windows API
+    async fn find_warcraft_process(&mut self) -> Result<()> {
+        info!("🔍 Searching for Warcraft II process...");
+        
+        unsafe {
+            // Create a snapshot of all running processes
+            let snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)?;
+            
+            let mut process_entry = PROCESSENTRY32W {
+                dwSize: std::mem::size_of::<PROCESSENTRY32W>() as u32,
+                ..Default::default()
+            };
+            
+            // Get the first process
+            let mut result = Process32FirstW(snapshot, &mut process_entry);
+            
+            while result.is_ok() {
+                // Convert process name to string
+                let process_name = String::from_utf16_lossy(&process_entry.szExeFile)
+                    .trim_matches('\0')
+                    .to_lowercase();
+                
+                // Check if this is a Warcraft II process
+                if process_name.contains("warcraft") || 
+                   process_name.contains("war2") || 
+                   process_name.contains("wc2") ||
+                   process_name.contains("battle.net") {
+                    
+                    info!("🎮 Found Warcraft II process: {} (PID: {})", 
+                          String::from_utf16_lossy(&process_entry.szExeFile).trim_matches('\0'),
+                          process_entry.th32ProcessID);
+                    
+                    // Open the process with necessary access rights
+                    let process_handle = OpenProcess(
+                        PROCESS_ALL_ACCESS,
+                        false,
+                        process_entry.th32ProcessID
+                    )?;
+                    
+                    // Store the process handle and ID
+                    self.process_handle = Some(process_handle);
+                    self.process_id = Some(process_entry.th32ProcessID);
+                    
+                    info!("✅ Successfully opened Warcraft II process");
+                    return Ok(());
+                }
+                
+                // Get the next process
+                result = Process32NextW(snapshot, &mut process_entry);
+            }
+            
+            // Close the snapshot handle
+            CloseHandle(snapshot);
+        }
+        
+        Err(anyhow!("Warcraft II process not found"))
     }
 }
 

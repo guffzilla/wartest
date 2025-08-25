@@ -83,7 +83,7 @@ pub async fn initialize_headless_system() -> anyhow::Result<HeadlessGameEngine> 
     let ai_controller = std::sync::Arc::new(AIController::new().await?);
     let data_exporter = std::sync::Arc::new(DataExporter::new().await?);
     let replay_system = std::sync::Arc::new(ReplaySystem::new().await?);
-    let input_simulator = std::sync::Arc::new(InputSimulator::new());
+    let input_simulator = std::sync::Arc::new(tokio::sync::Mutex::new(InputSimulator::new()));
     
     // Create the main game engine
     let game_engine = HeadlessGameEngine::new_with_components(

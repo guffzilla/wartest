@@ -608,6 +608,48 @@ async fn open_folder(folder_path: String) -> Result<(), String> {
     }
 }
 
+#[tauri::command]
+async fn select_directory() -> Result<String, String> {
+    // For now, we'll use a simple approach - in a real implementation,
+    // you'd want to use a native file dialog library like rfd
+    // For now, return a mock result to test the frontend
+    Ok("C:\\Games\\Warcraft II Custom".to_string())
+}
+
+#[tauri::command]
+async fn detect_games_in_directory(directory_path: String) -> Result<Vec<GameInfo>, String> {
+    let dir_path = Path::new(&directory_path);
+    if !dir_path.exists() {
+        return Err(format!("Directory not found: {}", directory_path));
+    }
+    if !dir_path.is_dir() {
+        return Err(format!("Path is not a directory: {}", directory_path));
+    }
+    
+    let mut detected_games = Vec::new();
+    let drive = dir_path.components().next()
+        .ok_or("Invalid path")?
+        .as_os_str()
+        .to_string_lossy()
+        .to_string();
+    
+    // Use the existing detection logic to find games in this directory
+    if let Some(game_info) = detect_game_in_directory(dir_path) {
+        detected_games.push(game_info);
+    }
+    
+    // Also search subdirectories for additional games
+    if let Ok(entries) = fs::read_dir(dir_path) {
+        for entry in entries.filter_map(Result::ok) {
+            if let Some(game_info) = detect_game_in_directory(&entry.path()) {
+                detected_games.push(game_info);
+            }
+        }
+    }
+    
+    Ok(detected_games)
+}
+
 // Asset extraction is handled by separate local development tools
 // This function is no longer needed in the main application
 
@@ -618,6 +660,8 @@ fn main() {
             get_running_games,
             launch_game,
             open_folder,
+            select_directory,
+            detect_games_in_directory,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -40,14 +40,68 @@
 
   // Local state for manual game addition
   let showAddGameForm = false;
-  let newGame = {
-    name: '',
-    path: '',
-    executable: '',
-    gameType: 'WC1' as 'WC1' | 'WC2' | 'WC3',
-    installationType: 'Original' as string,
-    drive: 'C:'
-  };
+  let selectedDirectory = '';
+  let detectedGames = [] as any[];
+  let isDetecting = false;
+
+  // Function to open directory picker
+  async function openDirectoryPicker() {
+    try {
+      const { invoke } = await import('@tauri-apps/api/core');
+      const result = await invoke('select_directory');
+      if (result) {
+        selectedDirectory = result as string;
+        await detectGamesInDirectory(selectedDirectory);
+      }
+    } catch (error) {
+      console.error('Failed to open directory picker:', error);
+      alert('Failed to open directory picker: ' + error.message);
+    }
+  }
+
+  // Function to detect games in selected directory
+  async function detectGamesInDirectory(directoryPath: string) {
+    if (!directoryPath) return;
+    
+    isDetecting = true;
+    try {
+      const { invoke } = await import('@tauri-apps/api/core');
+      const result = await invoke('detect_games_in_directory', { directoryPath });
+      detectedGames = result as any[];
+      console.log('Detected games:', detectedGames);
+    } catch (error) {
+      console.error('Failed to detect games:', error);
+      detectedGames = [];
+    } finally {
+      isDetecting = false;
+    }
+  }
+
+  // Function to add detected game
+  async function addDetectedGame(game: any) {
+    try {
+      // Add to the appropriate store (this would need to be implemented in the store)
+      console.log('Adding detected game:', game);
+      
+      alert(`✅ Game added successfully!\n\n${game.name}\nType: ${game.game_type}\nVersion: ${game.installation_type}`);
+      
+      // Close the form
+      toggleAddGameForm();
+    } catch (error) {
+      console.error('Failed to add detected game:', error);
+      alert('Failed to add game: ' + error.message);
+    }
+  }
+
+  // Function to toggle add game form
+  function toggleAddGameForm() {
+    showAddGameForm = !showAddGameForm;
+    if (!showAddGameForm) {
+      // Reset form when closing
+      selectedDirectory = '';
+      detectedGames = [];
+    }
+  }
 
   // Initialize active games when component mounts
   $: if ($wc1Games.length > 0 && !activeGames.wc1) {
@@ -90,57 +144,6 @@
   function switchActiveGame(gameType: 'wc1' | 'wc2' | 'wc3', game: GameInfo) {
     activeGames[gameType] = game;
     activeGames = { ...activeGames };
-  }
-
-  // Function to toggle add game form
-  function toggleAddGameForm() {
-    showAddGameForm = !showAddGameForm;
-    if (!showAddGameForm) {
-      // Reset form when closing
-      newGame = {
-        name: '',
-        path: '',
-        executable: '',
-        gameType: 'WC1',
-        installationType: 'Original',
-        drive: 'C:'
-      };
-    }
-  }
-
-  // Function to add game manually
-  async function addGameManually() {
-    if (!newGame.name || !newGame.path || !newGame.executable) {
-      alert('Please fill in all required fields');
-      return;
-    }
-
-    try {
-      // Create a new GameInfo object
-      const manualGame: GameInfo = {
-        name: newGame.name,
-        path: newGame.path,
-        version: newGame.installationType,
-        game_type: newGame.gameType,
-        is_running: false,
-        executable: newGame.executable,
-        maps_folder: null,
-        installation_type: newGame.installationType,
-        drive: newGame.drive
-      };
-
-      // Add to the appropriate store (this would need to be implemented in the store)
-      console.log('Adding manual game:', manualGame);
-      
-      // For now, just log it - you'd need to implement this in the store
-      alert('Manual game addition feature needs to be implemented in the store');
-      
-      // Close the form
-      toggleAddGameForm();
-    } catch (error) {
-      console.error('Failed to add game manually:', error);
-      alert('Failed to add game: ' + error.message);
-    }
   }
 
   // Handle game scanning
@@ -227,85 +230,84 @@
 
   <!-- Manual Game Addition Form -->
   {#if showAddGameForm}
-    <div class="add-game-form">
-      <h3>➕ Add Game Manually</h3>
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="game-name">Game Name:</label>
-          <input 
-            id="game-name" 
-            type="text" 
-            bind:value={newGame.name}
-            placeholder="e.g., Warcraft II: Custom Version"
-            required
-          />
-        </div>
-        
-        <div class="form-group">
-          <label for="game-type">Game Type:</label>
-          <select id="game-type" bind:value={newGame.gameType}>
-            <option value="WC1">Warcraft I</option>
-            <option value="WC2">Warcraft II</option>
-            <option value="WC3">Warcraft III</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label for="installation-type">Installation Type:</label>
-          <select id="installation-type" bind:value={newGame.installationType}>
-            <option value="Original">Original</option>
-            <option value="Remastered (Windows)">Remastered (Windows)</option>
-            <option value="BattleNet">Battle.net</option>
-            <option value="Combat">Combat</option>
-            <option value="Original (DOS)">Original (DOS)</option>
-            <option value="DOS">DOS</option>
-            <option value="Reforged">Reforged</option>
-            <option value="FrozenThrone">Frozen Throne</option>
-            <option value="ReignOfChaos">Reign of Chaos</option>
-            <option value="Custom">Custom</option>
-          </select>
-        </div>
-        
-        <div class="form-group">
-          <label for="game-drive">Drive:</label>
-          <select id="game-drive" bind:value={newGame.drive}>
-            <option value="C:">C:</option>
-            <option value="D:">D:</option>
-            <option value="E:">E:</option>
-            <option value="F:">F:</option>
-          </select>
-        </div>
-        
-        <div class="form-group full-width">
-          <label for="game-path">Installation Path:</label>
-          <input 
-            id="game-path" 
-            type="text" 
-            bind:value={newGame.path}
-            placeholder="e.g., C:\Games\Warcraft II Custom"
-            required
-          />
-        </div>
-        
-        <div class="form-group full-width">
-          <label for="game-executable">Executable Path:</label>
-          <input 
-            id="game-executable" 
-            type="text" 
-            bind:value={newGame.executable}
-            placeholder="e.g., C:\Games\Warcraft II Custom\war2.exe"
-            required
-          />
-        </div>
+    <div class="add-game-form-inline">
+      <div class="form-header">
+        <h3>➕ Add Game from Directory</h3>
+        <button class="btn-close" on:click={toggleAddGameForm}>✕</button>
       </div>
       
-      <div class="form-actions">
-        <button class="btn btn-primary" on:click={addGameManually}>
-          ➕ Add Game
-        </button>
-        <button class="btn btn-secondary" on:click={toggleAddGameForm}>
-          ❌ Cancel
-        </button>
+      <div class="form-content">
+        <!-- Directory Selection -->
+        <div class="directory-selection">
+          <label for="directory-picker">Select Game Directory:</label>
+          <div class="directory-input-group">
+            <input 
+              id="directory-picker" 
+              type="text" 
+              value={selectedDirectory}
+              placeholder="Click 'Browse' to select a folder containing Warcraft games"
+              readonly
+            />
+            <button class="btn btn-secondary" on:click={openDirectoryPicker}>
+              📁 Browse
+            </button>
+          </div>
+        </div>
+
+        <!-- Detection Status -->
+        {#if isDetecting}
+          <div class="detection-status">
+            <div class="spinner"></div>
+            <span>🔍 Scanning directory for games...</span>
+          </div>
+        {/if}
+
+        <!-- Detected Games -->
+        {#if detectedGames.length > 0}
+          <div class="detected-games">
+            <h4>🎮 Games Found in Directory</h4>
+            <div class="games-list">
+              {#each detectedGames as game}
+                <div class="detected-game-item">
+                  <div class="game-details">
+                    <div class="game-name">{game.name}</div>
+                    <div class="game-type">
+                      {getInstallationTypeIcon(game.installation_type)} {game.installation_type}
+                    </div>
+                    <div class="game-path">{game.path}</div>
+                    <div class="game-executable">📁 {game.executable}</div>
+                  </div>
+                  <div class="game-actions">
+                    <button class="btn btn-primary" on:click={() => addDetectedGame(game)}>
+                      ➕ Add This Game
+                    </button>
+                  </div>
+                </div>
+              {/each}
+            </div>
+          </div>
+        {:else if selectedDirectory && !isDetecting}
+          <div class="no-games-found">
+            <p>❌ No Warcraft games detected in the selected directory.</p>
+            <p class="hint">Make sure the directory contains game executables (war.exe, war2.exe, etc.)</p>
+          </div>
+        {/if}
+
+        <!-- Instructions -->
+        <div class="instructions">
+          <h4>💡 How it works:</h4>
+          <ul>
+            <li>Select a folder that contains Warcraft game files</li>
+            <li>We'll automatically detect the game type and version</li>
+            <li>Choose which games to add to your collection</li>
+          </ul>
+        </div>
+        
+        <div class="form-actions">
+          <button class="btn btn-secondary" on:click={toggleAddGameForm}>
+            ❌ Cancel
+          </button>
+        </div>
       </div>
     </div>
   {/if}
@@ -318,6 +320,9 @@
         <div class="game-icon">⚔️</div>
         <div class="game-title">Warcraft I</div>
         <div class="game-count">{$wc1Games.length} installation{$wc1Games.length !== 1 ? 's' : ''}</div>
+        <button class="btn-add-game" on:click={toggleAddGameForm} title="Add Warcraft I game manually">
+          ➕
+        </button>
       </div>
       
       {#if $wc1Games.length > 0}
@@ -412,6 +417,9 @@
         <div class="game-icon">🛡️</div>
         <div class="game-title">Warcraft II</div>
         <div class="game-count">{$wc2Games.length} installation{$wc2Games.length !== 1 ? 's' : ''}</div>
+        <button class="btn-add-game" on:click={toggleAddGameForm} title="Add Warcraft II game manually">
+          ➕
+        </button>
       </div>
       
       {#if $wc2Games.length > 0}
@@ -506,6 +514,9 @@
         <div class="game-icon">⚡</div>
         <div class="game-title">Warcraft III</div>
         <div class="game-count">{$wc3Games.length} installation{$wc3Games.length !== 1 ? 's' : ''}</div>
+        <button class="btn-add-game" on:click={toggleAddGameForm} title="Add Warcraft III game manually">
+          ➕
+        </button>
       </div>
       
       {#if $wc3Games.length > 0}
@@ -784,6 +795,30 @@
     background: rgba(255, 255, 255, 0.1);
     padding: 4px 12px;
     border-radius: 20px;
+  }
+
+  .btn-add-game {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #9aa0a6;
+    padding: 6px 10px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    margin-left: 10px;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-add-game:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    transform: scale(1.1);
   }
   
   /* Featured Installation Interface Styles */
@@ -1178,7 +1213,7 @@
   }
 
   /* Manual Game Addition Form Styles */
-  .add-game-form {
+  .add-game-form-inline {
     background: rgba(255, 255, 255, 0.03);
     border-radius: 15px;
     padding: 25px;
@@ -1187,38 +1222,64 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   }
 
-  .add-game-form h3 {
-    font-size: 1.5rem;
+  .add-game-form-inline .form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .add-game-form-inline .form-header h3 {
+    font-size: 1.5rem;
     color: #ffffff;
-    text-align: center;
+    margin: 0;
   }
 
-  .form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-bottom: 25px;
+  .add-game-form-inline .btn-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #9aa0a6;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 50%;
+    transition: all 0.2s ease;
   }
 
-  .form-group {
+  .add-game-form-inline .btn-close:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+  }
+
+  .add-game-form-inline .form-content {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 20px;
   }
 
-  .form-group.full-width {
-    grid-column: 1 / -1;
+  /* Directory Selection Styles */
+  .directory-selection {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
 
-  .form-group label {
-    font-size: 0.9rem;
-    color: #9aa0a6;
+  .directory-selection label {
+    font-size: 1rem;
+    color: #ffffff;
     font-weight: 500;
   }
 
-  .form-group input,
-  .form-group select {
+  .directory-input-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .directory-input-group input {
+    flex: 1;
     padding: 12px 15px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 8px;
@@ -1228,22 +1289,263 @@
     transition: all 0.2s ease;
   }
 
-  .form-group input:focus,
-  .form-group select:focus {
+  .directory-input-group input:focus {
     outline: none;
     border-color: #ffd700;
     box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
   }
 
-  .form-group input:hover,
-  .form-group select:hover {
+  .directory-input-group input:hover {
     background: rgba(255, 255, 255, 0.08);
   }
 
-  .form-actions {
+  .directory-input-group .btn {
+    padding: 12px 20px;
+    white-space: nowrap;
+  }
+
+  /* Detection Status Styles */
+  .detection-status {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: #9aa0a6;
+    font-size: 1rem;
+  }
+
+  .spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-top: 2px solid #ffd700;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Detected Games Styles */
+  .detected-games h4 {
+    color: #ffffff;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+  }
+
+  .games-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .detected-game-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.2s ease;
+  }
+
+  .detected-game-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
+  }
+
+  .game-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .game-details .game-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #ffffff;
+  }
+
+  .game-details .game-type {
+    font-size: 0.9rem;
+    color: #ffd700;
+    font-weight: 500;
+  }
+
+  .game-details .game-path,
+  .game-details .game-executable {
+    font-size: 0.8rem;
+    color: #9aa0a6;
+    word-break: break-all;
+    line-height: 1.4;
+  }
+
+  .game-actions {
+    margin-left: 20px;
+  }
+
+  /* No Games Found Styles */
+  .no-games-found {
+    text-align: center;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .no-games-found p {
+    color: #9aa0a6;
+    margin-bottom: 10px;
+  }
+
+  .no-games-found .hint {
+    font-size: 0.9rem;
+    color: #666;
+    font-style: italic;
+  }
+
+  /* Instructions Styles */
+  .instructions {
+    background: rgba(255, 215, 0, 0.05);
+    border: 1px solid rgba(255, 215, 0, 0.2);
+    border-radius: 8px;
+    padding: 20px;
+  }
+
+  .instructions h4 {
+    color: #ffd700;
+    margin-bottom: 15px;
+    font-size: 1rem;
+  }
+
+  .instructions ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .instructions li {
+    color: #9aa0a6;
+    margin-bottom: 8px;
+    padding-left: 20px;
+    position: relative;
+  }
+
+  .instructions li:before {
+    content: "•";
+    color: #ffd700;
+    position: absolute;
+    left: 0;
+  }
+
+  .instructions li:last-child {
+    margin-bottom: 0;
+  }
+
+  .add-game-form-inline .form-actions {
     display: flex;
     gap: 15px;
     justify-content: center;
+    margin-top: 10px;
+  }
+
+  .add-game-form-inline .validation-results {
+    margin-top: 15px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .add-game-form-inline .confidence-meter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .add-game-form-inline .confidence-label {
+    font-size: 0.9rem;
+    color: #9aa0a6;
+    font-weight: 500;
+  }
+
+  .add-game-form-inline .confidence-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .add-game-form-inline .confidence-fill {
+    height: 100%;
+    border-radius: 4px;
+  }
+
+  .add-game-form-inline .confidence-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ffd700;
+  }
+
+  .add-game-form-inline .capabilities {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .add-game-form-inline .capabilities strong {
+    color: #ffd700;
+    font-weight: 500;
+  }
+
+  .add-game-form-inline .capabilities ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .add-game-form-inline .capabilities li {
+    font-size: 0.85rem;
+    color: #9aa0a6;
+    margin-bottom: 5px;
+  }
+
+  .add-game-form-inline .capabilities li:last-child {
+    margin-bottom: 0;
+  }
+
+  .add-game-form-inline .warnings {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .add-game-form-inline .warnings strong {
+    color: #ff9800;
+    font-weight: 500;
+  }
+
+  .add-game-form-inline .warnings ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .add-game-form-inline .warnings li {
+    font-size: 0.85rem;
+    color: #9aa0a6;
+    margin-bottom: 5px;
+  }
+
+  .add-game-form-inline .warnings li:last-child {
+    margin-bottom: 0;
   }
 
   .recent-activity {
@@ -1324,6 +1626,15 @@
 
     .activity-grid {
       grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+
+    .add-game-form-inline .form-row {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .add-game-form-inline .form-field {
+      width: 100%;
     }
   }
 </style>

@@ -1,8 +1,9 @@
 use std::sync::Arc;
 use tokio::sync::Mutex;
-use anyhow::Result;
+use anyhow::{Result, anyhow};
+use log::{info, warn, debug};
 use serde::{Serialize, Deserialize};
-use log::{info, warn, error, debug};
+use chrono::{DateTime, Utc};
 
 use crate::memory_hooks::MemoryHookManager;
 use crate::function_hooks::FunctionHookManager;
@@ -165,7 +166,7 @@ pub struct HeadlessGameEngine {
     ai_controller: Arc<AIController>,
     data_exporter: Arc<DataExporter>,
     replay_system: Arc<ReplaySystem>,
-    input_simulator: Arc<InputSimulator>,
+    input_simulator: Arc<Mutex<InputSimulator>>,  // Wrap in Mutex for mutable access
     game_state: Arc<Mutex<HeadlessGameState>>,
     running: Arc<Mutex<bool>>,
 }
@@ -180,7 +181,7 @@ impl HeadlessGameEngine {
         let ai_controller = Arc::new(AIController::new().await?);
         let data_exporter = Arc::new(DataExporter::new().await?);
         let replay_system = Arc::new(ReplaySystem::new().await?);
-        let input_simulator = Arc::new(InputSimulator::new());
+        let input_simulator = Arc::new(Mutex::new(InputSimulator::new()));
         
         let game_state = Arc::new(Mutex::new(HeadlessGameState::default()));
         let running = Arc::new(Mutex::new(false));
@@ -207,7 +208,7 @@ impl HeadlessGameEngine {
         ai_controller: Arc<AIController>,
         data_exporter: Arc<DataExporter>,
         replay_system: Arc<ReplaySystem>,
-        input_simulator: Arc<InputSimulator>,
+        input_simulator: Arc<Mutex<InputSimulator>>,
     ) -> Result<Self> {
         info!("🔧 Initializing Headless Game Engine with components...");
         
@@ -256,27 +257,25 @@ impl HeadlessGameEngine {
         // We just need to install the hooks
         self.function_hooks.install_all_hooks().await?;
         
-        // Initialize input simulator for AI control
-        // Note: We need to get a mutable reference to initialize it
-        if let Some(simulator) = Arc::get_mut(&mut self.input_simulator) {
+        // Initialize input simulator
+        {
+            let mut simulator = self.input_simulator.lock().await;
             simulator.initialize().await?;
             
-            // Check if Warcraft II is already running
+            // Check if Warcraft II is running
             if !simulator.is_warcraft_ii_running().await {
-                info!("🎮 Warcraft II not running. Attempting to launch...");
+                info!("🎮 Warcraft II not running, attempting to launch...");
                 
-                // Try to launch the game
+                // Try to launch Warcraft II
                 match simulator.launch_warcraft_ii().await {
-                    Ok(_) => {
+                    Ok(()) => {
                         info!("✅ Warcraft II launched successfully");
                     }
                     Err(e) => {
-                        warn!("⚠️ Failed to launch Warcraft II: {}. Continuing with simulation mode.", e);
-                        info!("💡 The system will run in simulation mode until Warcraft II is manually launched.");
+                        warn!("⚠️ Failed to launch Warcraft II: {}", e);
+                        info!("💡 Please launch Warcraft II manually and try again");
                     }
                 }
-            } else {
-                info!("✅ Warcraft II is already running");
             }
         }
         
@@ -323,29 +322,21 @@ impl HeadlessGameEngine {
     }
     
     async fn update_memory_state(&mut self) -> Result<()> {
-        // Try to read real game memory if available
-        if let Some(simulator) = Arc::get_mut(&mut self.input_simulator) {
+        // Check if Warcraft II is running before attempting to read memory
+        {
+            let simulator = self.input_simulator.lock().await;
             if simulator.is_warcraft_ii_running().await {
-                info!("🔍 Reading real game memory...");
+                info!("🎮 Warcraft II is running, attempting to read real memory...");
                 
-                // Try to read from common Warcraft II memory addresses
-                let common_addresses = vec![
-                    0x00400000, // Common base address
-                    0x00800000, // Extended memory
-                    0x00C00000, // Additional memory
-                ];
+                // Try to read memory from multiple base addresses
+                let base_addresses = vec![0x00400000, 0x10000000, 0x20000000];
                 
-                for &base_addr in &common_addresses {
-                    match self.memory_hooks.read_game_memory(base_addr as u64, 4096).await {
+                for base_addr in base_addresses {
+                    match self.memory_hooks.read_game_memory(base_addr, 4096).await {
                         Ok(memory_data) => {
-                            info!("✅ Successfully read memory from 0x{:x} ({} bytes)", base_addr, memory_data.len());
-                            
-                            // Parse the memory data to extract game state
                             match self.memory_hooks.parse_game_state(&memory_data).await {
                                 Ok(memory_state) => {
-                                    info!("✅ Parsed game state: {}", memory_state.game_phase);
-                                    
-                                    // Update the game state with real data
+                                    // Update game state with real memory data
                                     let mut game_state = self.game_state.lock().await;
                                     game_state.update_from_memory_state(&memory_state);
                                     
@@ -399,114 +390,126 @@ impl HeadlessGameEngine {
         for action in actions {
             debug!("🤖 Executing AI action: {}", action);
             
-            // Execute the action based on its type
-            match action.as_str() {
-                "navigate_to_start_game" => {
-                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::StartGame).await?;
-                }
-                "build_barracks" => {
-                    self.ai_build_building("Barracks", 100, 100).await?;
-                }
-                "build_town_hall" => {
-                    self.ai_build_building("Town Hall", 64, 64).await?;
-                }
-                "build_farm" => {
-                    self.ai_build_building("Farm", 80, 80).await?;
-                }
-                "train_peasants" => {
-                    self.ai_train_unit("Peasant").await?;
-                }
-                "train_archers" => {
-                    self.ai_train_unit("Archer").await?;
-                }
-                "attack_move_forward" => {
-                    self.ai_attack_move(200, 200).await?;
-                }
-                "focus_on_economy" => {
-                    // Focus on economic buildings
-                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildFarm).await?;
-                }
-                "focus_on_military" => {
-                    // Focus on military buildings
-                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildBarracks).await?;
-                }
-                "balanced_development" => {
-                    // Balanced approach
-                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildTownHall).await?;
-                }
-                "fast_military_build" => {
-                    // Quick military build
-                    self.ai_build_building("Barracks", 120, 120).await?;
-                }
-                "rush_attack" => {
-                    // Rush attack
-                    self.ai_attack_move(300, 300).await?;
-                }
-                "build_defensive_structures" => {
-                    // Build defenses
-                    self.ai_build_building("Tower", 90, 90).await?;
-                }
-                "expand_economy_slowly" => {
-                    // Slow economic expansion
-                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildFarm).await?;
-                }
-                // Formation actions
-                action if action.starts_with("formation_line_") => {
-                    self.execute_formation_action(&action).await?;
-                }
-                action if action.starts_with("formation_wedge_") => {
-                    self.execute_formation_action(&action).await?;
-                }
-                action if action.starts_with("formation_circle_") => {
-                    self.execute_formation_action(&action).await?;
-                }
-                // Advanced combat tactics
-                "scout_expand" => {
-                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildScoutTower).await?;
-                }
-                "defensive_positioning" => {
-                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildTower).await?;
-                }
-                "emergency_defense" => {
-                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildTower).await?;
-                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildTower).await?;
-                }
-                "formation_attack" => {
-                    self.ai_attack_move(250, 250).await?;
-                }
-                // Resource optimization actions
-                "expand_production" => {
-                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildBarracks).await?;
-                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildWorkshop).await?;
-                }
-                "balance_economy" => {
-                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildFarm).await?;
-                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildMine).await?;
-                }
-                "emergency_economy" => {
-                    self.execute_game_hotkey(crate::input_simulator::GameHotkey::BuildFarm).await?;
-                }
-                "optimize_building_layout" => {
-                    // This would involve analyzing current building positions and optimizing
-                    debug!("🏗️ Optimizing building layout...");
-                }
-                _ => {
-                    // Unknown action - log and skip
-                    debug!("⚠️ Unknown AI action: {}", action);
-                }
-            }
-            
-            // Record the action for learning
-            if let Some(ai_controller) = Arc::get_mut(&mut self.ai_controller.clone()) {
-                ai_controller.record_learning_example(
-                    "AI Decision".to_string(),
-                    action.clone(),
-                    "Executed".to_string(),
-                    0.5, // Default success score, will be updated based on outcome
-                ).await?;
+            // Parse and execute the action using a flexible parser
+            self.parse_and_execute_action(&action).await?;
+        }
+        
+        Ok(())
+    }
+    
+    /// Parse and execute AI actions with flexible parsing
+    async fn parse_and_execute_action(&self, action: &str) -> Result<()> {
+        let action_lower = action.to_lowercase();
+        
+        // Building actions: "build TownHall", "build Farm", etc.
+        if action_lower.starts_with("build ") {
+            let building_type = action[6..].trim(); // Remove "build " prefix
+            let (x, y) = self.get_optimal_building_position(building_type).await?;
+            self.ai_build_building(building_type, x, y).await?;
+            return Ok(());
+        }
+        
+        // Training actions: "train Peasant", "train Footman", etc.
+        if action_lower.starts_with("train ") {
+            let unit_type = action[6..].trim(); // Remove "train " prefix
+            self.ai_train_unit(unit_type).await?;
+            return Ok(());
+        }
+        
+        // Attack actions: "attack 64 64", "attack 128 128", etc.
+        if action_lower.starts_with("attack ") {
+            let coords = action[7..].trim(); // Remove "attack " prefix
+            if let Some((x, y)) = self.parse_coordinates(coords) {
+                self.ai_attack_move(x, y).await?;
+                return Ok(());
             }
         }
         
+        // Click actions: "click 32 32", "click 64 64", etc.
+        if action_lower.starts_with("click ") {
+            let coords = action[6..].trim(); // Remove "click " prefix
+            if let Some((x, y)) = self.parse_coordinates(coords) {
+                let mouse_action = crate::input_simulator::MouseAction::Click { x, y };
+                self.execute_mouse_action(mouse_action).await?;
+                return Ok(());
+            }
+        }
+        
+        // Formation actions: "formation_line", "formation_wedge", etc.
+        if action_lower.starts_with("formation_") {
+            self.execute_formation_action(action).await?;
+            return Ok(());
+        }
+        
+        // Resource gathering actions
+        if action_lower.contains("gather") || action_lower.contains("mine") {
+            self.execute_resource_gathering_action(action).await?;
+            return Ok(());
+        }
+        
+        // Default: try to execute as a hotkey
+        if let Ok(hotkey) = self.parse_hotkey_from_action(action) {
+            self.execute_game_hotkey(hotkey).await?;
+            return Ok(());
+        }
+        
+        // Unknown action - log and skip
+        warn!("⚠️ Unknown AI action: {}", action);
+        Ok(())
+    }
+    
+    /// Get optimal building position based on building type and current game state
+    async fn get_optimal_building_position(&self, building_type: &str) -> Result<(i32, i32)> {
+        // For now, return a simple position. In a real implementation,
+        // this would analyze the current map and building layout
+        match building_type.to_lowercase().as_str() {
+            "townhall" | "town hall" => Ok((64, 64)),
+            "farm" => Ok((80, 80)),
+            "barracks" => Ok((100, 100)),
+            "blacksmith" => Ok((120, 120)),
+            "tower" => Ok((90, 90)),
+            _ => Ok((100, 100)), // Default position
+        }
+    }
+    
+    /// Parse coordinates from string like "64 64" or "128 128"
+    fn parse_coordinates(&self, coords: &str) -> Option<(i32, i32)> {
+        let parts: Vec<&str> = coords.split_whitespace().collect();
+        if parts.len() == 2 {
+            if let (Ok(x), Ok(y)) = (parts[0].parse::<i32>(), parts[1].parse::<i32>()) {
+                return Some((x, y));
+            }
+        }
+        None
+    }
+    
+    /// Parse hotkey from action string
+    fn parse_hotkey_from_action(&self, action: &str) -> Result<crate::input_simulator::GameHotkey> {
+        match action.to_lowercase().as_str() {
+            "start_game" => Ok(crate::input_simulator::GameHotkey::StartGame),
+            "build_farm" => Ok(crate::input_simulator::GameHotkey::BuildFarm),
+            "build_barracks" => Ok(crate::input_simulator::GameHotkey::BuildBarracks),
+            "build_town_hall" => Ok(crate::input_simulator::GameHotkey::BuildTownHall),
+            "build_peasant" => Ok(crate::input_simulator::GameHotkey::BuildPeasant),
+            "build_archer" => Ok(crate::input_simulator::GameHotkey::BuildArcher),
+            "build_knight" => Ok(crate::input_simulator::GameHotkey::BuildKnight),
+            "attack_move" => Ok(crate::input_simulator::GameHotkey::Attack),
+            _ => Err(anyhow!("Unknown hotkey action: {}", action)),
+        }
+    }
+    
+    /// Execute resource gathering action
+    async fn execute_resource_gathering_action(&self, action: &str) -> Result<()> {
+        // Parse resource type and location from action
+        if action.to_lowercase().contains("gold") {
+            // Send workers to gold mine
+            let mouse_action = crate::input_simulator::MouseAction::Click { x: 32, y: 32 };
+            self.execute_mouse_action(mouse_action).await?;
+        } else if action.to_lowercase().contains("wood") {
+            // Send workers to forest
+            let mouse_action = crate::input_simulator::MouseAction::Click { x: 96, y: 96 };
+            self.execute_mouse_action(mouse_action).await?;
+        }
         Ok(())
     }
     
@@ -595,10 +598,11 @@ impl HeadlessGameEngine {
     pub async fn execute_game_hotkey(&self, hotkey: crate::input_simulator::GameHotkey) -> Result<()> {
         info!("🎯 Executing game hotkey: {:?}", hotkey);
         
-        // For now, we'll just log the action since we can't get mutable access to Arc components
-        // In a real implementation, this would require restructuring the component architecture
-        info!("✅ Hotkey {:?} execution logged (mutable access not available)", hotkey);
+        // Now we can actually execute the hotkey using the mutex-protected input simulator
+        let mut input_sim = self.input_simulator.lock().await;
+        input_sim.execute_hotkey(hotkey.clone()).await?;
         
+        info!("✅ Hotkey {:?} executed successfully", hotkey);
         Ok(())
     }
     
@@ -606,10 +610,11 @@ impl HeadlessGameEngine {
     pub async fn execute_mouse_action(&self, action: crate::input_simulator::MouseAction) -> Result<()> {
         info!("🖱️ Executing mouse action: {:?}", action);
         
-        // For now, we'll just log the action since we can't get mutable access to Arc components
-        // In a real implementation, this would require restructuring the component architecture
-        info!("✅ Mouse action {:?} execution logged (mutable access not available)", action);
+        // Now we can actually execute the mouse action using the mutex-protected input simulator
+        let mut input_sim = self.input_simulator.lock().await;
+        input_sim.execute_mouse_action(action.clone()).await?;
         
+        info!("✅ Mouse action {:?} executed successfully", action);
         Ok(())
     }
     
@@ -617,10 +622,17 @@ impl HeadlessGameEngine {
     pub async fn ai_build_building(&self, building_type: &str, x: i32, y: i32) -> Result<()> {
         info!("🏗️ AI building {} at ({}, {})", building_type, x, y);
         
-        // For now, we'll just log the action since we can't get mutable access to Arc components
-        // In a real implementation, this would require restructuring the component architecture
-        info!("✅ Building {} at ({}, {}) logged (mutable access not available)", building_type, x, y);
+        // Now we can actually execute the building action using the mutex-protected input simulator
+        let mut input_sim = self.input_simulator.lock().await;
         
+        // Select the building type from the build menu
+        input_sim.execute_hotkey(crate::input_simulator::GameHotkey::BuildTownHall).await?;
+        
+        // Move mouse to position and click to place building
+        let mouse_action = crate::input_simulator::MouseAction::Click { x, y };
+        input_sim.execute_mouse_action(mouse_action).await?;
+        
+        info!("✅ Building {} at ({}, {}) executed successfully", building_type, x, y);
         Ok(())
     }
     
@@ -628,10 +640,27 @@ impl HeadlessGameEngine {
     pub async fn ai_train_unit(&self, unit_type: &str) -> Result<()> {
         info!("⚔️ AI training {}", unit_type);
         
-        // For now, we'll just log the action since we can't get mutable access to Arc components
-        // In a real implementation, this would require restructuring the component architecture
-        info!("✅ Training {} logged (mutable access not available)", unit_type);
+        // Now we can actually execute the unit training action using the mutex-protected input simulator
+        let mut input_sim = self.input_simulator.lock().await;
         
+        // Select the appropriate building for training this unit type
+        match unit_type {
+            "Peasant" => {
+                input_sim.execute_hotkey(crate::input_simulator::GameHotkey::BuildPeasant).await?;
+            }
+            "Archer" => {
+                input_sim.execute_hotkey(crate::input_simulator::GameHotkey::BuildArcher).await?;
+            }
+            "Knight" => {
+                input_sim.execute_hotkey(crate::input_simulator::GameHotkey::BuildKnight).await?;
+            }
+            _ => {
+                // Generic unit training - use the build menu
+                input_sim.execute_hotkey(crate::input_simulator::GameHotkey::BuildWorker).await?;
+            }
+        }
+        
+        info!("✅ Training {} executed successfully", unit_type);
         Ok(())
     }
     
@@ -639,10 +668,17 @@ impl HeadlessGameEngine {
     pub async fn ai_attack_move(&self, x: i32, y: i32) -> Result<()> {
         info!("⚔️ AI attack moving to ({}, {})", x, y);
         
-        // For now, we'll just log the action since we can't get mutable access to Arc components
-        // In a real implementation, this would require restructuring the component architecture
-        info!("✅ Attack move to ({}, {}) logged (mutable access not available)", x, y);
+        // Now we can actually execute the attack move action using the mutex-protected input simulator
+        let mut input_sim = self.input_simulator.lock().await;
         
+        // Use attack move hotkey (A key) and then click at the target position
+        input_sim.execute_hotkey(crate::input_simulator::GameHotkey::Attack).await?;
+        
+        // Move mouse to target position and click
+        let mouse_action = crate::input_simulator::MouseAction::Click { x, y };
+        input_sim.execute_mouse_action(mouse_action).await?;
+        
+        info!("✅ Attack move to ({}, {}) executed successfully", x, y);
         Ok(())
     }
     
@@ -650,16 +686,27 @@ impl HeadlessGameEngine {
     pub async fn ai_select_units(&self, start_x: i32, start_y: i32, end_x: i32, end_y: i32) -> Result<()> {
         info!("👆 AI selecting units from ({}, {}) to ({}, {})", start_x, start_y, end_x, end_y);
         
-        // For now, we'll just log the action since we can't get mutable access to Arc components
-        // In a real implementation, this would require restructuring the component architecture
-        info!("✅ Unit selection from ({}, {}) to ({}, {}) logged (mutable access not available)", start_x, start_y, end_x, end_y);
+        // Now we can actually execute the unit selection action using the mutex-protected input simulator
+        let mut input_sim = self.input_simulator.lock().await;
         
+        // Click and drag to select units in the specified area
+        let start_action = crate::input_simulator::MouseAction::Click { x: start_x, y: start_y };
+        let end_action = crate::input_simulator::MouseAction::Click { x: end_x, y: end_y };
+        
+        // Click at start position
+        input_sim.execute_mouse_action(start_action).await?;
+        
+        // Drag to end position (this would need to be implemented as a drag action)
+        // For now, we'll use a simple click at the end position
+        input_sim.execute_mouse_action(end_action).await?;
+        
+        info!("✅ Unit selection from ({}, {}) to ({}, {}) executed successfully", start_x, start_y, end_x, end_y);
         Ok(())
     }
     
     /// Get the current status of the input simulator
-    pub fn get_input_status(&self) -> crate::input_simulator::InputSimulatorStatus {
-        self.input_simulator.get_status()
+    pub async fn get_input_status(&self) -> crate::input_simulator::InputSimulatorStatus {
+        self.input_simulator.lock().await.get_status()
     }
     
     async fn cleanup_game(&mut self) -> Result<()> {
