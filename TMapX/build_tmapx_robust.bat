@@ -12,12 +12,13 @@ echo.
 echo Building TMapX Tauri application...
 echo.
 
-echo Starting Tauri build in a separate window...
-echo This window will stay open for you to review the results.
+echo Starting Tauri build in this window...
+echo All logs and output will be displayed here.
 echo.
 
-REM Run the build in a separate window and wait for it to complete
-start /wait cmd /c "npm run tauri dev"
+REM Run the build in the same window and capture the exit code
+call npm run tauri dev
+set BUILD_EXIT_CODE=%ERRORLEVEL%
 
 echo.
 echo ========================================
@@ -25,10 +26,16 @@ echo BUILD PROCESS COMPLETED
 echo ========================================
 echo.
 
-echo The build process has finished.
-echo Check the other window for any error messages.
-echo.
+REM Check if the build was successful
+if %BUILD_EXIT_CODE% EQU 0 (
+    echo SUCCESS: Tauri development server has finished successfully.
+    echo The application should now be running.
+) else (
+    echo ERROR: Build process encountered an error (Exit code: %BUILD_EXIT_CODE%)
+    echo Please check the error messages above for details.
+)
 
+echo.
 echo ========================================
 echo THIS WINDOW WILL STAY OPEN
 echo ========================================
