@@ -331,65 +331,38 @@ impl PudParser {
                     // Map data chunk - this likely contains the actual map information
                     println!("Found MAP chunk (size: {})", chunk_size);
                     
-                    // Try multiple parsing strategies for the MAP chunk
-                    let mut dimensions_found = false;
-                    
-                    // Strategy 1: Try reading as u32 dimensions
-                    if chunk_size >= 8 && !dimensions_found {
-                        let possible_width = self.read_u32_be();
-                        let possible_height = self.read_u32_be();
-                        println!("Strategy 1 - Possible dimensions: {}x{}", possible_width, possible_height);
+                    // For Warcraft II PUD files, the MAP chunk structure is:
+                    // - First 4 bytes: Map width (u16) and height (u16)
+                    // - Next 4 bytes: Player count and other flags
+                    if chunk_size >= 8 {
+                        // Read width and height directly
+                        let width = self.read_u16_be();
+                        let height = self.read_u16_be();
+                        let player_flags = self.read_u16_be();
+                        let other_flags = self.read_u16_be();
                         
-                        if possible_width > 0 && possible_width <= 256 && 
-                           possible_height > 0 && possible_height <= 256 {
-                            map_info.width = possible_width as u16;
-                            map_info.height = possible_height as u16;
-                            dimensions_found = true;
-                            println!("✓ Using u32 dimensions from MAP chunk: {}x{}", map_info.width, map_info.height);
-                        } else {
-                            // Reset position for next strategy
-                            self.position -= 8;
-                        }
-                    }
-                    
-                    // Strategy 2: Try reading as u16 dimensions
-                    if chunk_size >= 4 && !dimensions_found {
-                        let possible_width = self.read_u16_be();
-                        let possible_height = self.read_u16_be();
-                        println!("Strategy 2 - Possible dimensions: {}x{}", possible_width, possible_height);
+                        println!("MAP chunk raw data: width={}, height={}, player_flags={:04x}, other_flags={:04x}", 
+                               width, height, player_flags, other_flags);
                         
-                        if possible_width > 0 && possible_width <= 256 && 
-                           possible_height > 0 && possible_height <= 256 {
-                            map_info.width = possible_width;
-                            map_info.height = possible_height;
-                            dimensions_found = true;
-                            println!("✓ Using u16 dimensions from MAP chunk: {}x{}", map_info.width, map_info.height);
+                        // Validate dimensions
+                        if width > 0 && width <= 256 && height > 0 && height <= 256 {
+                            map_info.width = width;
+                            map_info.height = height;
+                            
+                            // Count active players from player_flags
+                            let mut player_count = 0;
+                            for i in 0..8 {
+                                if (player_flags & (1 << i)) != 0 {
+                                    player_count += 1;
+                                }
+                            }
+                            map_info.max_players = player_count;
+                            
+                            println!("✓ Using MAP chunk dimensions: {}x{} ({} players)", 
+                                   map_info.width, map_info.height, map_info.max_players);
                         } else {
-                            // Reset position for next strategy
-                            self.position -= 4;
+                            println!("⚠️ Invalid dimensions from MAP chunk: {}x{}", width, height);
                         }
-                    }
-                    
-                    // Strategy 3: Try reading as individual bytes (for very small maps)
-                    if chunk_size >= 2 && !dimensions_found {
-                        let possible_width = self.read_u8() as u16;
-                        let possible_height = self.read_u8() as u16;
-                        println!("Strategy 3 - Possible dimensions: {}x{}", possible_width, possible_height);
-                        
-                        if possible_width > 0 && possible_width <= 128 && 
-                           possible_height > 0 && possible_height <= 128 {
-                            map_info.width = possible_width;
-                            map_info.height = possible_height;
-                            dimensions_found = true;
-                            println!("✓ Using u8 dimensions from MAP chunk: {}x{}", map_info.width, map_info.height);
-                        } else {
-                            // Reset position
-                            self.position -= 2;
-                        }
-                    }
-                    
-                    if !dimensions_found {
-                        println!("⚠️ Could not determine dimensions from MAP chunk, will try other chunks");
                     }
                     
                     // Skip the rest of the chunk

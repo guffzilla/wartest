@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { invoke } from '@tauri-apps/api/core';
+  import { open } from '@tauri-apps/plugin-dialog';
 
   let selectedFilePath: string | null = null;
   let isUploading = false;
@@ -10,23 +11,54 @@
   let analysisComplete = false;
   let testResult: string = '';
 
-  async function selectFile() {
+  async function loadTestFile() {
     try {
-      const result = await invoke('select_map_file');
-      if (result) {
-        selectedFilePath = result as string;
+      errorMessage = '';
+      testResult = '';
+      
+      // Use the test file directly
+      const result = await invoke('test_pud_parser', { filePath: 'MapTests/Garden of War.pud' });
+      testResult = result as string;
+      
+      console.log('Test file loaded:', testResult);
+
+    } catch (error) {
+      console.error('Test file error:', error);
+      errorMessage = `Failed to load test file: ${error}`;
+      testResult = '';
+    }
+  }
+
+  async function uploadMap() {
+    console.log('uploadMap function called');
+    try {
+      console.log('About to open file dialog...');
+      const selected = await open({
+        multiple: false,
+        filters: [{
+          name: 'Warcraft II Maps',
+          extensions: ['pud']
+        }],
+        title: 'Select PUD Map File'
+      });
+      
+      console.log('Dialog returned:', selected);
+      if (selected && selected.length > 0) {
+        selectedFilePath = selected[0];
         errorMessage = '';
         console.log('Selected file:', selectedFilePath);
+      } else {
+        console.log('No file selected or dialog cancelled');
       }
     } catch (error) {
       console.error('Error selecting file:', error);
-      errorMessage = 'Failed to select file';
+      errorMessage = `Failed to select file: ${error}`;
     }
   }
 
   async function testPudParser() {
     if (!selectedFilePath) {
-      errorMessage = 'Please select a map file first';
+      errorMessage = 'Please select a map file first using the Upload Map button';
       return;
     }
 
@@ -42,15 +74,16 @@
     } catch (error) {
       console.error('PUD test error:', error);
       errorMessage = `Failed to test PUD parser: ${error}`;
+      testResult = '';
     }
   }
 
   async function analyzeMap() {
     if (!selectedFilePath) {
-      errorMessage = 'Please select a map file first';
+      errorMessage = 'Please select a map file first using the Upload Map button';
       return;
     }
-
+    
     isUploading = true;
     uploadProgress = 0;
     errorMessage = '';
@@ -111,251 +144,229 @@
 
 <main>
   <div class="container">
-    <h1>🗺️ Map Extraction Tool</h1>
+    <h1>🗺️ TMapX - Warcraft II Map Analyzer</h1>
     
-    <div class="upload-section">
-      <h2>Upload Warcraft II Map</h2>
+    <div class="button-section">
+      <button 
+        class="action-btn test-btn" 
+        on:click={loadTestFile}
+        disabled={isUploading}
+      >
+        🧪 Load Test File
+      </button>
       
-      <div class="upload-area">
-        <button 
-          class="upload-btn" 
-          on:click={selectFile}
-          disabled={isUploading}
-        >
-          📁 Select Map File
-        </button>
-        
-        {#if selectedFilePath}
-          <button 
-            class="test-btn" 
-            on:click={testPudParser}
-            disabled={isUploading}
-          >
-            🔍 Test PUD Parser
-          </button>
-        {/if}
-        
-        {#if selectedFilePath}
-          <div class="file-info">
-            <p>Selected: {selectedFilePath.split('\\').pop() || selectedFilePath.split('/').pop()}</p>
-          </div>
-        {/if}
-        
-        {#if isUploading}
-          <div class="progress">
-            <div class="progress-bar" style="width: {uploadProgress}%"></div>
-            <span>{uploadProgress}%</span>
-          </div>
-        {/if}
-        
-        {#if errorMessage}
-          <div class="error">
-            {errorMessage}
-          </div>
-        {/if}
-        
-        {#if testResult}
-          <div class="test-result">
-            <h3>PUD Parser Test Result:</h3>
-            <pre>{testResult}</pre>
-          </div>
-        {/if}
-        
-        <button 
-          class="analyze-btn" 
-          on:click={analyzeMap}
-          disabled={!selectedFilePath || isUploading}
-        >
-          🔍 Analyze Map
-        </button>
-      </div>
+      <button 
+        class="action-btn upload-btn" 
+        on:click={uploadMap}
+        disabled={isUploading}
+      >
+        📁 Upload Map
+      </button>
+      
+      <button 
+        class="action-btn analyze-btn" 
+        on:click={testPudParser}
+        disabled={!selectedFilePath || isUploading}
+      >
+        🔍 Test PUD Parser
+      </button>
     </div>
     
-                    {#if analysisComplete && mapData}
-          <div class="results-section">
-            <div class="results-header">
-              <h2>Map Analysis Results</h2>
-              <button 
-                class="export-btn" 
-                on:click={exportReport}
-                title="Export analysis report"
-              >
-                📄 Export Report
-              </button>
-            </div>
-        
-        <div class="map-info">
-          <h3>Map Information</h3>
-          <div class="info-grid">
-            <div class="info-item">
-              <strong>Name:</strong> {mapData.name}
-            </div>
-            <div class="info-item">
-              <strong>Size:</strong> {mapData.width} x {mapData.height}
-            </div>
-            <div class="info-item">
-              <strong>Players:</strong> {mapData.player_count}
-            </div>
-            <div class="info-item">
-              <strong>Total Tiles:</strong> {mapData.terrain_analysis?.total_tiles || 0}
-            </div>
-          </div>
-        </div>
-        
-        <!-- Terrain Analysis -->
-        <div class="terrain-section">
-          <h3>🌍 Terrain Analysis</h3>
-          <div class="terrain-overview">
-            <div class="terrain-chart">
-              <div class="terrain-bar">
-                <div class="terrain-fill grass" style="width: {mapData.terrain_analysis?.grass_percentage || 0}%"></div>
-                <span class="terrain-label">Grass: {mapData.terrain_analysis?.grass_percentage?.toFixed(1) || 0}%</span>
-              </div>
-              <div class="terrain-bar">
-                <div class="terrain-fill water" style="width: {mapData.terrain_analysis?.water_percentage || 0}%"></div>
-                <span class="terrain-label">Water: {mapData.terrain_analysis?.water_percentage?.toFixed(1) || 0}%</span>
-              </div>
-              <div class="terrain-bar">
-                <div class="terrain-fill forest" style="width: {mapData.terrain_analysis?.tree_percentage || 0}%"></div>
-                <span class="terrain-label">Forest: {mapData.terrain_analysis?.tree_percentage?.toFixed(1) || 0}%</span>
-              </div>
-              <div class="terrain-bar">
-                <div class="terrain-fill mountain" style="width: {mapData.terrain_analysis?.mountain_percentage || 0}%"></div>
-                <span class="terrain-label">Mountains: {mapData.terrain_analysis?.mountain_percentage?.toFixed(1) || 0}%</span>
-              </div>
-            </div>
-            
-            <div class="terrain-breakdown">
-              <h4>Detailed Terrain Breakdown</h4>
-              <div class="terrain-list">
-                {#each mapData.terrain_analysis?.terrain_breakdown || []}
-                  <div class="terrain-item">
-                    <span class="terrain-name">{.name}</span>
-                    <span class="terrain-count">{.count} tiles</span>
-                    <span class="terrain-percentage">{.percentage.toFixed(1)}%</span>
-                  </div>
-                {/each}
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <!-- Visual Map Preview -->
-        <div class="map-preview-section">
-          <h3>🗺️ Map Preview</h3>
-          <div class="map-preview-container">
-            <div class="map-grid" style="grid-template-columns: repeat({Math.min(mapData.width, 50)}, 1fr); grid-template-rows: repeat({Math.min(mapData.height, 50)}, 1fr);">
-              {#each Array(Math.min(mapData.width * mapData.height, 2500)) as _, i}
-                <div class="map-tile"></div>
-              {/each}
-            </div>
-            
-            <!-- Overlay elements -->
-            {#each mapData.resources as resource}
-              <div 
-                class="resource-marker goldmine" 
-                style="left: {(resource.x / mapData.width) * 100}%; top: {(resource.y / mapData.height) * 100}%;"
-                title="Goldmine at ({resource.x}, {resource.y})"
-              >💰</div>
-            {/each}
-            
-            {#each mapData.buildings as building}
-              <div 
-                class="building-marker townhall" 
-                style="left: {(building.x / mapData.width) * 100}%; top: {(building.y / mapData.height) * 100}%;"
-                title="{building.building_type} (Player {building.owner}) at ({building.x}, {building.y})"
-              >🏰</div>
-            {/each}
-            
-            {#each mapData.units as unit}
-              <div 
-                class="unit-marker peasant" 
-                style="left: {(unit.x / mapData.width) * 100}%; top: {(unit.y / mapData.height) * 100}%;"
-                title="{unit.unit_type} (Player {unit.owner}) at ({unit.x}, {unit.y})"
-              >👤</div>
-            {/each}
-          </div>
-          
-          <div class="map-legend">
-            <div class="legend-item">
-              <span class="legend-icon">💰</span>
-              <span>Goldmine</span>
-            </div>
-            <div class="legend-item">
-              <span class="legend-icon">🏰</span>
-              <span>Town Hall</span>
-            </div>
-            <div class="legend-item">
-              <span class="legend-icon">👤</span>
-              <span>Unit</span>
-            </div>
-          </div>
-        </div>
-        
-        <div class="resources-section">
-          <h3>💰 Resource Locations</h3>
-          <div class="resource-list">
-            {#each mapData.resources as resource}
-              <div class="resource-item">
-                <span class="resource-type">{resource.resource_type}</span>
-                <span class="resource-location">({resource.x}, {resource.y})</span>
-                <span class="resource-amount">{resource.amount}</span>
-                {#if resource.is_goldmine}
-                  <span class="goldmine-badge">🏆 Goldmine</span>
-                {/if}
-              </div>
-            {/each}
-          </div>
-        </div>
-        
-        <div class="units-section">
-          <h3>⚔️ Units</h3>
-          <div class="unit-list">
-            {#each mapData.units as unit}
-              <div class="unit-item">
-                <span class="unit-type">{unit.unit_type}</span>
-                <span class="unit-location">({unit.x}, {unit.y})</span>
-                <span class="unit-owner">Player {unit.owner}</span>
-              </div>
-            {/each}
-          </div>
-        </div>
-        
-        <div class="buildings-section">
-          <h3>🏗️ Buildings</h3>
-          <div class="building-list">
-            {#each mapData.buildings as building}
-              <div class="building-item">
-                <span class="building-type">{building.building_type}</span>
-                <span class="building-location">({building.x}, {building.y})</span>
-                <span class="building-owner">Player {building.owner}</span>
-                {#if building.is_completed}
-                  <span class="completed-badge">✅ Complete</span>
-                {/if}
-              </div>
-            {/each}
-          </div>
-        </div>
+    {#if selectedFilePath}
+      <div class="file-info">
+        <p>Selected: {selectedFilePath.split('\\').pop() || selectedFilePath.split('/').pop()}</p>
       </div>
     {/if}
     
-    <div class="info-section">
-      <h3>Supported Formats</h3>
-      <ul>
-        <li>Warcraft II Maps (.w2m)</li>
-        <li>Warcraft II Campaign Maps (.w2x)</li>
-      </ul>
+    {#if isUploading}
+      <div class="progress">
+        <div class="progress-bar" style="width: {uploadProgress}%"></div>
+        <span>{uploadProgress}%</span>
+      </div>
+    {/if}
+    
+    {#if errorMessage}
+      <div class="error">
+        {errorMessage}
+      </div>
+    {/if}
+    
+    {#if testResult}
+      <div class="test-result">
+        <h3>PUD Parser Test Result:</h3>
+        <pre>{testResult}</pre>
+      </div>
+    {/if}
+    
+    {#if analysisComplete && mapData}
+      <div class="results-section">
+        <div class="results-header">
+          <h2>Map Analysis Results</h2>
+          <button 
+            class="export-btn" 
+            on:click={exportReport}
+            title="Export analysis report"
+          >
+            📄 Export Report
+          </button>
+        </div>
+     
+    <div class="map-info">
+      <h3>Map Information</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <strong>Name:</strong> {mapData.name}
+        </div>
+        <div class="info-item">
+          <strong>Size:</strong> {mapData.width} x {mapData.height}
+        </div>
+        <div class="info-item">
+          <strong>Players:</strong> {mapData.player_count}
+        </div>
+        <div class="info-item">
+          <strong>Total Tiles:</strong> {mapData.terrain_analysis?.total_tiles || 0}
+        </div>
+      </div>
+    </div>
+    
+    <!-- Terrain Analysis -->
+    <div class="terrain-section">
+      <h3>🌍 Terrain Analysis</h3>
+      <div class="terrain-overview">
+        <div class="terrain-chart">
+          <div class="terrain-bar">
+            <div class="terrain-fill grass" style="width: {mapData.terrain_analysis?.grass_percentage || 0}%"></div>
+            <span class="terrain-label">Grass: {mapData.terrain_analysis?.grass_percentage?.toFixed(1) || 0}%</span>
+          </div>
+          <div class="terrain-bar">
+            <div class="terrain-fill water" style="width: {mapData.terrain_analysis?.water_percentage || 0}%"></div>
+            <span class="terrain-label">Water: {mapData.terrain_analysis?.water_percentage?.toFixed(1) || 0}%</span>
+          </div>
+          <div class="terrain-bar">
+            <div class="terrain-fill forest" style="width: {mapData.terrain_analysis?.tree_percentage || 0}%"></div>
+            <span class="terrain-label">Forest: {mapData.terrain_analysis?.tree_percentage?.toFixed(1) || 0}%</span>
+          </div>
+          <div class="terrain-bar">
+            <div class="terrain-fill mountain" style="width: {mapData.terrain_analysis?.mountain_percentage || 0}%"></div>
+            <span class="terrain-label">Mountains: {mapData.terrain_analysis?.mountain_percentage?.toFixed(1) || 0}%</span>
+          </div>
+        </div>
+        
+        <div class="terrain-breakdown">
+          <h4>Detailed Terrain Breakdown</h4>
+          <div class="terrain-list">
+                         {#each mapData.terrain_analysis?.terrain_breakdown || [] as terrain}
+              <div class="terrain-item">
+                <span class="terrain-name">{terrain.name}</span>
+                <span class="terrain-count">{terrain.count} tiles</span>
+                <span class="terrain-percentage">{terrain.percentage.toFixed(1)}%</span>
+              </div>
+            {/each}
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Visual Map Preview -->
+    <div class="map-preview-section">
+      <h3>🗺️ Map Preview</h3>
+      <div class="map-preview-container">
+        <div class="map-grid" style="grid-template-columns: repeat({Math.min(mapData.width, 50)}, 1fr); grid-template-rows: repeat({Math.min(mapData.height, 50)}, 1fr);">
+          {#each Array(Math.min(mapData.width * mapData.height, 2500)) as _, i}
+            <div class="map-tile"></div>
+          {/each}
+        </div>
+        
+        <!-- Overlay elements -->
+        {#each mapData.resources as resource}
+          <div 
+            class="resource-marker goldmine" 
+            style="left: {(resource.x / mapData.width) * 100}%; top: {(resource.y / mapData.height) * 100}%;"
+            title="Goldmine at ({resource.x}, {resource.y})"
+          >💰</div>
+        {/each}
+        
+        {#each mapData.buildings as building}
+          <div 
+            class="building-marker townhall" 
+            style="left: {(building.x / mapData.width) * 100}%; top: {(building.y / mapData.height) * 100}%;"
+            title="{building.building_type} (Player {building.owner}) at ({building.x}, {building.y})"
+          >🏰</div>
+        {/each}
+        
+        {#each mapData.units as unit}
+          <div 
+            class="unit-marker peasant" 
+            style="left: {(unit.x / mapData.width) * 100}%; top: {(unit.y / mapData.height) * 100}%;"
+            title="{unit.unit_type} (Player {unit.owner}) at ({unit.x}, {unit.y})"
+          >👤</div>
+        {/each}
+      </div>
       
-      <h3>Features</h3>
-      <ul>
-        <li>🗺️ Interactive map visualization</li>
-        <li>💰 Goldmine and resource location analysis</li>
-        <li>🏗️ Strategic position identification</li>
-        <li>📊 Terrain and elevation mapping</li>
-        <li>💾 Export analysis reports</li>
-      </ul>
+      <div class="map-legend">
+        <div class="legend-item">
+          <span class="legend-icon">💰</span>
+          <span>Goldmine</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-icon">🏰</span>
+          <span>Town Hall</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-icon">👤</span>
+          <span>Unit</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="resources-section">
+      <h3>💰 Resource Locations</h3>
+      <div class="resource-list">
+        {#each mapData.resources as resource}
+          <div class="resource-item">
+            <span class="resource-type">{resource.resource_type}</span>
+            <span class="resource-location">({resource.x}, {resource.y})</span>
+            <span class="resource-amount">{resource.amount}</span>
+            {#if resource.is_goldmine}
+              <span class="goldmine-badge">🏆 Goldmine</span>
+            {/if}
+          </div>
+        {/each}
+      </div>
+    </div>
+    
+    <div class="units-section">
+      <h3>⚔️ Units</h3>
+      <div class="unit-list">
+        {#each mapData.units as unit}
+          <div class="unit-item">
+            <span class="unit-type">{unit.unit_type}</span>
+            <span class="unit-location">({unit.x}, {unit.y})</span>
+            <span class="unit-owner">Player {unit.owner}</span>
+          </div>
+        {/each}
+      </div>
+    </div>
+    
+    <div class="buildings-section">
+      <h3>🏗️ Buildings</h3>
+      <div class="building-list">
+        {#each mapData.buildings as building}
+          <div class="building-item">
+            <span class="building-type">{building.building_type}</span>
+            <span class="building-location">({building.x}, {building.y})</span>
+            <span class="building-owner">Player {building.owner}</span>
+            {#if building.is_completed}
+              <span class="completed-badge">✅ Complete</span>
+            {/if}
+          </div>
+        {/each}
+      </div>
     </div>
   </div>
+{/if}
+   
+   </div>
 </main>
 
 <style>
@@ -378,37 +389,61 @@
     margin-bottom: 1rem;
   }
 
-  .upload-section {
-    background: #f8f9fa;
-    border-radius: 12px;
-    padding: 2rem;
+  .button-section {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
     margin-bottom: 2rem;
-    border: 2px dashed #dee2e6;
+    flex-wrap: wrap;
   }
 
-  .upload-area {
-    text-align: center;
-  }
-
-  .upload-btn, .analyze-btn {
+  .action-btn {
     background: #007bff;
     color: white;
     border: none;
-    padding: 12px 24px;
+    padding: 1rem 2rem;
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: 1.1rem;
     cursor: pointer;
-    margin: 0.5rem;
-    transition: background-color 0.2s;
+    transition: all 0.2s;
+    min-width: 150px;
   }
 
-  .upload-btn:hover, .analyze-btn:hover {
+  .action-btn:hover {
     background: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   }
 
-  .upload-btn:disabled, .analyze-btn:disabled {
+  .action-btn:disabled {
     background: #6c757d;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .test-btn {
+    background: #28a745;
+  }
+
+  .test-btn:hover {
+    background: #218838;
+  }
+
+  .upload-btn {
+    background: #17a2b8;
+  }
+
+  .upload-btn:hover {
+    background: #138496;
+  }
+
+  .analyze-btn {
+    background: #dc3545;
+  }
+
+  .analyze-btn:hover {
+    background: #c82333;
   }
 
   .file-info {
@@ -566,31 +601,7 @@
     font-size: 0.875rem;
   }
 
-  .info-section {
-    background: white;
-    border-radius: 12px;
-    padding: 2rem;
-    border: 1px solid #dee2e6;
-  }
 
-  .info-section h3 {
-    color: #495057;
-    margin-bottom: 0.5rem;
-  }
-
-  .info-section ul {
-    list-style: none;
-    padding: 0;
-  }
-
-  .info-section li {
-    padding: 0.5rem 0;
-    border-bottom: 1px solid #f8f9fa;
-  }
-
-  .info-section li:last-child {
-    border-bottom: none;
-  }
   
   /* Map Preview Styles */
   .map-preview-section {

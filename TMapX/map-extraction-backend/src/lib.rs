@@ -12,6 +12,7 @@ pub struct MapData {
     pub player_count: u8,
     pub resources: Vec<ResourceData>,
     pub terrain: TerrainData,
+    pub terrain_analysis: pud_parser::TerrainAnalysis,
     pub units: Vec<UnitData>,
     pub buildings: Vec<BuildingData>,
 }
@@ -53,19 +54,23 @@ pub struct BuildingData {
 
 #[tauri::command]
 async fn select_map_file() -> Result<Option<String>, String> {
-    // Get the current working directory and go up to the TMapX folder
+    // For now, return the test file path - we'll implement proper file dialog later
+    // In Tauri v2, we need to use a different approach for file dialogs
     let current_dir = std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
-    let timapx_dir = current_dir.parent().unwrap_or(&current_dir);
-    let test_path = timapx_dir.join("MapTests").join("Garden of War.pud");
+    let test_path = current_dir.join("MapTests").join("Garden of War.pud");
     
-    // Check if the file exists
     if test_path.exists() {
-        println!("Found file at: {}", test_path.display());
+        println!("Using test file: {}", test_path.display());
         return Ok(Some(test_path.to_string_lossy().to_string()));
     }
     
-    // If not found, return error with the path we tried
-    Err(format!("Test file not found at: {}", test_path.display()))
+    Err("Test file not found".to_string())
+}
+
+#[tauri::command]
+async fn select_pud_file() -> Result<Option<String>, String> {
+    // This function is no longer needed - using frontend dialog instead
+    Err("Use frontend dialog instead".to_string())
 }
 
 #[tauri::command]
@@ -90,42 +95,13 @@ async fn parse_map_file(file_path: String) -> Result<MapData, String> {
         width: pud_info.width as u32,
         height: pud_info.height as u32,
         player_count: pud_info.max_players as u8,
-        resources: vec![
-            // Add some realistic goldmine positions based on typical Warcraft II maps
-            ResourceData {
-                resource_type: "Gold".to_string(),
-                x: (pud_info.width / 4) as u32,
-                y: (pud_info.height / 4) as u32,
-                amount: 10000,
-                is_goldmine: true,
-            },
-            ResourceData {
-                resource_type: "Gold".to_string(),
-                x: (pud_info.width * 3 / 4) as u32,
-                y: (pud_info.height * 3 / 4) as u32,
-                amount: 10000,
-                is_goldmine: true,
-            },
-            ResourceData {
-                resource_type: "Gold".to_string(),
-                x: (pud_info.width / 4) as u32,
-                y: (pud_info.height * 3 / 4) as u32,
-                amount: 10000,
-                is_goldmine: true,
-            },
-            ResourceData {
-                resource_type: "Gold".to_string(),
-                x: (pud_info.width * 3 / 4) as u32,
-                y: (pud_info.height / 4) as u32,
-                amount: 10000,
-                is_goldmine: true,
-            },
-        ],
+        resources: detect_goldmines(&pud_info),
         terrain: TerrainData {
             tiles: vec![0; (pud_info.width * pud_info.height) as usize],
             elevation: vec![0; (pud_info.width * pud_info.height) as usize],
             water_level: 0,
         },
+        terrain_analysis: pud_info.terrain_analysis,
         units: pud_info.units.iter().map(|unit| UnitData {
             unit_type: pud_parser::get_unit_name(unit.unit_type).to_string(),
             x: unit.x as u32,
@@ -284,6 +260,36 @@ async fn export_map_report(map_data: MapData) -> Result<String, String> {
     Ok(output_path)
 }
 
+fn detect_goldmines(pud_info: &pud_parser::PudMapInfo) -> Vec<ResourceData> {
+    let mut resources = Vec::new();
+    
+    // For now, add some realistic goldmine positions based on typical Warcraft II maps
+    // In a real implementation, we would parse the actual resource data from the PUD file
+    let map_width = pud_info.width as u32;
+    let map_height = pud_info.height as u32;
+    
+    // Add goldmines at typical positions (corners and center areas)
+    let goldmine_positions = vec![
+        (map_width / 4, map_height / 4),
+        (map_width * 3 / 4, map_height * 3 / 4),
+        (map_width / 4, map_height * 3 / 4),
+        (map_width * 3 / 4, map_height / 4),
+        (map_width / 2, map_height / 2), // Center
+    ];
+    
+    for (x, y) in goldmine_positions {
+        resources.push(ResourceData {
+            resource_type: "Gold".to_string(),
+            x,
+            y,
+            amount: 10000,
+            is_goldmine: true,
+        });
+    }
+    
+    resources
+}
+
 fn get_default_warcraft_directory() -> Option<PathBuf> {
     // Try to find Warcraft II installation directory
     let possible_paths = vec![
@@ -305,8 +311,10 @@ fn get_default_warcraft_directory() -> Option<PathBuf> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .invoke_handler(tauri::generate_handler![
             select_map_file,
+            select_pud_file,
             parse_map_file,
             generate_map_image,
             test_pud_parser,
