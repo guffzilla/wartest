@@ -86,6 +86,39 @@ button:active {
   background-color: #e8e8e8;
 }
 
+.test-btn {
+  background-color: #28a745;
+  color: white;
+  margin-left: 10px;
+}
+
+.test-btn:hover {
+  background-color: #218838;
+}
+
+.test-result {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  text-align: left;
+}
+
+.test-result h3 {
+  margin-top: 0;
+  color: #495057;
+}
+
+.test-result pre {
+  background-color: #e9ecef;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
 input,
 button {
   outline: none;

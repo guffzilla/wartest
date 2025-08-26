@@ -1,8 +1,8 @@
 {
-  "name": "wc-arena-map-extractor",
+  "name": "timapx",
   "private": true,
   "version": "0.1.0",
-  "description": "WC Arena Map Extractor - Warcraft II Map Analysis Tool",
+  "description": "TMapX - Warcraft II Map Analysis Tool",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,12 +11,11 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@tauri-apps/api": "^2",
-    "@tauri-apps/plugin-opener": "^2"
+    "@tauri-apps/api": "^2"
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2",
-    "vite": "^6.0.3",
+    "vite": "^5.0.0",
     "typescript": "~5.6.2",
     "svelte": "^5.0.0",
     "@sveltejs/vite-plugin-svelte": "^3.0.0"

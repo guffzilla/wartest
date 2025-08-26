@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "WC Arena Map Extractor",
+  "productName": "TMapX",
   "version": "0.1.0",
-  "identifier": "com.wc-arena.map-extractor",
+  "identifier": "com.timapx",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -13,7 +13,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "🗺️ WC Arena Map Extractor - Warcraft II",
+        "title": "🗺️ TMapX - Warcraft II",
         "width": 1200,
         "height": 800,
         "resizable": true,
