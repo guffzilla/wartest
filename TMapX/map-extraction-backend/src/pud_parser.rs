@@ -17,6 +17,27 @@ pub struct PudMapInfo {
     pub max_players: u16,
     pub map_name: String,
     pub map_description: String,
+    pub terrain_analysis: TerrainAnalysis,
+    pub units: Vec<PudUnit>,
+    pub resources: Vec<PudResource>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TerrainAnalysis {
+    pub water_percentage: f32,
+    pub tree_percentage: f32,
+    pub grass_percentage: f32,
+    pub mountain_percentage: f32,
+    pub total_tiles: u32,
+    pub terrain_breakdown: Vec<TerrainType>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TerrainType {
+    pub tile_type: u16,
+    pub count: u32,
+    pub percentage: f32,
+    pub name: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -64,6 +85,11 @@ impl PudParser {
     }
 
     pub fn parse(&mut self) -> Result<PudMapInfo, String> {
+        // Validate file size
+        if self.data.len() < 12 {
+            return Err("File too small to be a valid PUD file".to_string());
+        }
+        
         // Parse header
         let header = self.parse_header()?;
         
@@ -73,12 +99,18 @@ impl PudParser {
         
         // Verify it's a valid Warcraft II file
         if &header.magic != b"FORM" && &header.magic != b"TYPE" {
-            return Err("Not a valid Warcraft II file".to_string());
+            return Err(format!("Invalid file format. Expected 'FORM' or 'TYPE', got '{:?}'", 
+                              String::from_utf8_lossy(&header.magic)));
+        }
+        
+        // Validate file size matches header
+        if header.file_size as usize != self.data.len() && header.file_size > 0 {
+            println!("Warning: Header file size ({}) doesn't match actual file size ({})", 
+                    header.file_size, self.data.len());
         }
         
         // Handle different file formats
         if &header.magic == b"TYPE" {
-            // This appears to be a different format, let's try to parse it
             println!("Detected TYPE format, attempting to parse...");
         }
 
@@ -89,6 +121,16 @@ impl PudParser {
             max_players: 0,
             map_name: String::new(),
             map_description: String::new(),
+            terrain_analysis: TerrainAnalysis {
+                water_percentage: 0.0,
+                tree_percentage: 0.0,
+                grass_percentage: 0.0,
+                mountain_percentage: 0.0,
+                total_tiles: 0,
+                terrain_breakdown: Vec::new(),
+            },
+            units: Vec::new(),
+            resources: Vec::new(),
         };
 
         while self.position < self.data.len() {
@@ -108,6 +150,15 @@ impl PudParser {
             // Validate chunk size
             if chunk_size > 1000000 {
                 println!("Warning: Suspiciously large chunk size: {}", chunk_size);
+                // Skip this chunk to prevent parsing errors
+                self.position += chunk_size as usize;
+                continue;
+            }
+            
+            // Validate we have enough data for this chunk
+            if self.position + chunk_size as usize > self.data.len() {
+                println!("Warning: Chunk extends beyond file end, truncating");
+                break;
             }
             
             match chunk_str.as_str() {
@@ -159,6 +210,16 @@ impl PudParser {
                             
                             println!("Unit: type={}, pos=({},{}), owner={}, health={}", 
                                    unit_type, x, y, owner, health);
+                            
+                            // Store the unit
+                            map_info.units.push(PudUnit {
+                                unit_type,
+                                x,
+                                y,
+                                owner,
+                                health: health as u16,
+                                rotation: 0, // Default rotation
+                            });
                         }
                     }
                 }
@@ -184,8 +245,63 @@ impl PudParser {
                             map_info.height = terrain_height;
                             println!("Using terrain dimensions: {}x{}", map_info.width, map_info.height);
                         }
+                        
+                        // Parse terrain tiles
+                        let tiles_to_read = (chunk_size - 4) / 2; // Each tile is 2 bytes
+                        println!("Reading {} terrain tiles", tiles_to_read);
+                        
+                        let mut terrain_counts = std::collections::HashMap::new();
+                        let mut total_tiles = 0;
+                        
+                        for _ in 0..tiles_to_read {
+                            if self.position + 2 <= self.data.len() {
+                                let tile_type = self.read_u16_be();
+                                *terrain_counts.entry(tile_type).or_insert(0) += 1;
+                                total_tiles += 1;
+                            }
+                        }
+                        
+                        // Analyze terrain
+                        map_info.terrain_analysis.total_tiles = total_tiles;
+                        let mut water_count = 0;
+                        let mut tree_count = 0;
+                        let mut grass_count = 0;
+                        let mut mountain_count = 0;
+                        
+                        for (tile_type, count) in terrain_counts {
+                            let percentage = (count as f32 / total_tiles as f32) * 100.0;
+                            let tile_name = get_terrain_name(tile_type);
+                            
+                            map_info.terrain_analysis.terrain_breakdown.push(TerrainType {
+                                tile_type,
+                                count,
+                                percentage,
+                                name: tile_name.clone(),
+                            });
+                            
+                            // Categorize terrain types
+                            match tile_type {
+                                0..=15 => grass_count += count,      // Grass tiles
+                                16..=31 => water_count += count,     // Water tiles
+                                32..=47 => tree_count += count,      // Forest tiles
+                                48..=63 => mountain_count += count,  // Mountain tiles
+                                _ => grass_count += count,           // Default to grass
+                            }
+                        }
+                        
+                        map_info.terrain_analysis.water_percentage = (water_count as f32 / total_tiles as f32) * 100.0;
+                        map_info.terrain_analysis.tree_percentage = (tree_count as f32 / total_tiles as f32) * 100.0;
+                        map_info.terrain_analysis.grass_percentage = (grass_count as f32 / total_tiles as f32) * 100.0;
+                        map_info.terrain_analysis.mountain_percentage = (mountain_count as f32 / total_tiles as f32) * 100.0;
+                        
+                        println!("Terrain analysis: Water: {:.1}%, Trees: {:.1}%, Grass: {:.1}%, Mountains: {:.1}%",
+                                map_info.terrain_analysis.water_percentage,
+                                map_info.terrain_analysis.tree_percentage,
+                                map_info.terrain_analysis.grass_percentage,
+                                map_info.terrain_analysis.mountain_percentage);
+                    } else {
+                        self.position += chunk_size as usize;
                     }
-                    self.position += (chunk_size - 4) as usize;
                 }
                 "PUNI" => {
                     // Player units chunk - skip
@@ -215,23 +331,65 @@ impl PudParser {
                     // Map data chunk - this likely contains the actual map information
                     println!("Found MAP chunk (size: {})", chunk_size);
                     
-                    // Try different parsing approaches for the MAP chunk
-                    if chunk_size >= 8 {
-                        // Try reading as if it's a header with dimensions
+                    // Try multiple parsing strategies for the MAP chunk
+                    let mut dimensions_found = false;
+                    
+                    // Strategy 1: Try reading as u32 dimensions
+                    if chunk_size >= 8 && !dimensions_found {
                         let possible_width = self.read_u32_be();
                         let possible_height = self.read_u32_be();
-                        println!("Possible dimensions from MAP chunk: {}x{}", possible_width, possible_height);
+                        println!("Strategy 1 - Possible dimensions: {}x{}", possible_width, possible_height);
                         
-                        // Check if these look like reasonable dimensions
                         if possible_width > 0 && possible_width <= 256 && 
                            possible_height > 0 && possible_height <= 256 {
                             map_info.width = possible_width as u16;
                             map_info.height = possible_height as u16;
-                            println!("Using dimensions from MAP chunk: {}x{}", map_info.width, map_info.height);
+                            dimensions_found = true;
+                            println!("✓ Using u32 dimensions from MAP chunk: {}x{}", map_info.width, map_info.height);
                         } else {
-                            // Reset position and try different approach
+                            // Reset position for next strategy
                             self.position -= 8;
                         }
+                    }
+                    
+                    // Strategy 2: Try reading as u16 dimensions
+                    if chunk_size >= 4 && !dimensions_found {
+                        let possible_width = self.read_u16_be();
+                        let possible_height = self.read_u16_be();
+                        println!("Strategy 2 - Possible dimensions: {}x{}", possible_width, possible_height);
+                        
+                        if possible_width > 0 && possible_width <= 256 && 
+                           possible_height > 0 && possible_height <= 256 {
+                            map_info.width = possible_width;
+                            map_info.height = possible_height;
+                            dimensions_found = true;
+                            println!("✓ Using u16 dimensions from MAP chunk: {}x{}", map_info.width, map_info.height);
+                        } else {
+                            // Reset position for next strategy
+                            self.position -= 4;
+                        }
+                    }
+                    
+                    // Strategy 3: Try reading as individual bytes (for very small maps)
+                    if chunk_size >= 2 && !dimensions_found {
+                        let possible_width = self.read_u8() as u16;
+                        let possible_height = self.read_u8() as u16;
+                        println!("Strategy 3 - Possible dimensions: {}x{}", possible_width, possible_height);
+                        
+                        if possible_width > 0 && possible_width <= 128 && 
+                           possible_height > 0 && possible_height <= 128 {
+                            map_info.width = possible_width;
+                            map_info.height = possible_height;
+                            dimensions_found = true;
+                            println!("✓ Using u8 dimensions from MAP chunk: {}x{}", map_info.width, map_info.height);
+                        } else {
+                            // Reset position
+                            self.position -= 2;
+                        }
+                    }
+                    
+                    if !dimensions_found {
+                        println!("⚠️ Could not determine dimensions from MAP chunk, will try other chunks");
                     }
                     
                     // Skip the rest of the chunk
@@ -256,6 +414,25 @@ impl PudParser {
             map_info.max_players = 4;
         }
 
+        // Validate final results
+        if map_info.width == 0 || map_info.height == 0 {
+            println!("Warning: Could not determine map dimensions, using defaults");
+            map_info.width = 128;
+            map_info.height = 128;
+        }
+        
+        // Print comprehensive summary
+        println!("\n=== PUD PARSING SUMMARY ===");
+        println!("Map Dimensions: {}x{}", map_info.width, map_info.height);
+        println!("Max Players: {}", map_info.max_players);
+        println!("Units Found: {}", map_info.units.len());
+        println!("Terrain Tiles: {}", map_info.terrain_analysis.total_tiles);
+        println!("Water: {:.1}%", map_info.terrain_analysis.water_percentage);
+        println!("Forest: {:.1}%", map_info.terrain_analysis.tree_percentage);
+        println!("Grass: {:.1}%", map_info.terrain_analysis.grass_percentage);
+        println!("Mountains: {:.1}%", map_info.terrain_analysis.mountain_percentage);
+        println!("===========================\n");
+        
         Ok(map_info)
     }
 
@@ -327,6 +504,77 @@ impl PudParser {
         String::from_utf8_lossy(bytes)
             .trim_matches('\0')
             .to_string()
+    }
+}
+
+// Terrain type mappings for Warcraft II
+pub fn get_terrain_name(tile_type: u16) -> String {
+    match tile_type {
+        0 => "Grass".to_string(),
+        1 => "Grass (Variation)".to_string(),
+        2 => "Grass (Path)".to_string(),
+        3 => "Grass (Dirt)".to_string(),
+        4 => "Grass (Rocky)".to_string(),
+        5 => "Grass (Flowers)".to_string(),
+        6 => "Grass (Dark)".to_string(),
+        7 => "Grass (Light)".to_string(),
+        8 => "Grass (Mossy)".to_string(),
+        9 => "Grass (Sparse)".to_string(),
+        10 => "Grass (Thick)".to_string(),
+        11 => "Grass (Worn)".to_string(),
+        12 => "Grass (Fresh)".to_string(),
+        13 => "Grass (Old)".to_string(),
+        14 => "Grass (Mixed)".to_string(),
+        15 => "Grass (Natural)".to_string(),
+        16 => "Water (Shallow)".to_string(),
+        17 => "Water (Deep)".to_string(),
+        18 => "Water (Ocean)".to_string(),
+        19 => "Water (Lake)".to_string(),
+        20 => "Water (River)".to_string(),
+        21 => "Water (Swamp)".to_string(),
+        22 => "Water (Ice)".to_string(),
+        23 => "Water (Bridge)".to_string(),
+        24 => "Water (Frozen)".to_string(),
+        25 => "Water (Muddy)".to_string(),
+        26 => "Water (Clear)".to_string(),
+        27 => "Water (Murky)".to_string(),
+        28 => "Water (Rough)".to_string(),
+        29 => "Water (Calm)".to_string(),
+        30 => "Water (Warm)".to_string(),
+        31 => "Water (Cold)".to_string(),
+        32 => "Forest (Pine)".to_string(),
+        33 => "Forest (Oak)".to_string(),
+        34 => "Forest (Dense)".to_string(),
+        35 => "Forest (Sparse)".to_string(),
+        36 => "Forest (Young)".to_string(),
+        37 => "Forest (Old)".to_string(),
+        38 => "Forest (Dead)".to_string(),
+        39 => "Forest (Burned)".to_string(),
+        40 => "Forest (Magic)".to_string(),
+        41 => "Forest (Dark)".to_string(),
+        42 => "Forest (Light)".to_string(),
+        43 => "Forest (Mixed)".to_string(),
+        44 => "Forest (Thick)".to_string(),
+        45 => "Forest (Thin)".to_string(),
+        46 => "Forest (Ancient)".to_string(),
+        47 => "Forest (Sacred)".to_string(),
+        48 => "Mountain (Rocky)".to_string(),
+        49 => "Mountain (Snow)".to_string(),
+        50 => "Mountain (Volcanic)".to_string(),
+        51 => "Mountain (Cliff)".to_string(),
+        52 => "Mountain (Cave)".to_string(),
+        53 => "Mountain (Peak)".to_string(),
+        54 => "Mountain (Ridge)".to_string(),
+        55 => "Mountain (Valley)".to_string(),
+        56 => "Mountain (Slope)".to_string(),
+        57 => "Mountain (Plateau)".to_string(),
+        58 => "Mountain (Summit)".to_string(),
+        59 => "Mountain (Base)".to_string(),
+        60 => "Mountain (Pass)".to_string(),
+        61 => "Mountain (Chasm)".to_string(),
+        62 => "Mountain (Crater)".to_string(),
+        63 => "Mountain (Ravine)".to_string(),
+        _ => format!("Unknown Terrain ({})", tile_type),
     }
 }
 

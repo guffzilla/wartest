@@ -126,23 +126,13 @@ async fn parse_map_file(file_path: String) -> Result<MapData, String> {
             elevation: vec![0; (pud_info.width * pud_info.height) as usize],
             water_level: 0,
         },
-        units: vec![
-            // Add starting units for each player
-            UnitData {
-                unit_type: "Peasant".to_string(),
-                x: (pud_info.width / 8) as u32,
-                y: (pud_info.height / 8) as u32,
-                owner: 1,
-                health: 100,
-            },
-            UnitData {
-                unit_type: "Peasant".to_string(),
-                x: (pud_info.width * 7 / 8) as u32,
-                y: (pud_info.height * 7 / 8) as u32,
-                owner: 2,
-                health: 100,
-            },
-        ],
+        units: pud_info.units.iter().map(|unit| UnitData {
+            unit_type: pud_parser::get_unit_name(unit.unit_type).to_string(),
+            x: unit.x as u32,
+            y: unit.y as u32,
+            owner: unit.owner,
+            health: unit.health as u32,
+        }).collect(),
         buildings: vec![
             // Add starting buildings for each player
             BuildingData {
