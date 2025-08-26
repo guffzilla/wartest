@@ -43,10 +43,27 @@
       });
       
       console.log('Dialog returned:', selected);
-      if (selected && selected.length > 0) {
-        selectedFilePath = selected[0];
-        errorMessage = '';
-        console.log('Selected file:', selectedFilePath);
+      console.log('Selected type:', typeof selected);
+      console.log('Selected value:', selected);
+      
+      if (selected) {
+        // In Tauri 2.x, when multiple: false, selected is a string
+        // When multiple: true, selected is an array
+        if (Array.isArray(selected)) {
+          if (selected.length > 0) {
+            selectedFilePath = selected[0];
+          }
+        } else {
+          // Single file selected (string)
+          selectedFilePath = selected;
+        }
+        
+        if (selectedFilePath) {
+          errorMessage = '';
+          console.log('Selected file:', selectedFilePath);
+        } else {
+          console.log('No file selected or dialog cancelled');
+        }
       } else {
         console.log('No file selected or dialog cancelled');
       }
@@ -174,7 +191,7 @@
     
     {#if selectedFilePath}
       <div class="file-info">
-        <p>Selected: {selectedFilePath.split('\\').pop() || selectedFilePath.split('/').pop()}</p>
+        <p>Selected: {selectedFilePath.split(/[\\\/]/).pop()}</p>
       </div>
     {/if}
     
