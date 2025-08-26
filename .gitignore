@@ -65,6 +65,10 @@ headlessgames/wc2-remastered-lab/custom_wc2_build/original_files/
 headlessgames/wc2-remastered-lab/output/
 headlessgames/wc2-remastered-lab/target/
 headlessgames/wc2-remastered-lab/Cargo.lock
+WC2Lab/custom_wc2_build/original_files/
+WC2Lab/output/
+WC2Lab/target/
+WC2Lab/Cargo.lock
 
 # Test and temporary files
 test_*.exe
