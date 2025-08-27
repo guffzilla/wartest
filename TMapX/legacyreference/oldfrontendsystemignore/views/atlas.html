@@ -1,0 +1,329 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>WC Arena - Epic Map Collection</title>
+  
+  <!-- Preload critical resources -->
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/css/warcraft-app-modern.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  
+  <!-- Universal Navbar Consistency - MUST be loaded last for proper override -->
+  <link rel="stylesheet" href="/css/navbar-universal.css">
+  
+  <!-- Chart.js for terrain visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Maps Page Styles -->
+  <link rel="stylesheet" href="/css/maps/maps-base.css">
+  <link rel="stylesheet" href="/css/maps/maps-hero.css">
+  <link rel="stylesheet" href="/css/maps/maps-tabs.css">
+  <link rel="stylesheet" href="/css/maps/maps-cards.css">
+      <!-- Removed: maps-modal.css and maps-modal-modern.css (files don't exist) -->
+  <link rel="stylesheet" href="/css/maps/maps-wc3-images.css">
+  <link rel="stylesheet" href="/css/maps/maps-wc3-overlay.css">
+      <link rel="stylesheet" href="/css/unified-modal-system.css">
+</head>
+<body>
+  <div id="navbar-container"></div>
+
+  <main>
+    <!-- Epic Maps Hero Section -->
+    <section class="maps-hero">
+      <div class="hero-content fade-in">
+        <h1 class="hero-title" data-theme="atlas">🗺️ Atlas</h1>
+      </div>
+    </section>
+
+    <!-- Main Maps Content -->
+    <div class="maps-main">
+      <!-- Game Selection Tabs with Stats -->
+      <section class="game-tabs-container fade-in">
+        <div class="game-tabs-wrapper">
+          <div class="game-tabs">
+            <button class="game-tab" data-game="wc1">
+              <i class="fas fa-dragon"></i>
+              <span>WC I</span>
+            </button>
+            <button class="game-tab active" data-game="wc2">
+              <i class="fas fa-shield-alt"></i>
+              <span>WC II</span>
+            </button>
+            <button class="game-tab" data-game="wc3">
+              <i class="fas fa-chess-king"></i>
+              <span>WC III</span>
+            </button>
+          </div>
+          
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <div class="hero-stat-value" id="current-game-maps">...</div>
+              <div class="hero-stat-label">Maps Available</div>
+            </div>
+            <div class="hero-stat">
+              <div class="hero-stat-value" id="recent-uploads">...</div>
+              <div class="hero-stat-label">This Month</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- WC I - Custom Scenarios Section -->
+      <div class="game-content wc1-content" id="wc1-content">
+        <div class="wc1-section fade-in">
+          <div class="section-header">
+            <div class="section-title-with-search">
+              <div class="section-title">
+                <i class="fas fa-dragon"></i>
+                <span>WC I</span>
+              </div>
+            </div>
+            
+            <div class="section-actions">
+              <button id="wc1-random-scenario-btn" class="epic-btn secondary">
+                <i class="fas fa-random"></i>
+                <span>Random Scenario</span>
+              </button>
+
+            </div>
+          </div>
+
+          <!-- Category tabs for WC1 -->
+          <div class="maps-tabs-section">
+            <div class="maps-tabs">
+              <button class="tab-btn active" data-category="all">All Scenarios</button>
+              <button class="tab-btn" data-category="forest">Forest</button>
+              <button class="tab-btn" data-category="swamp">Swamp</button>
+              <button class="tab-btn" data-category="dungeon">Dungeon</button>
+            </div>
+          </div>
+
+          <!-- WC1 Scenarios Grid -->
+          <div class="wc1-scenarios-grid" id="wc1-scenarios-grid">
+            <!-- Scenarios will be loaded here dynamically -->
+            <div class="loading">Loading classic scenarios...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WC II - Active Content -->
+      <div class="game-content wc2-content active" id="wc2-content">
+        <div class="wc2-section fade-in">
+          <div class="section-header">
+            <div class="section-title-with-search">
+              <div class="section-title">
+                <i class="fas fa-shield-alt"></i>
+                <span>WC II</span>
+              </div>
+              
+              <!-- Search bar moved next to WC II -->
+              <div class="maps-search-inline">
+                <div class="search-input-container">
+                  <input type="text" id="search-input" placeholder="Search maps...">
+                  <button id="search-btn" class="search-btn-modern">
+                    <i class="fas fa-search"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="section-actions">
+              <button id="upload-map-btn" class="epic-btn">
+                <i class="fas fa-upload"></i>
+                <span>Upload Map</span>
+              </button>
+              <button id="show-random-map-btn" class="epic-btn secondary">
+                <i class="fas fa-random"></i>
+                <span>Random Map</span>
+              </button>
+
+            </div>
+          </div>
+
+          <!-- Filter tabs moved up -->
+          <div class="maps-tabs-section">
+            <div class="maps-tabs">
+              <button class="tab-btn active" data-tab="all">All Maps</button>
+              <button class="tab-btn" data-tab="popular">Most Played</button>
+              <button class="tab-btn" data-tab="top-rated">Top Rated</button>
+              <button class="tab-btn" data-tab="recent">Recently Added</button>
+              <button class="tab-btn" data-tab="land">Land Maps</button>
+              <button class="tab-btn" data-tab="sea">Sea Maps</button>
+            </div>
+          </div>
+
+          <div class="maps-grid" id="maps-grid">
+            <!-- Maps will be loaded here dynamically -->
+            <div class="loading">Loading epic battlegrounds...</div>
+          </div>
+
+          <!-- Pagination at bottom -->
+          
+        </div>
+      </div>
+
+      <!-- WC III - Content -->
+      <div class="game-content wc3-content" id="wc3-content">
+        <div class="wc3-section fade-in">
+          <div class="section-header">
+            <div class="section-title-with-search">
+              <div class="section-title">
+                <i class="fas fa-chess-king"></i>
+                <span>WC III</span>
+              </div>
+              
+              <!-- Search bar for WC3 -->
+              <div class="maps-search-inline">
+                <div class="search-input-container">
+                  <input type="text" id="wc3-search-input" placeholder="Search WC3 maps...">
+                  <button id="wc3-search-btn" class="search-btn-modern">
+                    <i class="fas fa-search"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="section-actions">
+              <button id="process-enhanced-wc3-maps-btn" class="epic-btn admin-only">
+                <i class="fas fa-cogs"></i>
+                <span>Enhanced Processing</span>
+              </button>
+              <button id="process-wc3-maps-btn" class="epic-btn admin-only">
+                <i class="fas fa-cogs"></i>
+                <span>Process Maps</span>
+              </button>
+              <button id="wc3-random-map-btn" class="epic-btn secondary">
+                <i class="fas fa-random"></i>
+                <span>Random Map</span>
+              </button>
+              <label for="wc3-map-upload-input" class="epic-btn">
+                <i class="fas fa-upload"></i>
+                <span>Upload Map</span>
+              </label>
+              <input type="file" id="wc3-map-upload-input" accept=".w3m,.w3x">
+
+            </div>
+          </div>
+
+          <!-- Filter tabs for WC3 -->
+          <div class="maps-tabs-section">
+            <div class="maps-tabs">
+              <button class="tab-btn active" data-tab="all">All Maps</button>
+              <button class="tab-btn" data-tab="popular">Most Played</button>
+              <button class="tab-btn" data-tab="top-rated">Top Rated</button>
+              <button class="tab-btn" data-tab="recent">Recently Added</button>
+            </div>
+          </div>
+
+          <!-- WC3 Maps Grid -->
+          <div class="wc3-maps-grid" id="wc3-maps-grid">
+            <!-- WC3 maps will be loaded here dynamically -->
+            <div class="loading">Loading WC3Net maps...</div>
+          </div>
+
+          <!-- WC3 Pagination -->
+          
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-content">
+      
+      <div class="loading-text">Loading Epic Maps...</div>
+    </div>
+  </div>
+
+  <!-- Map Upload Modal -->
+  <div id="upload-map-modal" class="modal" data-static="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Upload New Map</h2>
+        <span class="close-modal">×</span>
+      </div>
+      <div class="modal-body">
+        <form id="upload-map-form" method="POST" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="map-file">Select Map File (.pud)</label>
+            <input type="file" id="map-file" name="mapFile" accept=".pud" required="">
+            <div id="map-name-display" class="map-name-display">
+              <p>Map Name: <strong id="map-name-text"></strong></p>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="map-description">Description (Optional)</label>
+            <textarea id="map-description" name="description" rows="3" placeholder="Describe your map..."></textarea>
+          </div>
+          
+          <div class="form-actions">
+            <button type="button" class="btn btn-secondary" id="cancel-upload-btn">Cancel</button>
+            <button type="submit" class="btn btn-primary" id="upload-map-submit-btn" disabled="">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <span>Select a PUD file first</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Map Details Modal -->
+  <div id="map-details-modal" class="modal">
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h2>Map Details</h2>
+        <span class="close-modal">×</span>
+      </div>
+      
+    </div>
+  </div>
+
+
+  <!-- Core Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+  <script src="/js/utils.js"></script>
+  <script type="module" src="/js/notifications.js"></script>
+  <script type="module" src="/js/main.js"></script>
+  <script type="module" src="/js/app.js"></script>
+  
+  <!-- Universal Modal System -->
+  <script type="module" src="/js/modules/ModalManager.js"></script>
+  <script type="module" src="/js/modules/UniversalModalMigrator.js"></script>
+
+
+  <!-- Image Compression -->
+  <script type="module" src="/js/modules/ImageCompressor.js"></script>
+  <script type="module" src="/js/ultraCompressionIntegration.js"></script>
+  
+  <!-- Maps System Scripts as ES6 modules -->
+  <script type="module" src="/js/maps.js"></script>
+  <script type="module" src="/js/modules/MapsCore.js"></script>
+  <script type="module" src="/js/modules/MapsGrid.js"></script>
+  <script type="module" src="/js/modules/MapDetails.js"></script>
+  <script type="module" src="/js/modules/MapManagement.js"></script>
+
+  
+  <script type="module" src="/js/modules/MapDetailsViewer.js"></script>
+  <script src="/js/modules/War3OverlayRenderer.js"></script>
+  
+  <!-- Atlas-specific functionality -->
+  <script type="module" src="/js/atlas.js"></script>
+
+  <!-- Game Tabs Manager - Required for WC1/2/3 tab functionality -->
+  <script type="module" src="/js/game-tabs.js"></script>
+
+
+ </body></html>

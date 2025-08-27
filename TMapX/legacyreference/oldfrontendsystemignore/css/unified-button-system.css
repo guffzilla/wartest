@@ -1,0 +1,496 @@
+/* =============================================================================
+   UNIFIED BUTTON SYSTEM
+   Consolidates all button styles from across the project
+   ============================================================================= */
+
+/* =============================================================================
+   BASE BUTTON RESET
+   ============================================================================= */
+.btn,
+button,
+input[type="button"],
+input[type="submit"],
+.button,
+.action-btn,
+.download-btn,
+.support-link {
+  /* Reset conflicting styles */
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* =============================================================================
+   CORE BUTTON SYSTEM
+   ============================================================================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2, 0.5rem);
+  padding: var(--space-3, 0.75rem) var(--space-6, 1.5rem);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md, 8px);
+  font-family: var(--font-primary, 'Inter', sans-serif);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all var(--transition-normal, 0.3s ease);
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* =============================================================================
+   BUTTON VARIANTS
+   ============================================================================= */
+
+/* Primary Button - Gold Theme */
+.btn-primary {
+  background: linear-gradient(135deg, var(--warcraft-gold, #D4AF37), var(--warcraft-gold-dark, #b8860b));
+  color: var(--neutral-900, #1a1a1a);
+  border-color: var(--warcraft-gold, #D4AF37);
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--warcraft-gold-light, #ffed4e), var(--warcraft-gold, #D4AF37));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(212, 175, 55, 0.4);
+}
+
+/* Secondary Button - Glass Theme */
+.btn-secondary {
+  background: var(--glass-bg, rgba(255, 255, 255, 0.05));
+  color: var(--neutral-100, #ffffff);
+  border-color: var(--glass-border, rgba(255, 255, 255, 0.1));
+  backdrop-filter: blur(10px);
+}
+
+.btn-secondary:hover {
+  background: var(--glass-border, rgba(255, 255, 255, 0.1));
+  border-color: var(--warcraft-gold, #D4AF37);
+  color: var(--warcraft-gold, #D4AF37);
+}
+
+/* Danger Button - Red Theme */
+.btn-danger {
+  background: var(--horde-red, #ef4444);
+  color: white;
+  border-color: var(--horde-red, #ef4444);
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-danger:hover {
+  background: var(--horde-red-dark, #dc2626);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+}
+
+/* Success Button - Green Theme */
+.btn-success {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  color: white;
+  border-color: #28a745;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.25);
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #218838, #1dd1a1);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(40, 167, 69, 0.3);
+}
+
+/* Info Button - Blue Theme */
+.btn-info {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: white;
+  border-color: #3b82f6;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-info:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+/* Warning Button - Orange Theme */
+.btn-warning {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  border-color: #f59e0b;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.btn-warning:hover {
+  background: linear-gradient(135deg, #d97706, #b45309);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.4);
+}
+
+/* =============================================================================
+   BUTTON SIZES
+   ============================================================================= */
+.btn-sm {
+  padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+  font-size: var(--text-xs, 0.75rem);
+  min-height: 32px;
+}
+
+.btn-lg {
+  padding: var(--space-4, 1rem) var(--space-8, 2rem);
+  font-size: var(--text-lg, 1.125rem);
+  min-height: 56px;
+}
+
+.btn-xl {
+  padding: var(--space-6, 1.5rem) var(--space-10, 2.5rem);
+  font-size: var(--text-xl, 1.25rem);
+  min-height: 72px;
+}
+
+/* =============================================================================
+   SPECIAL BUTTON TYPES
+   ============================================================================= */
+
+/* Epic Report Button */
+.epic-report-btn {
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff6b35 100%);
+  background-size: 200% 200%;
+  border: none;
+  color: white;
+  padding: 1.5rem 3rem;
+  border-radius: 50px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 900;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  box-shadow: 
+    0 10px 30px rgba(255, 107, 53, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+  animation: pulse-glow 2s ease-in-out infinite alternate;
+}
+
+.epic-report-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  background-position: 100% 100%;
+  box-shadow: 
+    0 15px 40px rgba(255, 107, 53, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* Create Post Button */
+.create-post-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 144px;
+  padding: 40px 32px;
+  margin-bottom: 24px;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: none;
+  background: linear-gradient(135deg, #5B3EA4 0%, #7A5BD6 45%, #D4AF37 100%);
+  color: #0c0f13;
+  border-radius: 16px;
+  box-shadow: 
+    0 8px 24px rgba(91, 62, 164, 0.25),
+    0 4px 12px rgba(212, 175, 55, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.create-post-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 12px 32px rgba(91, 62, 164, 0.35),
+    0 6px 16px rgba(212, 175, 55, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Game Toggle Button */
+.game-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, var(--bg-secondary, rgba(255, 255, 255, 0.05)), var(--bg-tertiary, rgba(255, 255, 255, 0.02)));
+  border: 2px solid var(--border-primary, rgba(255, 255, 255, 0.1));
+  border-radius: var(--radius-lg, 12px);
+  padding: 12px 16px;
+  color: var(--text-primary, #ffffff);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 280px;
+}
+
+.game-toggle-btn:hover {
+  background: linear-gradient(135deg, var(--bg-hover, rgba(255, 255, 255, 0.1)), var(--bg-secondary, rgba(255, 255, 255, 0.05)));
+  border-color: var(--primary-gold, #D4AF37);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Report Match Button */
+.btn-report {
+  background: linear-gradient(135deg, var(--primary-gold, #D4AF37), var(--primary-gold-dark, #b8860b));
+  border: 2px solid var(--primary-gold-dark, #b8860b);
+  color: var(--text-dark, #1a1a1a);
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: var(--radius-lg, 12px);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-report:hover {
+  background: linear-gradient(135deg, var(--primary-gold-dark, #b8860b), var(--primary-gold, #D4AF37));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(212, 175, 55, 0.6);
+}
+
+/* Search Button */
+.btn-search {
+  background: linear-gradient(135deg, var(--primary-gold, #D4AF37) 0%, #b8860b 100%);
+  color: var(--bg-primary, #1a1a1a);
+  border: none;
+  padding: var(--spacing-md, 0.75rem);
+  border-radius: var(--radius-md, 8px);
+  font-weight: 600;
+  font-family: 'Cinzel', serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+  min-width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+
+.btn-search:hover {
+  background: linear-gradient(135deg, #b8860b 0%, var(--primary-gold, #D4AF37) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+  scale: 1.05;
+}
+
+/* Filter Button */
+.filter-btn {
+  background: var(--bg-tertiary, rgba(255, 255, 255, 0.02));
+  color: var(--text-secondary, #cccccc);
+  border: 2px solid var(--border-primary, rgba(255, 255, 255, 0.1));
+  padding: var(--spacing-md, 0.75rem) var(--spacing-lg, 1rem);
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-family: 'Cinzel', serif;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.9rem;
+  min-width: 60px;
+}
+
+.filter-btn:hover {
+  background: var(--primary-gold, #D4AF37);
+  color: var(--bg-primary, #1a1a1a);
+  border-color: var(--primary-gold, #D4AF37);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+
+.filter-btn.active {
+  background: linear-gradient(135deg, var(--primary-gold, #D4AF37) 0%, #b8860b 100%);
+  color: var(--bg-primary, #1a1a1a);
+  border-color: var(--primary-gold, #D4AF37);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+}
+
+/* =============================================================================
+   BUTTON STATES
+   ============================================================================= */
+.btn:disabled,
+.btn.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+/* =============================================================================
+   BUTTON EFFECTS
+   ============================================================================= */
+
+/* Shimmer Effect */
+.btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn:hover::before {
+  left: 100%;
+}
+
+/* Glow Effect */
+.btn-glow {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+  animation: rotate-glow 4s linear infinite;
+  pointer-events: none;
+}
+
+/* =============================================================================
+   ANIMATIONS
+   ============================================================================= */
+
+/* =============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================= */
+@media (max-width: 768px) {
+  .btn {
+    padding: var(--space-2, 0.5rem) var(--space-4, 1rem);
+    font-size: var(--text-xs, 0.75rem);
+  }
+  
+  .btn-lg {
+    padding: var(--space-3, 0.75rem) var(--space-6, 1.5rem);
+    font-size: var(--text-base, 1rem);
+  }
+  
+  .epic-report-btn {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+  }
+  
+  .create-post-button {
+    min-height: 120px;
+    padding: 24px 20px;
+    font-size: 1rem;
+  }
+  
+  .game-toggle-btn {
+    min-width: 240px;
+  }
+}
+
+@media (max-width: 480px) {
+  .btn {
+    padding: var(--space-1, 0.25rem) var(--space-3, 0.75rem);
+    font-size: var(--text-xs, 0.75rem);
+  }
+  
+  .epic-report-btn {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+  }
+  
+  .create-post-button {
+    min-height: 100px;
+    padding: 20px 16px;
+    font-size: 0.9rem;
+  }
+  
+  .game-toggle-btn {
+    min-width: 200px;
+  }
+}
+
+/* =============================================================================
+   ACTION BUTTON UTILITIES
+   ============================================================================= */
+.btn-action {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: var(--glass-bg);
+  color: var(--neutral-400);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--glass-border);
+}
+
+
+
+.btn-create-tournament {
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-create-tournament:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+}
+
+.btn-ranks {
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #2c3e50;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  margin-right: 1rem;
+}
+
+.btn-ranks:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}

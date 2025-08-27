@@ -1,0 +1,229 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WC Arena - War Tales</title>
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="">
+  <link rel="stylesheet" href="/css/warcraft-app-modern.css">
+
+  <link rel="stylesheet" href="/css/maps/maps-tabs.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  
+  <!-- Universal Navbar Consistency - MUST be loaded last for proper override -->
+  <link rel="stylesheet" href="/css/navbar-universal.css">
+  
+  <script src="/js/utils.js"></script>
+  
+  <!-- Universal Navbar Consistency - MUST be loaded last for proper override -->
+  <link rel="stylesheet" href="/css/navbar-universal.css">
+</head>
+<body>
+  <div id="navbar-container"></div>
+
+  <main>
+    <!-- Page Title -->
+    <div class="page-header">
+      <h1 class="page-title" data-theme="wartales">⚔️ War Tales</h1>
+    </div>
+    
+    <div class="wartales-container">
+      <div class="wartales-header">
+        <p>Complete War Tales missions to earn points, experience, and achievements!</p>
+      </div>
+
+      <div class="wartales-stats" id="wartales-stats">
+        <div class="stat-card">
+          <span class="stat-value" id="missions-completed">0</span>
+          <div class="stat-label">Missions Completed</div>
+        </div>
+
+        <div class="stat-card">
+          <span class="stat-value" id="total-experience">0</span>
+          <div class="stat-label">Experience Gained</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="arena-gold">0</span>
+          <div class="stat-label">Arena Gold</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="honor-points">0</span>
+          <div class="stat-label">Honor Points</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value" id="achievements-unlocked">0</span>
+          <div class="stat-label">Achievements</div>
+        </div>
+      </div>
+
+      <!-- Game Type Tabs -->
+      <section class="wartales-tabs-container fade-in">
+        <div class="wartales-tabs-wrapper">
+          <div class="wartales-tabs">
+            <button class="wartales-tab" data-game="wc1">
+              <i class="fas fa-dragon"></i>
+              <span>WC I</span>
+            </button>
+            <button class="wartales-tab active" data-game="wc2">
+              <i class="fas fa-shield-alt"></i>
+              <span>WC II</span>
+            </button>
+            <button class="wartales-tab" data-game="wc3">
+              <i class="fas fa-chess-king"></i>
+              <span>WC III</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <div id="wartales-content" class="loading">
+        <i class="fas fa-spinner fa-spin"></i>
+                    <p>Loading War Tales...</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- Mission Completion Modal -->
+  <div id="completion-modal" class="modal" data-static="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-title">Complete Mission</h2>
+        <span class="close" id="modal-close">×</span>
+      </div>
+      <form id="completion-form" enctype="multipart/form-data">
+        <input type="hidden" id="campaign-id" name="campaignId">
+        <input type="hidden" id="campaign-game" name="campaignGame">
+        
+        <div class="modal-form-content">
+          <!-- Left Column: Form Inputs -->
+          <div class="form-left-column">
+            <!-- Difficulty Selection (for WC3 only) -->
+            <div class="form-group" id="difficulty-group">
+              <label for="difficulty">Difficulty Mode</label>
+              <select id="difficulty" name="difficulty">
+                <option value="story">Story Mode</option>
+                <option value="normal" selected="">Normal</option>
+                <option value="hard">Hard</option>
+              </select>
+              <small>Higher difficulties provide bonus rewards!</small>
+            </div>
+
+            <!-- Speedrun Options -->
+            <div class="form-group">
+              <label class="checkbox-label">
+                <input type="checkbox" id="is-speedrun" name="isSpeedrun">
+                
+                Speedrun attempt
+              </label>
+              <small>Check if attempting to complete quickly</small>
+            </div>
+
+            <!-- Speedrun Time (shown when speedrun is checked) -->
+            <div class="form-group" id="speedrun-time-group">
+              <label for="completion-time">Completion Time</label>
+              <div class="time-input-group">
+                <input type="number" id="completion-minutes" min="0" max="999" placeholder="MM">
+                <span>:</span>
+                <input type="number" id="completion-seconds" min="0" max="59" placeholder="SS">
+                <input type="hidden" id="completion-time" name="completionTime">
+              </div>
+              <small>Enter time in minutes and seconds</small>
+            </div>
+
+            <!-- Video Proof (shown when speedrun is checked) -->
+            <div class="form-group" id="video-proof-group">
+              <label for="video-proof">Video Proof (Optional)</label>
+              <input type="url" id="video-proof" name="videoProof" placeholder="https://youtube.com/watch?v=...">
+              <small>YouTube link for verification</small>
+            </div>
+            
+            <!-- Screenshot Upload -->
+            <div class="form-group">
+              <label for="screenshots">Screenshots (Required)</label>
+              <div class="file-upload" id="file-upload">
+                <input type="file" id="screenshots" name="screenshots" multiple="" accept="image/*">
+                <div class="upload-text">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <p>Click or drag screenshots</p>
+                  <small>Up to 5 images (JPG, PNG, GIF, WebP)</small>
+                </div>
+              </div>
+              
+            </div>
+
+                      <!-- Battle Report -->
+          <div class="form-group">
+            <label for="battle-report">Battle Report (Optional)</label>
+            <textarea id="battle-report" name="battleReport" placeholder="Describe your strategy, challenges faced, key moments..."></textarea>
+          </div>
+          </div>
+
+          <!-- Right Column: Rewards & Achievements -->
+          <div class="form-right-column">
+            <!-- Mission Info -->
+            <div class="mission-info-card">
+              <h3 id="mission-display-name">Mission</h3>
+              <p class="mission-subtitle">Complete to earn rewards</p>
+            </div>
+            
+            <!-- Reward Preview -->
+            <div class="reward-preview" id="reward-preview">
+              <h4><i class="fas fa-gift"></i> Mission Rewards</h4>
+              <div class="reward-breakdown">
+                <div class="reward-item primary">
+                  <span class="reward-label"><i class="fas fa-coins"></i> Gold:</span>
+                  <span class="reward-value" id="arena-gold-reward">5</span>
+                </div>
+                <div class="reward-item primary">
+                  <span class="reward-label"><i class="fas fa-star"></i> XP:</span>
+                  <span class="reward-value" id="achievement-xp-reward">5</span>
+                </div>
+                <div class="reward-item primary">
+                  <span class="reward-label"><i class="fas fa-shield-alt"></i> Honor:</span>
+                  <span class="reward-value" id="honor-points-reward">0</span>
+                </div>
+                <div class="reward-item bonus wc3-only">
+                  <span class="reward-label"><i class="fas fa-trophy"></i> Difficulty:</span>
+                  <span class="reward-value" id="difficulty-multiplier">1.0x</span>
+                </div>
+                <div class="reward-item" id="speedrun-bonus">
+                  <span class="reward-label"><i class="fas fa-stopwatch"></i> Speedrun:</span>
+                  <span class="reward-value">+10%</span>
+                </div>
+              </div>
+              
+              <!-- Campaign Completion Bonuses (WC1 specific) -->
+              <div class="campaign-completion-rewards" id="campaign-completion-rewards">
+                <h5><i class="fas fa-crown"></i> Campaign Bonuses</h5>
+                
+              </div>
+            </div>
+
+            <!-- Achievement Preview -->
+            
+          </div>
+        </div>
+
+        <div class="campaign-actions">
+          <button type="button" class="btn-campaign btn-view" id="cancel-btn">Cancel</button>
+          <button type="submit" class="btn-campaign btn-complete" id="submit-btn">Submit Completion</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div id="footer-container"></div>
+
+  <!-- Load main.js first to handle navbar loading -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+  <script src="/js/api-config.js"></script>
+  <script type="module" src="/js/app.js"></script>
+  <script type="module" src="/js/main.js"></script>
+  <!-- Ultra-Aggressive Image Compression Integration -->
+  <script type="module" src="/js/modules/ImageCompressor.js"></script>
+  <script type="module" src="/js/ultraCompressionIntegration.js"></script>
+  <script type="module" src="/js/wartales.js"></script>
+
+ 
+</body></html>

@@ -1,0 +1,2097 @@
+/* ===== MAPS BASE CSS ===== */
+/* Base styles for all map-related pages */
+
+/* Admin-only elements */
+.admin-only {
+  display: none;
+}
+
+/* Map name display */
+.map-name-display {
+  display: none;
+}
+
+/* ===== GLOBAL BASE STYLES ===== */
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+  color: rgba(255, 255, 255, 0.9);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  .maps-main {
+    padding: 0 1rem 2rem;
+  }
+  
+  .hero-title {
+    font-size: clamp(2rem, 8vw, 3rem);
+  }
+  
+  .hero-subtitle {
+    font-size: clamp(0.9rem, 3vw, 1.2rem);
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .maps-controls {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .maps-search {
+    max-width: 100%;
+  }
+  
+  .game-tabs {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .game-tab {
+    min-width: auto;
+    padding: 0.75rem 1rem;
+  }
+  
+  #maps-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    padding: 0.5rem;
+    gap: 0.8rem;
+  }
+  
+  .wc2-map-card {
+  margin-bottom: 0.5rem;
+  min-height: 280px; /* Increased from 209px to match desktop and fix rating overlap */
+}
+  
+  .wc2-map-thumbnail-wrapper {
+    height: 220px !important; /* Increased from 181px to match desktop */
+  }
+  
+  .wc2-map-thumbnail {
+    height: 210px !important; /* Increased from 170px to match desktop */
+  }
+  
+  .modal-content {
+    width: 95%;
+    margin: 2% auto;
+    max-height: 90vh;
+  }
+  
+  .modal-header {
+    padding: 1rem 1.5rem;
+  }
+  
+  .modal-body {
+    padding: 0;
+  }
+  
+  .modal-title {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .maps-hero {
+    min-height: 6vh;
+    padding: 1rem 0;
+  }
+  
+  .hero-stats {
+    gap: 0.5rem;
+  }
+  
+  .hero-stat {
+    padding: 0.4rem 0.6rem;
+    min-width: 60px;
+  }
+  
+  .hero-stat-value {
+    font-size: 1rem;
+  }
+  
+  .hero-stat-label {
+    font-size: 0.6rem;
+  }
+  
+  .game-tabs-container {
+    margin: 0.5rem auto 0.5rem;
+    padding: 0.4rem;
+  }
+  
+  .game-tab {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.7rem;
+  }
+  
+  #maps-grid {
+    grid-template-columns: 1fr;
+    padding: 0.5rem;
+  }
+  
+  .wc2-section {
+    padding: 1.5rem;
+    margin: 1rem auto;
+  }
+  
+  .section-title {
+    font-size: 1.3rem;
+  }
+  
+  .map-actions {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
+}
+
+/* ===== SECTION STYLES ===== */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #ffd700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-title i {
+  font-size: 1.5rem;
+  color: rgba(255, 215, 0, 0.8);
+}
+
+.section-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.epic-btn {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05));
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  border-radius: 10px;
+  color: #ffd700;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+}
+
+.epic-btn:hover {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
+  border-color: rgba(255, 215, 0, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
+}
+
+.epic-btn.secondary {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.epic-btn.secondary:hover {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.08));
+  border-color: rgba(255, 215, 0, 0.3);
+  color: #ffd700;
+}
+
+/* ===== MAPS TABS STYLES ===== */
+.maps-tabs-section {
+  margin: 1rem 0;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.maps-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.tab-btn {
+  padding: 0.6rem 1.2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.tab-btn:hover {
+  background: rgba(255, 215, 0, 0.1);
+  border-color: rgba(255, 215, 0, 0.3);
+  color: #ffd700;
+}
+
+.tab-btn.active {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.08));
+  border-color: #ffd700;
+  color: #ffd700;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
+}
+
+/* ===== PAGINATION STYLES ===== */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+  padding: 1rem;
+}
+
+.pagination {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.pagination button {
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.pagination button:hover {
+  background: rgba(255, 215, 0, 0.1);
+  border-color: rgba(255, 215, 0, 0.3);
+  color: #ffd700;
+}
+
+.pagination button.active {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.08));
+  border-color: #ffd700;
+  color: #ffd700;
+}
+
+.pagination button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== MAPS GRID STYLES ===== */
+#maps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 15px;
+  min-height: 200px;
+}
+
+
+
+/* Loading state */
+#maps-grid .loading {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.1rem;
+}
+
+/* No maps state */
+#maps-grid .no-maps {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem 1rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+#maps-grid .no-maps i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: rgba(255, 215, 0, 0.3);
+}
+
+#maps-grid .no-maps h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ===== WC3 MAPS GRID STYLES ===== */
+#wc3-maps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 15px;
+  min-height: 200px;
+}
+
+/* ===== WC3 MAP CARD STYLES - REDESIGNED FOR COMPACTNESS ===== */
+.wc3-map-card {
+  position: relative;
+  cursor: pointer;
+  transform-origin: center;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  min-height: 280px; /* Increased from 209px to match WC2 cards and fix rating overlap */
+}
+
+.wc3-map-card:hover {
+  background: rgba(255, 215, 0, 0.08);
+  border-color: rgba(255, 215, 0, 0.3);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 12px 25px rgba(255, 215, 0, 0.2);
+}
+
+.wc3-map-thumbnail-wrapper {
+  position: relative;
+  width: 100%;
+  height: 220px !important; /* Increased from 181px to match WC2 cards */
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 12px 12px 0 0;
+  flex-shrink: 0;
+}
+
+.wc3-map-thumbnail {
+  width: 100%;
+  height: 210px !important; /* Increased from 170px to match WC2 cards */
+  object-fit: contain;
+  /* Remove conflicting transition to allow animation to work */
+}
+
+.wc3-map-card:hover .wc3-map-thumbnail {
+  /* Animation will be handled by the mapFlap keyframes */
+  transform: none;
+}
+
+.wc3-map-info {
+  padding: 0.8rem; /* Increased padding to give more space for rating stars */
+  background: rgba(255, 255, 255, 0.02);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 120px; /* Increased from 80px to match WC2 cards */
+}
+
+.wc3-map-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1rem; /* Reduced from 1.1rem */
+  font-weight: 600;
+  color: #ffd700;
+  margin-bottom: 0.2rem; /* Reduced from 0.3rem */
+  line-height: 1.2;
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* Show only 1 line for title */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.wc3-map-description {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8rem; /* Reduced from 0.9rem */
+  line-height: 1.3;
+  margin-bottom: 0.2rem; /* Reduced from 0.3rem */
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* Show only 1 line for description */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.wc3-map-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.7rem; /* Reduced from 0.8rem */
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 0.2rem; /* Reduced from 0.3rem */
+  padding: 0.2rem 0; /* Reduced from 0.3rem */
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.wc3-map-size {
+  font-weight: 600;
+  color: rgba(255, 215, 0, 0.8);
+}
+
+.wc3-map-download-btn {
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #000;
+  border: none;
+  padding: 0.4rem 0.8rem; /* Reduced from 0.5rem 1rem */
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.75rem; /* Reduced from 0.8rem */
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.3);
+  flex: 1;
+  justify-content: center;
+}
+
+.wc3-map-download-btn:hover {
+  background: linear-gradient(135deg, #ffed4e, #ffd700);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+}
+
+.wc3-map-rating-section {
+  margin: 0.5rem 0; /* Increased margin to prevent overlap */
+  padding: 0.3rem 0; /* Increased padding for better spacing */
+}
+
+.wc3-map-rating-stars {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem; /* Reduced from 0.3rem */
+  margin-bottom: 0.3rem; /* Reduced from 0.5rem */
+}
+
+.wc3-map-rating-stars i {
+  color: #ffd700;
+  font-size: 0.9rem; /* Reduced from 1rem */
+}
+
+.wc3-map-rating-value {
+  font-weight: 600;
+  color: #ffd700;
+  margin-left: 0.4rem; /* Reduced from 0.5rem */
+  font-size: 0.8rem; /* Reduced from 0.9rem */
+}
+
+.wc3-map-actions {
+  display: flex;
+  gap: 0.4rem; /* Reduced from 0.5rem */
+  margin-top: 0.3rem; /* Reduced from 0.5rem */
+}
+
+.wc3-map-actions .btn {
+  padding: 0.5rem 0.8rem; /* Reduced from 0.6rem 1rem */
+  font-size: 0.8rem; /* Reduced from 0.9rem */
+  flex: 1;
+  justify-content: center;
+  font-weight: 500;
+}
+
+.wc3-map-view-details-btn {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.08));
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  color: #ffd700;
+  font-weight: 600;
+  flex: 1;
+}
+
+.wc3-map-view-details-btn:hover {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(255, 215, 0, 0.15));
+  border-color: rgba(255, 215, 0, 0.5);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+
+/* ===== ENHANCED WC3 ACTION BUTTONS - MORE PROMINENT ===== */
+.wc3-map-actions-enhanced {
+  display: flex;
+  gap: 0.4rem;
+  margin-top: 0.3rem;
+}
+
+.wc3-btn-view-details-enhanced {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
+  border: 2px solid rgba(255, 215, 0, 0.4);
+  color: #ffd700;
+  font-weight: 700;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex: 1;
+  box-shadow: 0 2px 8px rgba(255, 215, 0, 0.2);
+}
+
+.wc3-btn-view-details-enhanced:hover {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.2));
+  border-color: rgba(255, 215, 0, 0.6);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+  color: #fff;
+}
+
+.wc3-btn-download-overlay {
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #000;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  box-shadow: 0 3px 10px rgba(255, 215, 0, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.wc3-btn-download-overlay:hover {
+  background: linear-gradient(135deg, #ffed4e, #ffd700);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 215, 0, 0.6);
+}
+
+/* ===== WC3 STRATEGIC ITEMS - COMPACT DISPLAY ===== */
+.wc3-strategic-items {
+  display: flex;
+  gap: 0.3rem;
+  margin: 0.2rem 0;
+  flex-wrap: wrap;
+}
+
+.wc3-strategic-item {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  background: rgba(255, 215, 0, 0.1);
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  font-size: 0.7rem;
+  color: rgba(255, 215, 0, 0.9);
+}
+
+.wc3-strategic-icon {
+  font-size: 0.6rem;
+  color: #ffd700;
+}
+
+/* WC3 Loading state */
+#wc3-maps-grid .loading {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.1rem;
+}
+
+/* WC3 No maps state */
+#wc3-maps-grid .no-maps {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3rem 1rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+#wc3-maps-grid .no-maps i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: rgba(255, 215, 0, 0.3);
+}
+
+#wc3-maps-grid .no-maps h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* ===== UTILITY CLASSES ===== */
+.btn {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn:hover {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
+  border-color: rgba(255, 215, 0, 0.3);
+  color: #ffd700;
+  transform: translateY(-2px);
+}
+
+.btn.primary {
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #000;
+  border-color: #ffd700;
+}
+
+.btn.primary:hover {
+  background: linear-gradient(135deg, #ffed4e, #ffd700);
+  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+}
+
+/* ===== ANIMATIONS ===== */
+.fade-in {
+  animation: fadeIn 0.6s ease;
+}
+
+.slide-up {
+  animation: slideUp 0.6s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Scroll animations */
+.scroll-fade {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease;
+}
+
+.scroll-fade.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Loading spinner */
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 215, 0, 0.2);
+  border-top: 3px solid #ffd700;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 2rem auto;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.6));
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.6), rgba(255, 215, 0, 0.8));
+}
+
+/* Selection styling */
+::selection {
+  background: rgba(255, 215, 0, 0.3);
+  color: #ffd700;
+}
+
+::-moz-selection {
+  background: rgba(255, 215, 0, 0.3);
+  color: #ffd700;
+} 
+
+/* ===== FORCED HEIGHT OVERRIDES - HIGH SPECIFICITY ===== */
+/* These rules ensure our doubled height design takes precedence over any conflicting styles */
+
+#maps-grid .wc2-map-card .wc2-map-thumbnail-wrapper,
+#maps-grid .wc2-map-card .wc2-map-thumbnail {
+  height: 220px !important;
+  max-height: 220px !important;
+  min-height: 220px !important;
+}
+
+#wc3-maps-grid .wc3-map-card .wc3-map-thumbnail-wrapper,
+#wc3-maps-grid .wc3-map-card .wc3-map-thumbnail {
+  height: 220px !important;
+  max-height: 220px !important;
+  min-height: 220px !important;
+}
+
+/* Additional specificity for any dynamically created elements */
+.wc2-map-card .wc2-map-thumbnail-wrapper,
+.wc2-map-card .wc2-map-thumbnail,
+.wc3-map-card .wc3-map-thumbnail-wrapper,
+.wc3-map-card .wc3-map-thumbnail {
+  height: 220px !important;
+  max-height: 220px !important;
+  min-height: 220px !important;
+}
+
+/* Force override for any inline styles or JavaScript-set heights */
+.wc2-map-thumbnail-wrapper[style*="height"],
+.wc2-map-thumbnail[style*="height"],
+.wc3-map-thumbnail-wrapper[style*="height"],
+.wc3-map-thumbnail[style*="height"] {
+  height: 220px !important;
+  max-height: 220px !important;
+  min-height: 220px !important;
+} 
+
+/* ===== MAP OVERLAY BUTTONS STYLING - REMOVED - REPLACED WITH TOP BUTTONS ===== */
+
+.fullscreen-icon {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.8);
+  padding: 0.4rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+}
+
+.fullscreen-icon:hover {
+  background: rgba(255, 215, 0, 0.2);
+  border-color: rgba(255, 215, 0, 0.4);
+  color: #ffd700;
+  transform: scale(1.05);
+}
+
+.fullscreen-icon i {
+  font-size: 0.9rem;
+}
+
+/* ===== MAP OVERLAY INFO STYLING - REMOVED - REPLACED WITH TOP BUTTONS AND EDGE STATS ===== */
+
+/* ===== MAP QUICK STATS STYLING - REMOVED - REPLACED WITH EDGE STATS ===== */
+
+/* ===== MAP OVERLAY RATINGS STYLING ===== */
+.map-overlay-ratings {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  justify-content: center;
+}
+
+.map-overlay-ratings .fa-star {
+  font-size: 0.7rem;
+  color: #ffd700;
+}
+
+.overlay-rating-text {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+/* Stars container styling */
+.stars-container {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.stars-container .fa-star,
+.stars-container .fas.fa-star,
+.stars-container .far.fa-star {
+  color: #ffd700;
+  font-size: 0.7rem;
+  transition: all 0.2s ease;
+}
+
+.stars-container .far.fa-star {
+  color: #6b7280;
+}
+
+.stars-container .fa-star-half-alt {
+  color: #ffd700;
+  font-size: 0.7rem;
+}
+
+.rating-text {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  margin-left: 0.5rem;
+}
+
+
+
+.map-rating-section .fa-star,
+.wc3-map-rating-section .fa-star {
+  color: #ffd700;
+  font-size: 0.7rem;
+}
+
+/* Add padding to regular map rating section to prevent overlap */
+.map-rating-section {
+  padding: 0.3rem 0.5rem;
+  margin: 0.3rem 0;
+}
+
+.map-rating-value,
+.wc3-map-value {
+  color: #666;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+
+/* Pop out effect for WC2/3 map cards */
+/* WC2/3 Map Cards - New Design with Backdrop */
+.wc2-map-card,
+.wc3-map-card {
+  position: relative;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  cursor: pointer;
+  min-height: 280px; /* Increased from 230px to 280px to provide more space and prevent overlap */
+}
+
+.wc2-map-card:hover,
+.wc3-map-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+/* WC2/3 Thumbnail Container - Doubled size as backdrop */
+.wc2-map-thumbnail-container,
+.wc3-map-thumbnail-container {
+  position: relative;
+  width: 100%;
+  height: 220px !important; /* Increased from 181px to 220px (proportional to card height) */
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px 12px 0 0;
+}
+
+/* WC2/3 Thumbnail - Doubled size */
+.wc2-map-thumbnail,
+.wc3-map-thumbnail {
+  width: 100%;
+  height: 210px !important; /* Increased from 170px to 210px (proportional to container) */
+  object-fit: contain;
+  background: rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.wc2-map-card:hover .wc2-map-thumbnail,
+.wc3-map-card:hover .wc3-map-thumbnail {
+  /* Animation will be handled by the mapFlap keyframes */
+  transform: none;
+}
+
+/* WC2/3 Map Info - Moved up to accommodate larger image */
+.wc2-map-info,
+.wc3-map-info {
+  padding: 0.8rem;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 2;
+  margin-top: 0; /* Remove any top margin */
+  min-height: 120px; /* Increased from 80px to provide more space for content */
+}
+
+/* WC2/3 Map Title */
+.wc2-map-title,
+.wc3-map-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* WC2/3 Map Description */
+.wc2-map-description,
+.wc3-map-description {
+  margin: 0 0 0.8rem 0;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* WC2/3 Map Meta */
+.map-meta,
+.wc3-map-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* WC2/3 Map Size */
+.map-size,
+.wc3-map-size {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* WC2/3 Map Download Button */
+.map-download-btn,
+.wc3-map-download-btn {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.map-download-btn:hover,
+.wc3-map-download-btn:hover {
+  background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+}
+
+/* WC2/3 Map Rating Section */
+.map-rating-section,
+.wc3-map-rating-section {
+  position: absolute;
+  bottom: 12rem; /* Increased from 10rem to provide more space above edge stats and prevent overlap with author */
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0.5rem;
+  z-index: 10;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 8px;
+  margin: 0 0.8rem;
+}
+
+.map-rating-stars,
+.wc3-map-rating-stars {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.map-rating-stars i,
+.wc3-map-rating-stars i {
+  color: #ffd700;
+  font-size: 0.8rem;
+}
+
+.map-rating-value,
+.wc3-map-rating-value {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}
+
+/* WC2/3 Map Actions */
+.map-actions,
+.wc3-map-actions {
+  margin-top: 0.8rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.map-actions .btn,
+.wc3-map-actions .btn {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* WC2/3 Map View Details Button */
+.map-view-details-btn,
+.wc3-map-view-details-btn {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  color: white;
+}
+
+.map-view-details-btn:hover,
+.wc3-map-view-details-btn:hover {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+}
+
+/* WC2/3 Map Actions Enhanced */
+.map-actions-enhanced,
+.wc3-map-actions-enhanced {
+  margin-top: 0.8rem;
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* WC2/3 Button View Details Enhanced */
+.btn-view-details-enhanced,
+.wc3-btn-view-details-enhanced {
+  flex: 1;
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-view-details-enhanced:hover,
+.wc3-btn-view-details-enhanced:hover {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.4);
+}
+
+/* WC2/3 Button Download Overlay */
+.btn-download-overlay,
+.wc3-btn-download-overlay {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white;
+  border: none;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.btn-download-overlay:hover,
+.wc3-btn-download-overlay:hover {
+  background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+}
+
+/* WC2/3 Button Fullscreen Overlay */
+.btn-fullscreen-overlay {
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+  color: white;
+  border: none;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  white-space: nowrap;
+}
+
+.btn-fullscreen-overlay:hover {
+  background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
+}
+
+/* WC2/3 Strategic Items */
+.strategic-items,
+.wc3-strategic-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.8rem;
+}
+
+.strategic-item,
+.wc3-strategic-item {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.strategic-icon,
+.wc3-strategic-icon {
+  color: #fbbf24;
+  font-size: 0.8rem;
+}
+
+/* WC2/3 Map Overlay Info - Removed duplicate, using high-specificity rule above */
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+  .wc2-map-card,
+  .wc3-map-card {
+    min-height: 309px; /* Increased from 259px to match the desktop increase */
+  }
+  
+  .wc2-map-thumbnail-wrapper,
+  .wc3-map-thumbnail-wrapper {
+    height: 220px !important; /* Increased to match desktop */
+  }
+  
+  .wc2-map-thumbnail,
+  .wc3-map-thumbnail {
+    height: 210px !important; /* Increased to match desktop */
+  }
+  
+  .btn-view-details-enhanced,
+  .wc3-btn-view-details-enhanced {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.75rem;
+  }
+  
+  .btn-download-overlay,
+  .wc3-btn-download-overlay {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.75rem;
+  }
+  
+  .btn-fullscreen-overlay {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.75rem;
+  }
+  
+  .map-overlay-ratings {
+    margin-top: 0.3rem;
+  }
+  
+  .map-overlay-ratings .fa-star {
+    font-size: 0.65rem;
+  }
+  
+  .overlay-rating-text {
+    font-size: 0.65rem;
+  }
+  
+  .map-rating-section {
+    padding-left: 0.3rem;
+  }
+  
+  .map-rating-section .fa-star {
+    font-size: 0.65rem;
+  }
+  
+  .map-rating-value {
+    font-size: 0.65rem;
+  }
+  
+  .map-meta-left {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.3rem;
+  }
+  
+  /* Mobile responsive styles for new layout */
+  .map-top-buttons {
+    top: 0.5rem;
+    left: 0.5rem;
+    right: 0.5rem;
+    gap: 0.4rem; /* Reduced gap for mobile */
+    flex-direction: column; /* Keep stacked on mobile */
+  }
+
+  .map-edge-stats {
+    top: 50%; /* Keep centered on mobile */
+    padding: 0 0.5rem;
+    transform: translateY(-50%); /* Keep perfect centering */
+  }
+
+  .map-left-stat,
+  .map-right-stat {
+    padding: 0.3rem 0.6rem; /* Slightly smaller for mobile */
+    font-size: 0.75rem;
+  }
+
+  .map-left-stat {
+    margin-left: 0.3rem; /* Adjusted for mobile */
+  }
+
+  .map-right-stat {
+    margin-right: 0.3rem; /* Adjusted for mobile */
+  }
+
+  .map-left-stat i,
+  .map-right-stat i {
+    font-size: 0.7rem;
+  }
+
+  /* Mobile button adjustments */
+  .btn-download-overlay,
+  .wc3-btn-download-overlay,
+  .btn-fullscreen-overlay,
+  .btn-match-history,
+  .btn-view-details-enhanced,
+  .wc3-btn-view-details-enhanced {
+    padding: 0.7rem 1.2rem; /* Slightly smaller for mobile but still large */
+    font-size: 0.9rem;
+    min-height: 44px; /* Slightly smaller minimum height */
+  }
+} 
+
+/* ===== NEW LAYOUT - TOP BUTTONS AND EDGE STATS ===== */
+.map-top-buttons {
+  position: absolute;
+  top: 0.8rem;
+  left: 0.8rem;
+  right: 0.8rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2 columns */
+  gap: 0.4rem; /* Smaller gap for 25% size */
+  z-index: 10;
+}
+
+/* Position buttons to align with card edges */
+.map-top-buttons .btn-view-details-enhanced,
+.map-top-buttons .btn-download-overlay,
+.map-top-buttons .wc3-btn-view-details-enhanced,
+.map-top-buttons .wc3-btn-download-overlay {
+  justify-self: start; /* Align to left edge */
+  margin-left: 0; /* Ensure no left margin */
+  width: 80%; /* 20% less wide than current 100% */
+}
+
+.map-top-buttons .btn-fullscreen-overlay,
+.map-top-buttons .btn-match-history {
+  justify-self: end; /* Align to right edge */
+  margin-right: 0; /* Ensure no right margin */
+  width: 80%; /* 20% less wide than current 100% */
+}
+
+/* Ensure WC3 buttons also follow the same alignment */
+.map-top-buttons .wc3-btn-view-details-enhanced,
+.map-top-buttons .wc3-btn-download-overlay {
+  justify-self: start; /* Align to left edge */
+  margin-left: 0;
+}
+
+/* Force button positioning with more specific rules */
+.map-top-buttons {
+  grid-template-areas: 
+    "left-top right-top"
+    "left-bottom right-bottom";
+}
+
+.map-top-buttons .btn-view-details-enhanced,
+.map-top-buttons .wc3-btn-view-details-enhanced {
+  grid-area: left-top;
+  justify-self: start;
+  margin-left: 0;
+}
+
+.map-top-buttons .btn-download-overlay,
+.map-top-buttons .wc3-btn-download-overlay {
+  grid-area: left-bottom;
+  justify-self: start;
+  margin-left: 0;
+}
+
+.map-top-buttons .btn-fullscreen-overlay {
+  grid-area: right-top;
+  justify-self: end;
+  margin-right: 0;
+}
+
+.map-top-buttons .btn-match-history {
+  grid-area: right-bottom;
+  justify-self: end;
+  margin-right: 0;
+}
+
+.map-edge-stats {
+  position: absolute;
+  bottom: 0.8rem; /* Position at bottom, just above player numbers/map size */
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0.8rem;
+  z-index: 10;
+}
+
+.map-left-stat,
+.map-right-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 0.4rem 0.8rem; /* Slightly larger padding */
+  border-radius: 8px; /* Slightly larger radius */
+  font-size: 0.8rem; /* Slightly larger font */
+  font-weight: 500;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.map-left-stat {
+  margin-left: 0.5rem; /* Move left stat a bit more left */
+}
+
+.map-right-stat {
+  margin-right: 0.5rem; /* Move right stat more to the right */
+}
+
+.map-left-stat i,
+.map-right-stat i {
+  color: #ffd700;
+  font-size: 0.75rem;
+}
+
+/* Make buttons 25% of current size and in 2x2 grid */
+.btn-download-overlay,
+.wc3-btn-download-overlay,
+.btn-fullscreen-overlay,
+.btn-match-history,
+.btn-view-details-enhanced,
+.wc3-btn-view-details-enhanced {
+  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  color: white;
+  border: none;
+  padding: 0.25rem 0.5rem; /* 25% of current size */
+  border-radius: 6px; /* Smaller radius */
+  font-size: 0.7rem; /* Smaller font size */
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Center text */
+  gap: 0.2rem;
+  white-space: nowrap;
+  min-height: 24px; /* Smaller minimum height */
+}
+
+.btn-view-details-enhanced,
+.wc3-btn-view-details-enhanced {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+}
+
+.btn-fullscreen-overlay {
+  background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+}
+
+.btn-match-history {
+  background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+}
+
+.btn-download-overlay:hover,
+.wc3-btn-download-overlay:hover,
+.btn-fullscreen-overlay:hover,
+.btn-match-history:hover,
+.btn-view-details-enhanced:hover,
+.wc3-btn-view-details-enhanced:hover {
+  background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+  transform: translateY(-3px); /* Increased hover effect */
+  box-shadow: 0 8px 25px rgba(79, 70, 229, 0.6); /* Increased shadow */
+}
+
+.btn-view-details-enhanced:hover,
+.wc3-btn-view-details-enhanced:hover {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%);
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.6);
+}
+
+.btn-fullscreen-overlay:hover {
+  background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%);
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.6);
+}
+
+.btn-match-history:hover {
+  background: linear-gradient(135deg, #047857 0%, #059669 100%);
+  box-shadow: 0 8px 25px rgba(5, 150, 105, 0.6);
+}
+
+/* Map flapping animation */
+.wc2-map-thumbnail,
+.wc3-map-thumbnail {
+  width: 100%;
+  height: 155px !important;
+  object-fit: contain;
+  background: rgba(0, 0, 0, 0.3);
+  /* Remove conflicting transition to allow animation to work */
+  transform-origin: center center;
+}
+
+.wc2-map-card:hover .wc2-map-thumbnail,
+.wc3-map-card:hover .wc3-map-thumbnail {
+  animation: mapFlap 2s ease-in-out infinite;
+  /* Ensure animation takes precedence */
+  transform: none;
+}
+
+@keyframes mapFlap {
+  0%, 100% {
+    transform: rotateY(0deg) scale(1.05);
+  }
+  25% {
+    transform: rotateY(-5deg) scale(1.05);
+  }
+  50% {
+    transform: rotateY(0deg) scale(1.05);
+  }
+  75% {
+    transform: rotateY(5deg) scale(1.05);
+  }
+}
+
+/* Ensure the thumbnail container has proper positioning for the new layout */
+.wc2-map-thumbnail-container,
+.wc3-map-thumbnail-container {
+  position: relative;
+  width: 100%;
+  height: 220px !important;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px 12px 0 0;
+  margin-top: 0; /* Remove any top margin */
+}
+
+/* Adjust the map info section to account for the new top layout */
+.wc2-map-info,
+.wc3-map-info {
+  padding: 0.8rem;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 2;
+  margin-top: 0; /* Remove any top margin */
+  min-height: 120px; /* Increased from 90px to provide more space for content */
+}
+
+/* Ensure proper spacing for the creator text */
+.wc2-map-info .map-creator,
+.wc3-map-info .map-creator {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.2;
+}
+
+/* Stars container styling - More specific to prevent overrides */
+.wc2-map-card .stars-container,
+.wc3-map-card .stars-container,
+.map-rating-section .stars-container,
+.wc3-map-rating-section .stars-container {
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.2rem !important;
+  z-index: 100 !important;
+  position: relative !important;
+}
+
+.wc2-map-card .stars-container .fa-star,
+.wc2-map-card .stars-container .fas.fa-star,
+.wc2-map-card .stars-container .far.fa-star,
+.wc3-map-card .stars-container .fa-star,
+.wc3-map-card .stars-container .fas.fa-star,
+.wc3-map-card .stars-container .far.fa-star,
+.map-rating-section .stars-container .fa-star,
+.map-rating-section .stars-container .fas.fa-star,
+.map-rating-section .stars-container .far.fa-star,
+.wc3-map-rating-section .stars-container .fa-star,
+.wc3-map-rating-section .stars-container .fas.fa-star,
+.wc3-map-rating-section .stars-container .far.fa-star {
+  color: #ffd700 !important;
+  font-size: 0.7rem !important;
+  transition: all 0.2s ease !important;
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+
+.wc2-map-card .stars-container .far.fa-star,
+.wc3-map-card .stars-container .far.fa-star,
+.map-rating-section .stars-container .far.fa-star,
+.wc3-map-rating-section .stars-container .far.fa-star {
+  color: #6b7280 !important;
+}
+
+.wc2-map-card .stars-container .fa-star-half-alt,
+.wc3-map-card .stars-container .fa-star-half-alt,
+.map-rating-section .stars-container .fa-star-half-alt,
+.wc3-map-rating-section .stars-container .fa-star-half-alt {
+  color: #ffd700 !important;
+  font-size: 0.7rem !important;
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.wc2-map-card .rating-text,
+.wc3-map-card .rating-text,
+.map-rating-section .rating-text,
+.wc3-map-rating-section .rating-text {
+  font-size: 0.75rem !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500 !important;
+  margin-left: 0.5rem !important;
+  display: inline-block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+} 
+
+/* ===== GAME CONTENT SECTIONS ===== */
+.game-content {
+  display: none;
+}
+
+.game-content.active {
+  display: block;
+}
+
+.wc2-content.active {
+  display: block;
+}
+
+/* ===== WC1 SCENARIO CARDS ===== */
+.wc1-scenarios-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1rem 0;
+}
+
+.wc1-category-section {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.category-title {
+  color: #ffd700;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-family: 'Cinzel', serif;
+}
+
+.wc1-scenarios-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.wc1-scenario-card {
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.wc1-scenario-card:hover {
+  transform: translateY(-5px);
+  border-color: #ffd700;
+  box-shadow: 0 10px 25px rgba(255, 215, 0, 0.2);
+}
+
+.scenario-image-container {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.scenario-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.wc1-scenario-card:hover .scenario-image {
+  transform: scale(1.05);
+}
+
+.scenario-overlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 0.5rem;
+  border-radius: 0 12px 0 8px;
+}
+
+.scenario-rating {
+  color: #ffd700;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.scenario-rating i {
+  margin-right: 0.3rem;
+}
+
+.scenario-rating small {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.7rem;
+}
+
+.scenario-info {
+  padding: 1rem;
+}
+
+.scenario-name {
+  color: #ffd700;
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem 0;
+  font-family: 'Cinzel', serif;
+}
+
+.scenario-description {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin: 0 0 1rem 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.scenario-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-view-scenario,
+.btn-rate-scenario {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+}
+
+.btn-view-scenario {
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #1a1a1a;
+}
+
+.btn-view-scenario:hover {
+  background: linear-gradient(135deg, #ffed4e, #ffd700);
+  transform: translateY(-2px);
+}
+
+.btn-rate-scenario {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-rate-scenario:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Responsive design for WC1 scenarios */
+@media (max-width: 768px) {
+  .wc1-scenarios-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .wc1-category-section {
+    padding: 1rem;
+  }
+  
+  .category-title {
+    font-size: 1.3rem;
+  }
+  
+  .scenario-image-container {
+    height: 150px;
+  }
+}
+
+/* ===== WC1 SCENARIO MODAL ===== */
+.wc1-scenario-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wc1-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  backdrop-filter: blur(10px);
+}
+
+.wc1-modal-content {
+  position: relative;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  border: 2px solid #ffd700;
+  border-radius: 16px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(255, 215, 0, 0.3);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.wc1-modal-header {
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #1a1a1a;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.wc1-modal-title {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  font-family: 'Cinzel', serif;
+}
+
+.wc1-modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #1a1a1a;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wc1-modal-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+  transform: scale(1.1);
+}
+
+.wc1-modal-body {
+  padding: 2rem;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.wc1-scenario-image-container {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.wc1-scenario-fullscreen-image {
+  max-width: 100%;
+  max-height: 60vh;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 215, 0, 0.3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.wc1-scenario-details {
+  color: white;
+}
+
+.scenario-category {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: #ffd700;
+  font-weight: 600;
+}
+
+.scenario-category i {
+  font-size: 1.1rem;
+}
+
+.scenario-description-full {
+  margin-bottom: 2rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.scenario-rating-section h4 {
+  color: #ffd700;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+}
+
+.scenario-rating-display {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.scenario-rating-display .stars {
+  color: #ffd700;
+  font-size: 1.2rem;
+}
+
+.rating-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffd700;
+}
+
+.rating-count {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.wc1-modal-footer {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  border-top: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.btn-rate-scenario-modal,
+.btn-close-modal {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-rate-scenario-modal {
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #1a1a1a;
+}
+
+.btn-rate-scenario-modal:hover {
+  background: linear-gradient(135deg, #ffed4e, #ffd700);
+  transform: translateY(-2px);
+}
+
+.btn-close-modal {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-close-modal:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.rating-input-section {
+  background: rgba(0, 0, 0, 0.2);
+  padding: 1.5rem;
+  border-top: 1px solid rgba(255, 215, 0, 0.2);
+  text-align: center;
+}
+
+.rating-input-section h4 {
+  color: #ffd700;
+  margin-bottom: 1rem;
+}
+
+.rating-stars-input {
+  margin-bottom: 1rem;
+  color: #ffd700;
+  font-size: 1.5rem;
+}
+
+.rating-stars-input i {
+  cursor: pointer;
+  margin: 0 0.2rem;
+  transition: all 0.2s ease;
+}
+
+.rating-stars-input i:hover {
+  transform: scale(1.2);
+}
+
+.btn-submit-rating {
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  color: #1a1a1a;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-submit-rating:hover {
+  background: linear-gradient(135deg, #ffed4e, #ffd700);
+  transform: translateY(-2px);
+}
+
+/* Responsive design for WC1 modal */
+@media (max-width: 768px) {
+  .wc1-modal-content {
+    max-width: 95vw;
+    max-height: 95vh;
+    margin: 1rem;
+  }
+  
+  .wc1-modal-header {
+    padding: 1rem;
+  }
+  
+  .wc1-modal-title {
+    font-size: 1.4rem;
+  }
+  
+  .wc1-modal-body {
+    padding: 1rem;
+  }
+  
+  .wc1-scenario-fullscreen-image {
+    max-height: 50vh;
+  }
+  
+  .wc1-modal-footer {
+    flex-direction: column;
+    padding: 1rem;
+  }
+  
+  .btn-rate-scenario-modal,
+  .btn-close-modal {
+    width: 100%;
+    justify-content: center;
+  }
+}

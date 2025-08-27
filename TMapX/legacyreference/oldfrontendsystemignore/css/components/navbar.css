@@ -1,0 +1,935 @@
+/* =============================================================================
+   NAVBAR COMPONENT STYLES
+   ============================================================================= */
+
+.navbar,
+.navbar-modern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  transition: all var(--transition-normal);
+}
+
+/* Improved focus styles for accessibility */
+.navbar-modern *:focus {
+  outline: 2px solid var(--primary-gold);
+  outline-offset: 2px;
+}
+
+.navbar-modern *:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+/* Brand section */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-decoration: none;
+  color: var(--primary-gold);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  transition: all var(--transition-fast);
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+}
+
+.brand-link:hover, .brand-link:focus {
+  color: var(--primary-gold-light);
+  text-shadow: 0 0 10px var(--primary-gold);
+  transform: translateY(-1px);
+}
+
+.brand-logo {
+  height: 40px;
+  width: auto;
+  transition: all var(--transition-fast);
+}
+
+.brand-icon {
+  font-size: 24px;
+  color: var(--primary-gold);
+  transition: all var(--transition-fast);
+}
+
+.brand-link:hover .brand-logo, .brand-link:focus .brand-logo {
+  filter: brightness(1.2);
+  transform: rotate(10deg);
+}
+
+.brand-link:hover .brand-icon, .brand-link:focus .brand-icon {
+  transform: rotate(10deg) scale(1.1);
+  filter: drop-shadow(0 0 8px var(--primary-gold));
+}
+
+.brand-text {
+  background: linear-gradient(135deg, var(--primary-gold), var(--primary-gold-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Desktop navigation */
+.navbar-nav,
+.navbar-nav-desktop {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  justify-content: center;
+}
+
+.nav-primary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  position: relative;
+  z-index: 0; /* ensure it does not sit above fixed navbar wrapper */
+}
+
+.navbar-nav a,
+.navbar-nav-desktop a,
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  color: var(--neutral-300);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: var(--text-sm);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+  position: relative;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  will-change: transform, background-color, border-color;
+  cursor: pointer;
+}
+
+.nav-item::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary-gold), var(--primary-gold-light));
+  transition: all var(--transition-normal);
+  transform: translateX(-50%);
+}
+
+.navbar-nav a:hover,
+.navbar-nav a.active,
+.navbar-nav-desktop a:hover,
+.navbar-nav-desktop a.active,
+.nav-item:hover, 
+.nav-item:focus {
+  color: var(--primary-gold);
+  background: rgba(212, 175, 55, 0.1);
+  transform: translateY(-1px);
+  border-color: var(--primary-gold);
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.2);
+}
+
+.nav-item:hover::before, .nav-item:focus::before {
+  width: 80%;
+}
+
+.nav-item.active {
+  color: var(--primary-gold);
+  background: rgba(212, 175, 55, 0.15);
+  border-color: var(--primary-gold);
+}
+
+.nav-item.active::before {
+  width: 100%;
+}
+
+.nav-item i {
+  font-size: var(--text-lg);
+  transition: all var(--transition-fast);
+}
+
+.nav-item:hover i, .nav-item:focus i {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 4px var(--primary-gold));
+}
+
+/* Music Control in Navigation */
+.nav-music-control {
+  display: flex;
+  align-items: center;
+  margin: 0 var(--space-2);
+  margin-right: var(--space-6); /* Add extra spacing to the right */
+  position: relative;
+}
+
+.nav-music-control .music-orb-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.nav-music-control .music-orb {
+  width: 40px;
+  height: 40px;
+  position: relative;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.nav-music-control .music-orb:hover {
+  transform: scale(1.1);
+}
+
+.nav-music-control .orb-core {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--primary-gold), var(--primary-gold-light));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+  transition: all var(--transition-fast);
+}
+
+.nav-music-control .orb-icon {
+  color: var(--neutral-900);
+  font-size: 16px;
+  transition: all var(--transition-fast);
+}
+
+.nav-music-control .orb-rings {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.nav-music-control .ring {
+  position: absolute;
+  border: 2px solid var(--primary-gold);
+  border-radius: 50%;
+  opacity: 0;
+  animation: pulse-ring 2s infinite;
+}
+
+.nav-music-control .ring-1 {
+  width: 50px;
+  height: 50px;
+  animation-delay: 0s;
+}
+
+.nav-music-control .ring-2 {
+  width: 60px;
+  height: 60px;
+  animation-delay: 0.5s;
+}
+
+.nav-music-control .ring-3 {
+  width: 70px;
+  height: 70px;
+  animation-delay: 1s;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 0;
+  }
+}
+
+.nav-music-control .music-options {
+  position: absolute;
+  top: 100%; /* Keep it below the music icon */
+  left: 50%; /* Center it horizontally under the music icon */
+  transform: translateX(-50%); /* Center horizontally */
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  visibility: hidden;
+  transition: all var(--transition-normal);
+  z-index: 1001;
+  min-width: 200px;
+  margin-top: var(--space-2); /* Add some space below the music icon */
+}
+
+.nav-music-control:hover .music-options {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(5px); /* Center horizontally and move down slightly */
+}
+
+.nav-music-control .music-toggle-enhanced {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-music-control .music-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  color: var(--neutral-300);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: var(--text-sm);
+  font-weight: 500;
+}
+
+.nav-music-control .music-btn:hover {
+  background: rgba(212, 175, 55, 0.1);
+  border-color: var(--primary-gold);
+  color: var(--primary-gold);
+  transform: translateX(2px);
+}
+
+.nav-music-control .music-btn i {
+  font-size: 14px;
+  width: 16px;
+  text-align: center;
+}
+
+.nav-music-control .btn-text {
+  flex: 1;
+  text-align: left;
+}
+
+/* Mobile adjustments for music control */
+@media (max-width: 768px) {
+  .nav-music-control {
+    display: none; /* Hide on mobile, will be in mobile menu */
+  }
+}
+
+/* GOLDMINE dropdown styling - PROPER NAVBAR INTEGRATION */
+.goldmine-dropdown {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.goldmine-dropdown .nav-item {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--primary-gold);
+  transition: all var(--transition-normal);
+}
+
+/* Simple cursor fix for goldmine dropdown button */
+.goldmine-dropdown button.nav-item {
+  cursor: pointer;
+}
+
+.goldmine-dropdown .nav-item:hover {
+  background: var(--glass-border);
+  border-color: var(--primary-gold);
+  color: var(--primary-gold);
+}
+
+/* Make sure navbar-nav-desktop is visible when it has goldmine */
+.navbar-nav-desktop:has(.goldmine-dropdown) {
+  display: flex;
+  position: relative;
+}
+
+.nav-chevron {
+  font-size: 12px;
+  margin-left: 4px;
+  transition: transform var(--transition-fast);
+}
+
+.goldmine-dropdown[aria-expanded="true"] .nav-chevron {
+  transform: rotate(180deg);
+}
+
+.goldmine-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: var(--space-2);
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2);
+  width: 220px;
+  max-width: 220px;
+  min-width: 220px;
+  max-height: 400px;
+  overflow-y: auto;
+  box-shadow: var(--glass-shadow);
+  display: none;
+  z-index: var(--z-dropdown);
+  transition: all var(--transition-normal);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+}
+
+.goldmine-dropdown[aria-expanded="true"] .goldmine-menu {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.goldmine-menu .nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  color: var(--neutral-300);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-normal);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.goldmine-menu .nav-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.goldmine-menu .nav-dropdown-item:hover {
+  background: var(--glass-border);
+  color: var(--primary-gold);
+}
+
+.goldmine-menu .nav-dropdown-item i {
+  font-size: var(--text-base);
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Support section styling */
+.support-section {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: rgba(255, 215, 0, 0.05);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: var(--radius-lg);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  /* Hidden by default using visibility and opacity */
+  visibility: hidden;
+  opacity: 0;
+  transform: translateX(20px);
+  max-width: 0;
+  overflow: hidden;
+}
+
+/* Show support section when visible class is added */
+.support-section.visible {
+  visibility: visible;
+  opacity: 1;
+  transform: translateX(0);
+  max-width: 200px;
+}
+
+.support-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--neutral-300);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all var(--transition-fast);
+  font-size: var(--text-sm);
+}
+
+.support-btn:hover {
+  color: var(--primary-gold);
+  background: rgba(255, 215, 0, 0.1);
+  border-color: rgba(255, 215, 0, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
+}
+
+.support-btn.patreon:hover {
+  color: #FF424D;
+  background: rgba(255, 66, 77, 0.1);
+  border-color: rgba(255, 66, 77, 0.3);
+}
+
+.support-btn.paypal:hover {
+  color: #00457C;
+  background: rgba(0, 69, 124, 0.1);
+  border-color: rgba(0, 69, 124, 0.3);
+}
+
+.support-btn.coinbase:hover {
+  color: #F7931A;
+  background: rgba(247, 147, 26, 0.1);
+  border-color: rgba(247, 147, 26, 0.3);
+}
+
+/* Controls section */
+.navbar-avatar,
+.navbar-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-shrink: 0;
+}
+
+/* Music controls styling */
+.music-control,
+.music-toggle-modern {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2);
+  transition: all var(--transition-fast);
+}
+
+.music-toggle-modern input[type="radio"] {
+  display: none;
+}
+
+.music-toggle-modern label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--neutral-400);
+  background: transparent;
+  font-size: var(--text-sm);
+}
+
+.music-toggle-modern label:hover,
+.music-toggle-modern label:focus {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--primary-gold);
+}
+
+.music-toggle-modern input[type="radio"]:checked + label {
+  background: var(--primary-gold);
+  color: #000;
+  font-weight: 600;
+}
+
+/* Profile dropdown */
+.avatar-dropdown,
+.profile-dropdown {
+  position: relative;
+}
+
+.avatar-toggle,
+.profile-dropdown-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.avatar-toggle:hover,
+.profile-dropdown-toggle:hover,
+.profile-dropdown-toggle:focus {
+  background: var(--glass-border);
+  border-color: var(--primary-gold);
+}
+
+.avatar-image,
+.profile-avatar,
+.navbar-modern .profile-avatar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.navbar-modern .profile-avatar img,
+.profile-avatar img,
+.avatar-image,
+#profile-image,
+#profile-image-mobile {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--primary-gold);
+  object-fit: cover;
+  max-width: 32px;
+  max-height: 32px;
+}
+
+.navbar-modern .profile-status {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-primary);
+  background: var(--success);
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.profile-title,
+.navbar-modern .profile-title {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--primary-gold);
+  line-height: 1.2;
+}
+
+.profile-username {
+  font-size: var(--text-xs);
+  color: var(--neutral-400);
+  line-height: 1.2;
+}
+
+.profile-chevron {
+  color: var(--neutral-400);
+  transition: all var(--transition-fast);
+}
+
+.profile-dropdown.active .profile-chevron {
+  transform: rotate(180deg);
+  color: var(--primary-gold);
+}
+
+/* Dropdown menus - FIXED SIZING */
+.avatar-menu,
+.profile-dropdown-menu,
+.profile-menu,
+.nav-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: var(--space-2);
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-2);
+  width: 220px;
+  max-width: 220px;
+  min-width: 220px;
+  max-height: 400px;
+  overflow-y: auto;
+  box-shadow: var(--glass-shadow);
+  display: none;
+  z-index: var(--z-dropdown);
+}
+
+.avatar-menu.show,
+.profile-dropdown-menu.show,
+.profile-dropdown.active .profile-dropdown-menu,
+.profile-dropdown.active .profile-menu,
+.nav-dropdown.active .nav-dropdown-menu {
+  display: block;
+}
+
+.avatar-menu a,
+.profile-dropdown-menu a,
+.nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  color: var(--neutral-300);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  transition: all var(--transition-normal);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.avatar-menu a:hover,
+.profile-dropdown-menu a:hover,
+.nav-dropdown-item:hover, 
+.nav-dropdown-item:focus {
+  background: var(--glass-border);
+  color: var(--primary-gold);
+}
+
+.nav-dropdown-item i {
+  font-size: var(--text-base);
+  width: 16px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.avatar-menu .divider,
+.profile-dropdown-menu .divider,
+.dropdown-divider {
+  height: 1px;
+  background: var(--glass-border);
+  margin: var(--space-2) 0;
+}
+
+/* Notification bell */
+.navbar-modern .avatar-notifications {
+  /* Inherits from notifications.css */
+}
+
+.navbar-modern .notification-bell-avatar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--neutral-400);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.navbar-modern .notification-bell-avatar:hover {
+  background: rgba(212, 175, 55, 0.1);
+  border-color: var(--primary-gold);
+  color: var(--primary-gold);
+  transform: translateY(-1px);
+}
+
+.navbar-modern .notification-bell-avatar i {
+  font-size: 16px;
+}
+
+.navbar-modern .notification-bell-avatar .notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--danger);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--bg-primary);
+}
+
+/* Admin link */
+.admin-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  color: #e74c3c;
+  background: rgba(231, 76, 60, 0.1);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  margin-left: var(--space-2);
+}
+
+.admin-link:hover, .admin-link:focus {
+  background: rgba(231, 76, 60, 0.2);
+  border-color: #e74c3c;
+  color: #e74c3c;
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+.admin-link i {
+  font-size: 18px;
+}
+
+/* Current page indicator */
+.nav-dropdown-item.current-page,
+.navbar-nav a.current-page {
+  background: rgba(212, 175, 55, 0.15);
+  color: var(--primary-gold);
+  position: relative;
+}
+
+.nav-dropdown-item.current-page::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--primary-gold);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+/* ===== RANK IMAGE SIZE CONSTRAINTS ===== */
+/* Prevent massive rank images from overlapping */
+.navbar-modern img[src*="/ranks/"],
+.navbar-modern .rank-image,
+.navbar-modern .player-rank-image,
+.nav-dropdown-menu img[src*="/ranks/"],
+.profile-dropdown-menu img[src*="/ranks/"],
+.profile-menu img[src*="/ranks/"] {
+  max-width: 32px;
+  max-height: 32px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Navbar profile images should be small */
+.navbar-modern #profile-image,
+.navbar-modern #profile-image-mobile,
+.navbar-modern .profile-avatar img {
+  max-width: 32px;
+  max-height: 32px;
+  width: 32px;
+  height: 32px;
+}
+
+/* Mobile Navigation */
+@media (max-width: 768px) {
+  .navbar-nav {
+    display: none;
+  }
+  
+  .navbar-nav-desktop {
+    display: none;
+  }
+  
+  /* BUT keep GOLDMINE visible on mobile */
+  .navbar-nav-desktop .goldmine-dropdown {
+    display: flex;
+    position: absolute;
+    top: 50%;
+    right: 70px;
+    transform: translateY(-50%);
+    z-index: 1000;
+  }
+  
+  /* Show the parent container only for goldmine */
+  .navbar-nav-desktop:has(.goldmine-dropdown) {
+    display: block;
+    position: relative;
+  }
+  
+  /* Adjust mobile GOLDMINE button size */
+  .goldmine-dropdown .nav-item {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-xs);
+  }
+  
+  .goldmine-dropdown .nav-item span {
+    display: none; /* Hide "GOLDMINE" text on mobile, keep only icon */
+  }
+  
+  .navbar-container {
+    padding: 0 var(--space-3);
+  }
+  
+  .navbar-brand {
+    font-size: var(--text-xl);
+  }
+  
+  .brand-text {
+    display: none;
+  }
+  
+  .brand-logo {
+    height: 32px;
+  }
+  
+  .music-control,
+  .music-toggle-modern {
+    gap: var(--space-1);
+    padding: var(--space-1);
+  }
+  
+  .music-toggle-modern label {
+    width: 32px;
+    height: 32px;
+    font-size: 0.75rem;
+  }
+  
+  .goldmine-menu {
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    min-width: 180px;
+  }
+  
+  .goldmine-dropdown[aria-expanded="true"] .goldmine-menu {
+    display: block;
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+

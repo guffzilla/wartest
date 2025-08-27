@@ -1,0 +1,130 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <title>WC Arena - Player Profile</title>
+    <link rel="stylesheet" href="/css/warcraft-app-modern.css">
+    <link rel="stylesheet" href="/css/unified-modal-system.css">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Universal Navbar Consistency - MUST be loaded last for proper override --></head><body>`r`n  <link rel="stylesheet" href="/css/navbar-universal.css">`r`n
+
+    <div id="navbar-container"></div>
+
+    <main>
+        <div class="profile-container">
+            <div class="profile-header">
+                
+                <div class="profile-info">
+                    <h1 id="profile-username">Loading profile...</h1>
+                    
+                </div>
+            </div>
+
+            <div class="profile-sections">
+                <section class="profile-section">
+                    <h2>About</h2>
+                    <div class="bio-container">
+                        <div class="bio-content" id="bio-content">
+                            <p id="bio-text">No bio available.</p>
+                        </div>
+                        <div class="social-links" id="social-links">
+                            <div class="social-link" id="youtube-link">
+                                <i class="fab fa-youtube"></i>
+                                <span id="youtube-url">Not set</span>
+                            </div>
+                            <div class="social-link" id="twitch-link">
+                                <i class="fab fa-twitch"></i>
+                                <span id="twitch-url">Not set</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="profile-section">
+                    <h2>Achievements</h2>
+                    <div class="achievement-summary-card">
+                        <div class="summary-item">
+                            <div class="summary-value" id="total-achievements">0</div>
+                            <div class="summary-label">Total</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-value" id="completed-achievements">0</div>
+                            <div class="summary-label">Completed</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-value" id="total-points">0</div>
+                            <div class="summary-label">Points</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-value" id="completion-percentage">0%</div>
+                            <div class="summary-label">Completion</div>
+                        </div>
+                    </div>
+                    
+                    
+                </section>
+
+                <section class="profile-section">
+                    <h2>Player Stats</h2>
+                    <div class="stats-tabs">
+                        <button class="stats-tab active" data-tab="overview">Overview</button>
+                        <button class="stats-tab" data-tab="races">Races</button>
+                        <button class="stats-tab" data-tab="maps">Maps</button>
+                        <button class="stats-tab" data-tab="resources">Resources</button>
+                    </div>
+                    <div id="player-profile-stats-content">
+                        <div class="loading">Loading player stats...</div>
+                    </div>
+                </section>
+
+                <section class="profile-section">
+                    <h2>My Activity</h2>
+                    <div class="activity-tabs">
+                        <button class="activity-tab active" data-tab="forum-activity">Forum</button>
+                        <button class="activity-tab" data-tab="tournaments">Tournaments</button>
+                        <button class="activity-tab" data-tab="maps">Maps</button>
+                    </div>
+
+
+                </section>
+
+                <section class="profile-section">
+                    <h2>Recent Matches</h2>
+                    <div class="match-type-filter">
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-match-type="all">All</button>
+                            <button class="filter-btn" data-match-type="1v1">1v1</button>
+                            <button class="filter-btn" data-match-type="2v2">2v2</button>
+                            <button class="filter-btn" data-match-type="3v3">3v3</button>
+                            <button class="filter-btn" data-match-type="4v4">4v4</button>
+                            <button class="filter-btn" data-match-type="ffa">FFA</button>
+                        </div>
+                    </div>
+                    <div id="recent-matches-container">
+                        <div class="loading">Loading recent matches...</div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-container"></div>
+
+    <!-- Load Chart.js before our scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="/js/chart-utils.js"></script>
+
+    <!-- Load our scripts in the correct order -->
+    <script src="/js/utils.js"></script>
+    <script type="module" src="/js/notifications.js"></script>
+    <script type="module" src="/js/main.js"></script>
+    <script type="module" src="/js/playerDetails.js?v=1.0.2"></script>
+    <script type="module" src="/js/modules/ModalManager.js"></script>
+    <script type="module" src="/js/modules/UniversalModalMigrator.js"></script>
+    <script src="/js/achievements.js"></script>
+    <script src="/js/player-profile.js"></script>
+
+
+</body></html>

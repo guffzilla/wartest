@@ -1,0 +1,737 @@
+
+/* 
+ * WC Arena - MODERN APP DESIGN SYSTEM
+ * Critical CSS for above-the-fold content
+ */
+
+/* ===== ESSENTIAL CSS CUSTOM PROPERTIES ===== */
+:root {
+  /* ===== BRAND COLORS ===== */
+  --warcraft-gold: #D4AF37;
+  --warcraft-gold-dark: #B8941F;
+  --warcraft-gold-light: #E8C547;
+  
+  --alliance-blue: #2563EB;
+  --alliance-blue-dark: #1D4ED8;
+  --alliance-blue-light: #3B82F6;
+  
+  --horde-red: #DC2626;
+  --horde-red-dark: #B91C1C;
+  --horde-red-light: #EF4444;
+  
+  /* ===== NEUTRAL PALETTE ===== */
+  --neutral-50: #F8FAFC;
+  --neutral-100: #F1F5F9;
+  --neutral-200: #E2E8F0;
+  --neutral-300: #CBD5E1;
+  --neutral-400: #94A3B8;
+  --neutral-500: #64748B;
+  --neutral-600: #475569;
+  --neutral-700: #334155;
+  --neutral-800: #1E293B;
+  --neutral-900: #0F172A;
+  
+  /* ===== SEMANTIC COLORS ===== */
+  --success: #10B981;
+  --success-dark: #059669;
+  --success-light: #34D399;
+  
+  --error: #EF4444;
+  --error-dark: #DC2626;
+  --error-light: #F87171;
+  
+  --warning: #F59E0B;
+  --warning-dark: #D97706;
+  --warning-light: #FBBF24;
+  
+  --info: #3B82F6;
+  --info-dark: #2563EB;
+  --info-light: #60A5FA;
+  
+  /* ===== BACKGROUND SYSTEM ===== */
+  --bg-primary: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%);
+  --bg-secondary: rgba(30, 41, 59, 0.8);
+  --bg-tertiary: rgba(51, 65, 85, 0.6);
+  --bg-card: rgba(15, 23, 42, 0.8);
+  --bg-card-hover: rgba(30, 41, 59, 0.9);
+  --bg-overlay: rgba(0, 0, 0, 0.8);
+  
+  /* ===== GLASS EFFECTS ===== */
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  
+  /* ===== SHADOWS ===== */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 20px rgba(212, 175, 55, 0.3);
+  
+  /* ===== TYPOGRAPHY ===== */
+  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Cinzel', serif;
+  
+  /* ===== SPACING SCALE ===== */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  
+  /* ===== BORDER RADIUS ===== */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-full: 9999px;
+  
+  /* ===== TRANSITIONS ===== */
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 250ms ease-in-out;
+  --transition-slow: 350ms ease-in-out;
+  
+  /* ===== LEGACY ALIASES (for compatibility) ===== */
+  --primary-gold: var(--warcraft-gold);
+  --primary-color: var(--warcraft-gold);
+  --primary-hover: var(--warcraft-gold-light);
+  
+  --text-primary: var(--neutral-100);
+  --text-secondary: var(--neutral-400);
+  --text-muted: var(--neutral-500);
+  
+  --border-primary: var(--glass-border);
+  --border-hover: var(--warcraft-gold);
+  
+  /* Spacing aliases (tournaments.css expects these) */
+  --spacing-sm: var(--space-2);      /* 0.5rem */
+  --spacing-md: var(--space-4);      /* 1rem */
+  --spacing-lg: var(--space-6);      /* 1.5rem */
+  --spacing-xl: var(--space-8);      /* 2rem */
+  
+  /* Background aliases */
+  --bg-hover: var(--bg-card-hover);
+}
+
+/* ===== GLOBAL RESET & BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-primary);
+  background: var(--bg-primary);
+  color: var(--neutral-100);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  padding-top: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ===== NAVBAR MODERN UNIVERSAL ===== */
+/* Base navbar structure */
+html body .navbar-modern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999999 !important; /* Increased to be above other elements */
+  height: 80px;
+  background: rgba(20, 20, 20, 0.97); /* Solid fallback */
+  background: linear-gradient(135deg, rgba(20, 20, 20, 0.97), rgba(40, 40, 40, 0.95));
+  backdrop-filter: blur(10px); /* Reduced from 20px for better performance */
+  -webkit-backdrop-filter: blur(10px); /* Added for Safari support */
+  border-bottom: 1px solid var(--glass-bg);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-modern .navbar-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar-modern .navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.navbar-modern .brand-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--warcraft-gold);
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: 600;
+  font-family: var(--font-display);
+  transition: var(--transition-base);
+}
+
+.navbar-modern .brand-link:hover {
+  color: var(--warcraft-gold-light);
+  transform: translateY(-1px);
+}
+
+.navbar-modern .brand-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--warcraft-gold);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  color: var(--neutral-900);
+  box-shadow: var(--shadow-glow);
+}
+
+.navbar-modern .brand-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.navbar-modern .brand-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--warcraft-gold);
+  text-shadow: var(--text-shadow-gold);
+  letter-spacing: -0.025em;
+}
+
+.navbar-modern .brand-middle {
+  font-size: 0.875rem;
+  color: var(--neutral-400);
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.navbar-modern .brand-subtitle-link {
+  color: var(--neutral-400);
+  text-decoration: none;
+  font-size: 0.75rem;
+  transition: var(--transition-base);
+}
+
+.navbar-modern .brand-subtitle-link:hover {
+  color: var(--warcraft-gold);
+}
+
+.navbar-modern .brand-subtitle {
+  font-size: 0.75rem;
+  color: var(--neutral-400);
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Navigation items */
+.navbar-modern .navbar-nav-desktop {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-modern .nav-item {
+  position: relative;
+}
+
+.navbar-modern .nav-link {
+  color: var(--neutral-100);
+  text-decoration: none;
+  font-weight: 500;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  transition: var(--transition-base);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.navbar-modern .nav-link:hover {
+  color: var(--warcraft-gold);
+  background: var(--glass-bg);
+  transform: translateY(-1px);
+}
+
+.navbar-modern .nav-link.active {
+  color: var(--warcraft-gold);
+  background: var(--glass-bg);
+  box-shadow: var(--shadow-glow);
+}
+
+/* Navbar controls */
+.navbar-modern .navbar-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+/* User profile section */
+.navbar-modern .user-profile-modern {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.navbar-modern .profile-dropdown {
+  position: relative;
+  cursor: pointer;
+}
+
+.navbar-modern .profile-dropdown .nav-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  min-width: 200px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: var(--transition-base);
+  z-index: 1000;
+  margin-top: var(--space-2);
+}
+
+.navbar-modern .profile-dropdown.open .nav-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.navbar-modern .profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  background: var(--warcraft-gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: var(--neutral-900);
+  border: 2px solid var(--glass-border);
+  transition: var(--transition-base);
+}
+
+.navbar-modern .profile-avatar:hover {
+  border-color: var(--warcraft-gold);
+  transform: scale(1.05);
+}
+
+.navbar-modern .profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.navbar-modern .profile-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--neutral-100);
+  line-height: 1.2;
+}
+
+.navbar-modern .profile-username {
+  font-size: 0.75rem;
+  color: var(--neutral-400);
+  font-weight: 400;
+}
+
+.navbar-modern .profile-chevron {
+  color: var(--neutral-400);
+  transition: var(--transition-base);
+  font-size: 0.75rem;
+}
+
+.navbar-modern .profile-dropdown.open .profile-chevron {
+  transform: rotate(180deg);
+  color: var(--warcraft-gold);
+}
+
+/* Dropdown menu items */
+.navbar-modern .nav-dropdown-menu .nav-dropdown-item {
+  display: block;
+  padding: var(--space-3) var(--space-4);
+  color: var(--neutral-100);
+  text-decoration: none;
+  transition: var(--transition-base);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.navbar-modern .nav-dropdown-menu .nav-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.navbar-modern .nav-dropdown-menu .nav-dropdown-item:hover {
+  background: var(--glass-bg);
+  color: var(--warcraft-gold);
+}
+
+/* Mobile menu toggle */
+.navbar-modern .mobile-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--neutral-100);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  transition: var(--transition-base);
+}
+
+.navbar-modern .mobile-menu-toggle:hover {
+  color: var(--warcraft-gold);
+  background: var(--glass-bg);
+}
+
+.navbar-modern .mobile-menu-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mobile menu */
+.navbar-modern .mobile-menu {
+  display: none;
+  position: fixed;
+  top: 80px;
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-xl);
+  z-index: 999;
+}
+
+.navbar-modern .mobile-menu.open {
+  display: block;
+}
+
+.navbar-modern .mobile-menu .nav-item {
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.navbar-modern .mobile-menu .nav-link {
+  padding: var(--space-4);
+  display: block;
+  width: 100%;
+}
+
+/* Admin link */
+.navbar-modern .admin-link {
+  color: var(--alliance-blue);
+  font-weight: 600;
+  text-decoration: none;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  transition: var(--transition-base);
+  border: 1px solid var(--alliance-blue);
+}
+
+.navbar-modern .admin-link:hover {
+  background: var(--alliance-blue);
+  color: var(--neutral-100);
+  transform: translateY(-1px);
+}
+
+/* Town Hall dropdown specific */
+.navbar-modern .town-hall-dropdown {
+  position: relative;
+}
+
+.navbar-modern .town-hall-dropdown .nav-dropdown-menu {
+  min-width: 250px;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .navbar-modern .navbar-nav-desktop {
+    display: none;
+  }
+  
+  .navbar-modern .mobile-menu-toggle {
+    display: block;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar-modern .brand-text {
+    font-size: 1.25rem;
+  }
+  
+  .navbar-modern .brand-middle {
+    display: none;
+  }
+  
+  .navbar-modern .profile-info {
+    display: none;
+  }
+  
+  .navbar-modern .navbar-container {
+    padding: 0 var(--space-3);
+  }
+}
+
+/* ===== ESSENTIAL LAYOUT CLASSES ===== */
+.main-content {
+  flex: 1;
+  padding-top: 80px; /* Account for fixed navbar */
+  min-height: calc(100vh - 80px);
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--space-4);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 calc(-1 * var(--space-4));
+}
+
+.col {
+  flex: 1;
+  padding: 0 var(--space-4);
+}
+
+/* ===== ESSENTIAL UTILITY CLASSES ===== */
+.d-flex { display: flex; }
+.d-none { display: none; }
+.d-block { display: block; }
+
+.position-fixed { position: fixed; }
+.position-relative { position: relative; }
+.position-absolute { position: absolute; }
+
+.w-100 { width: 100%; }
+.h-100 { height: 100%; }
+
+.m-0 { margin: 0; }
+.p-0 { padding: 0; }
+
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+/* ===== ESSENTIAL ANIMATIONS ===== */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* ===== ESSENTIAL TRANSITIONS ===== */
+.transition-all {
+  transition: all var(--transition-base);
+}
+
+.transition-colors {
+  transition: color var(--transition-base), background-color var(--transition-base), border-color var(--transition-base);
+}
+
+.transition-transform {
+  transition: transform var(--transition-base);
+}
+
+/* ===== ESSENTIAL GLASS EFFECTS ===== */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.glass-button {
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  color: var(--neutral-100);
+  padding: var(--space-3) var(--space-4);
+  font-weight: 500;
+  transition: var(--transition-base);
+  cursor: pointer;
+}
+
+.glass-button:hover {
+  background: var(--warcraft-gold);
+  color: var(--neutral-900);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-glow);
+}
+
+/* ===== ESSENTIAL NAVBAR COMPONENT STYLES ===== */
+.navbar,
+.navbar-modern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  transition: all var(--transition-normal);
+}
+
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--space-6);
+}
+
+.nav-primary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  position: relative;
+  z-index: 0; /* ensure it does not sit above fixed navbar wrapper */
+}
+
+.navbar-nav,
+.navbar-nav-desktop {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  justify-content: center;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  color: var(--neutral-300);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: var(--text-sm);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+  position: relative;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  will-change: transform, background-color, border-color;
+  cursor: pointer;
+}
+
+.nav-item:hover, 
+.nav-item:focus {
+  color: var(--primary-gold);
+  background: rgba(212, 175, 55, 0.1);
+  transform: translateY(-1px);
+  border-color: var(--primary-gold);
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.2);
+}
+
+/* ===== ESSENTIAL PROFILE HERO STYLES ===== */
+.profile-hero {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 50%, rgba(51, 65, 85, 0.95) 100%);
+  padding: 1rem 0.75rem;
+  border-radius: 0 0 1rem 1rem;
+  margin-bottom: 1rem;
+  position: relative;
+  overflow: visible;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 3px solid var(--primary-gold);
+  background: linear-gradient(135deg, #1e293b, #334155);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.profile-username {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--neutral-100);
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* ===== ESSENTIAL PAGE HEADER STYLES ===== */
+.page-header {
+  margin-bottom: var(--space-4);
+  padding: var(--space-6) 0;
+  text-align: center;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--neutral-100);
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}

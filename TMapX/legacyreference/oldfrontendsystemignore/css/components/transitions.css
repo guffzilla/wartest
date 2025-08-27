@@ -1,0 +1,587 @@
+/* =============================================================================
+   UNIFIED TRANSITION SYSTEM
+   Consolidates all transition patterns from across the project
+   ============================================================================= */
+
+/* =============================================================================
+   TRANSITION VARIABLES
+   ============================================================================= */
+
+:root {
+  /* Transition Durations */
+  --transition-instant: 0ms;
+  --transition-fast: 0.15s;
+  --transition-normal: 0.3s;
+  --transition-slow: 0.5s;
+  --transition-slower: 0.8s;
+  --transition-slowest: 1.2s;
+
+  /* Transition Timing Functions */
+  --ease-linear: linear;
+  --ease-in: ease-in;
+  --ease-out: ease-out;
+  --ease-in-out: ease-in-out;
+  --ease-cubic: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* =============================================================================
+   GLOBAL TRANSITION RESET
+   ============================================================================= */
+
+/* Apply consistent transitions to interactive elements */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: var(--ease-cubic);
+  transition-duration: var(--transition-normal);
+}
+
+/* =============================================================================
+   TRANSITION UTILITY CLASSES
+   ============================================================================= */
+
+/* ===== DURATION UTILITIES ===== */
+.transition-instant {
+  transition-duration: var(--transition-instant);
+}
+
+.transition-fast {
+  transition-duration: var(--transition-fast);
+}
+
+.transition-normal {
+  transition-duration: var(--transition-normal);
+}
+
+.transition-slow {
+  transition-duration: var(--transition-slow);
+}
+
+.transition-slower {
+  transition-duration: var(--transition-slower);
+}
+
+.transition-slowest {
+  transition-duration: var(--transition-slowest);
+}
+
+/* ===== TIMING FUNCTION UTILITIES ===== */
+.ease-linear {
+  transition-timing-function: var(--ease-linear);
+}
+
+.ease-in {
+  transition-timing-function: var(--ease-in);
+}
+
+.ease-out {
+  transition-timing-function: var(--ease-out);
+}
+
+.ease-in-out {
+  transition-timing-function: var(--ease-in-out);
+}
+
+.ease-cubic {
+  transition-timing-function: var(--ease-cubic);
+}
+
+.ease-bounce {
+  transition-timing-function: var(--ease-bounce);
+}
+
+.ease-elastic {
+  transition-timing-function: var(--ease-elastic);
+}
+
+/* ===== PROPERTY UTILITIES ===== */
+.transition-all {
+  transition-property: all;
+}
+
+.transition-none {
+  transition-property: none;
+}
+
+.transition-colors {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+}
+
+.transition-opacity {
+  transition-property: opacity;
+}
+
+.transition-shadow {
+  transition-property: box-shadow;
+}
+
+.transition-transform {
+  transition-property: transform;
+}
+
+.transition-filter {
+  transition-property: filter;
+}
+
+.transition-backdrop {
+  transition-property: backdrop-filter;
+}
+
+/* =============================================================================
+   COMPONENT-SPECIFIC TRANSITIONS
+   ============================================================================= */
+
+/* ===== BUTTON TRANSITIONS ===== */
+.btn,
+button,
+input[type="button"],
+input[type="submit"] {
+  transition: all var(--transition-normal) var(--ease-cubic);
+}
+
+.btn:hover {
+  transition-duration: var(--transition-fast);
+}
+
+.btn:active {
+  transition-duration: var(--transition-instant);
+}
+
+/* ===== FORM ELEMENT TRANSITIONS ===== */
+input,
+textarea,
+select,
+.form-input,
+.form-textarea,
+.form-select {
+  transition: border-color var(--transition-normal) var(--ease-cubic),
+              box-shadow var(--transition-normal) var(--ease-cubic),
+              background-color var(--transition-normal) var(--ease-cubic);
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  transition-duration: var(--transition-fast);
+}
+
+/* ===== CARD TRANSITIONS ===== */
+.card,
+.stat-card,
+.feature-card,
+.match-item {
+  transition: all var(--transition-normal) var(--ease-cubic);
+}
+
+.card:hover,
+.stat-card:hover,
+.feature-card:hover,
+.match-item:hover {
+  transition-duration: var(--transition-fast);
+}
+
+/* ===== MODAL TRANSITIONS ===== */
+.modal,
+.modal-overlay {
+  transition: opacity var(--transition-normal) var(--ease-cubic),
+              visibility var(--transition-normal) var(--ease-cubic);
+}
+
+.modal-content {
+  transition: transform var(--transition-normal) var(--ease-cubic),
+              opacity var(--transition-normal) var(--ease-cubic);
+}
+
+/* ===== NAVIGATION TRANSITIONS ===== */
+.nav-link,
+.nav-item {
+  transition: color var(--transition-normal) var(--ease-cubic),
+              background-color var(--transition-normal) var(--ease-cubic),
+              border-color var(--transition-normal) var(--ease-cubic);
+}
+
+.nav-link:hover,
+.nav-item:hover {
+  transition-duration: var(--transition-fast);
+}
+
+/* ===== TAB TRANSITIONS ===== */
+.tab,
+.tab-button {
+  transition: color var(--transition-normal) var(--ease-cubic),
+              background-color var(--transition-normal) var(--ease-cubic),
+              border-color var(--transition-normal) var(--ease-cubic);
+}
+
+.tab-content {
+  transition: opacity var(--transition-slow) var(--ease-cubic),
+              transform var(--transition-slow) var(--ease-cubic);
+}
+
+/* ===== TOOLTIP TRANSITIONS ===== */
+.tooltip {
+  transition: opacity var(--transition-fast) var(--ease-cubic),
+              visibility var(--transition-fast) var(--ease-cubic),
+              transform var(--transition-fast) var(--ease-cubic);
+}
+
+/* ===== NOTIFICATION TRANSITIONS ===== */
+.notification {
+  transition: all var(--transition-normal) var(--ease-cubic);
+}
+
+.notification-enter {
+  transition: transform var(--transition-normal) var(--ease-cubic),
+              opacity var(--transition-normal) var(--ease-cubic);
+}
+
+.notification-exit {
+  transition: transform var(--transition-fast) var(--ease-cubic),
+              opacity var(--transition-fast) var(--ease-cubic);
+}
+
+/* ===== LOADING TRANSITIONS ===== */
+.loading {
+  transition: opacity var(--transition-normal) var(--ease-cubic);
+}
+
+.loading-spinner {
+  transition: transform var(--transition-slow) var(--ease-linear);
+}
+
+/* ===== PROGRESS BAR TRANSITIONS ===== */
+.progress-bar {
+  transition: width var(--transition-slow) var(--ease-cubic);
+}
+
+/* ===== IMAGE TRANSITIONS ===== */
+img,
+.avatar,
+.profile-image {
+  transition: transform var(--transition-normal) var(--ease-cubic),
+              filter var(--transition-normal) var(--ease-cubic);
+}
+
+img:hover,
+.avatar:hover,
+.profile-image:hover {
+  transition-duration: var(--transition-fast);
+}
+
+/* ===== ICON TRANSITIONS ===== */
+.icon,
+.fa,
+.fas,
+.far,
+.fal,
+.fab {
+  transition: transform var(--transition-normal) var(--ease-cubic),
+              color var(--transition-normal) var(--ease-cubic);
+}
+
+.icon:hover,
+.fa:hover,
+.fas:hover,
+.far:hover,
+.fal:hover,
+.fab:hover {
+  transition-duration: var(--transition-fast);
+}
+
+/* =============================================================================
+   HOVER TRANSITIONS
+   ============================================================================= */
+
+/* ===== LIFT EFFECT ===== */
+.hover-lift {
+  transition: transform var(--transition-normal) var(--ease-cubic);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  transition-duration: var(--transition-fast);
+}
+
+/* ===== SCALE EFFECT ===== */
+.hover-scale {
+  transition: transform var(--transition-normal) var(--ease-cubic);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+  transition-duration: var(--transition-fast);
+}
+
+.hover-scale-large {
+  transition: transform var(--transition-normal) var(--ease-cubic);
+}
+
+.hover-scale-large:hover {
+  transform: scale(1.1);
+  transition-duration: var(--transition-fast);
+}
+
+/* ===== GLOW EFFECT ===== */
+.hover-glow {
+  transition: box-shadow var(--transition-normal) var(--ease-cubic);
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+  transition-duration: var(--transition-fast);
+}
+
+/* ===== ROTATE EFFECT ===== */
+.hover-rotate {
+  transition: transform var(--transition-normal) var(--ease-cubic);
+}
+
+.hover-rotate:hover {
+  transform: rotate(5deg);
+  transition-duration: var(--transition-fast);
+}
+
+.hover-rotate-180 {
+  transition: transform var(--transition-normal) var(--ease-cubic);
+}
+
+.hover-rotate-180:hover {
+  transform: rotate(180deg);
+  transition-duration: var(--transition-fast);
+}
+
+/* ===== SKEW EFFECT ===== */
+.hover-skew {
+  transition: transform var(--transition-normal) var(--ease-cubic);
+}
+
+.hover-skew:hover {
+  transform: skew(-5deg);
+  transition-duration: var(--transition-fast);
+}
+
+/* ===== BRIGHTNESS EFFECT ===== */
+.hover-brightness {
+  transition: filter var(--transition-normal) var(--ease-cubic);
+}
+
+.hover-brightness:hover {
+  filter: brightness(1.1);
+  transition-duration: var(--transition-fast);
+}
+
+/* ===== BLUR EFFECT ===== */
+.hover-blur {
+  transition: filter var(--transition-normal) var(--ease-cubic);
+}
+
+.hover-blur:hover {
+  filter: blur(1px);
+  transition-duration: var(--transition-fast);
+}
+
+/* ===== BORDER EFFECT ===== */
+.hover-border {
+  transition: border-color var(--transition-normal) var(--ease-cubic);
+}
+
+.hover-border:hover {
+  border-color: var(--warcraft-gold);
+  transition-duration: var(--transition-fast);
+}
+
+/* =============================================================================
+   STATE TRANSITIONS
+   ============================================================================= */
+
+/* ===== ACTIVE STATE ===== */
+.active {
+  transition: all var(--transition-fast) var(--ease-cubic);
+}
+
+/* ===== DISABLED STATE ===== */
+.disabled,
+:disabled {
+  transition: opacity var(--transition-normal) var(--ease-cubic);
+}
+
+/* ===== FOCUS STATE ===== */
+:focus {
+  transition: box-shadow var(--transition-fast) var(--ease-cubic);
+}
+
+/* ===== SELECTED STATE ===== */
+.selected {
+  transition: background-color var(--transition-normal) var(--ease-cubic),
+              border-color var(--transition-normal) var(--ease-cubic);
+}
+
+/* ===== ERROR STATE ===== */
+.error {
+  transition: border-color var(--transition-fast) var(--ease-cubic),
+              box-shadow var(--transition-fast) var(--ease-cubic);
+}
+
+/* ===== SUCCESS STATE ===== */
+.success {
+  transition: border-color var(--transition-fast) var(--ease-cubic),
+              box-shadow var(--transition-fast) var(--ease-cubic);
+}
+
+/* =============================================================================
+   ANIMATION TRANSITIONS
+   ============================================================================= */
+
+/* ===== ENTRANCE TRANSITIONS ===== */
+.entrance-fade {
+  transition: opacity var(--transition-slow) var(--ease-cubic);
+}
+
+.entrance-slide-up {
+  transition: opacity var(--transition-slow) var(--ease-cubic),
+              transform var(--transition-slow) var(--ease-cubic);
+}
+
+.entrance-slide-down {
+  transition: opacity var(--transition-slow) var(--ease-cubic),
+              transform var(--transition-slow) var(--ease-cubic);
+}
+
+.entrance-slide-left {
+  transition: opacity var(--transition-slow) var(--ease-cubic),
+              transform var(--transition-slow) var(--ease-cubic);
+}
+
+.entrance-slide-right {
+  transition: opacity var(--transition-slow) var(--ease-cubic),
+              transform var(--transition-slow) var(--ease-cubic);
+}
+
+.entrance-scale {
+  transition: opacity var(--transition-slow) var(--ease-cubic),
+              transform var(--transition-slow) var(--ease-cubic);
+}
+
+/* ===== EXIT TRANSITIONS ===== */
+.exit-fade {
+  transition: opacity var(--transition-fast) var(--ease-cubic);
+}
+
+.exit-slide-up {
+  transition: opacity var(--transition-fast) var(--ease-cubic),
+              transform var(--transition-fast) var(--ease-cubic);
+}
+
+.exit-slide-down {
+  transition: opacity var(--transition-fast) var(--ease-cubic),
+              transform var(--transition-fast) var(--ease-cubic);
+}
+
+.exit-slide-left {
+  transition: opacity var(--transition-fast) var(--ease-cubic),
+              transform var(--transition-fast) var(--ease-cubic);
+}
+
+.exit-slide-right {
+  transition: opacity var(--transition-fast) var(--ease-cubic),
+              transform var(--transition-fast) var(--ease-cubic);
+}
+
+.exit-scale {
+  transition: opacity var(--transition-fast) var(--ease-cubic),
+              transform var(--transition-fast) var(--ease-cubic);
+}
+
+/* =============================================================================
+   PERFORMANCE OPTIMIZATIONS
+   ============================================================================= */
+
+/* ===== GPU ACCELERATION ===== */
+.gpu-accelerated {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: var(--transition-instant) !important;
+    transition-delay: 0ms !important;
+  }
+}
+
+/* ===== TRANSITION DISABLE ===== */
+.no-transition {
+  transition: none !important;
+}
+
+.no-transition *,
+.no-transition *::before,
+.no-transition *::after {
+  transition: none !important;
+}
+
+/* =============================================================================
+   TRANSITION DELAYS
+   ============================================================================= */
+
+.delay-0 {
+  transition-delay: 0ms;
+}
+
+.delay-50 {
+  transition-delay: 50ms;
+}
+
+.delay-100 {
+  transition-delay: 100ms;
+}
+
+.delay-150 {
+  transition-delay: 150ms;
+}
+
+.delay-200 {
+  transition-delay: 200ms;
+}
+
+.delay-300 {
+  transition-delay: 300ms;
+}
+
+.delay-500 {
+  transition-delay: 500ms;
+}
+
+.delay-700 {
+  transition-delay: 700ms;
+}
+
+.delay-1000 {
+  transition-delay: 1000ms;
+}
+
+/* =============================================================================
+   STAGGERED TRANSITIONS
+   ============================================================================= */
+
+.stagger-children > * {
+  transition-delay: calc(var(--stagger-delay, 50ms) * var(--stagger-index, 0));
+}
+
+.stagger-children > *:nth-child(1) { --stagger-index: 1; }
+.stagger-children > *:nth-child(2) { --stagger-index: 2; }
+.stagger-children > *:nth-child(3) { --stagger-index: 3; }
+.stagger-children > *:nth-child(4) { --stagger-index: 4; }
+.stagger-children > *:nth-child(5) { --stagger-index: 5; }
+.stagger-children > *:nth-child(6) { --stagger-index: 6; }
+.stagger-children > *:nth-child(7) { --stagger-index: 7; }
+.stagger-children > *:nth-child(8) { --stagger-index: 8; }
+.stagger-children > *:nth-child(9) { --stagger-index: 9; }
+.stagger-children > *:nth-child(10) { --stagger-index: 10; }

@@ -1,0 +1,559 @@
+/* ===== BLACKSMITH PAGE OPTIMIZED CSS ===== */
+/* Consolidated styles for the blacksmith page only */
+
+/* Critical CSS - Load First */
+:root {
+  --primary-gold: #D4AF37;
+  --primary-gold-light: #E8C547;
+  --theme-black: #000000;
+  --theme-silver: #C0C0C0;
+  --font-display: 'Cinzel', serif;
+  --font-primary: 'Inter', sans-serif;
+}
+
+/* Critical Layout */
+body {
+  background: var(--theme-black);
+  color: var(--theme-silver);
+  font-family: var(--font-primary);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* Page Header */
+.page-header {
+  text-align: center;
+  padding: 2rem 1rem;
+  background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+}
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--primary-gold);
+  margin: 0 0 1rem 0;
+  text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+}
+
+.blacksmith-subtitle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.subtitle-text {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  font-style: italic;
+}
+
+.hero-button {
+  background: linear-gradient(135deg, var(--primary-gold), #E5C158);
+  color: #000;
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+  cursor: pointer;
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
+  user-select: none;
+}
+
+.hero-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+  color: #000;
+  text-decoration: none;
+}
+
+/* Glass Section */
+.glass-section {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+  padding: 2rem;
+  margin: 1rem auto;
+  max-width: 1400px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+/* Blacksmith Tabs */
+.blacksmith-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.blacksmith-tab {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.blacksmith-tab:hover {
+  background: rgba(255, 215, 0, 0.1);
+  border-color: rgba(255, 215, 0, 0.3);
+  color: var(--primary-gold);
+  transform: translateY(-1px);
+}
+
+.blacksmith-tab.active {
+  background: rgba(255, 215, 0, 0.15);
+  border-color: var(--primary-gold);
+  color: var(--primary-gold);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+
+.blacksmith-tab i {
+  font-size: 1rem;
+}
+
+/* Tab Content */
+.blacksmith-content {
+  position: relative;
+}
+
+.tab-panel {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+.tab-title {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--primary-gold);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+/* Features Grid */
+.features-grid {
+  /* ===== GRID PATTERN REPLACED WITH .grid-auto-fit-2xl UTILITY ===== */
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.feature-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 215, 0, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.feature-card.detailed {
+  padding: 2rem;
+}
+
+.feature-card.future {
+  opacity: 0.7;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.feature-card.future:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.feature-icon {
+  color: var(--primary-gold);
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.feature-card.future .feature-icon {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.feature-card h4 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 0.75rem;
+}
+
+.feature-card p {
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Poll Container */
+.poll-container-large {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 600px;
+}
+
+.poll-question {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary-gold);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.poll-options {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.poll-option {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.poll-option:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 215, 0, 0.3);
+  transform: translateX(5px);
+}
+
+.poll-option-label {
+  font-weight: 600;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.poll-option-bar {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  height: 8px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.poll-option-progress {
+  background: linear-gradient(90deg, var(--primary-gold), #E5C158);
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.5s ease;
+  width: 0%;
+}
+
+.poll-option-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+.poll-option-percentage {
+  color: var(--primary-gold);
+  font-weight: 600;
+}
+
+.poll-option-votes {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.poll-results {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.poll-results-text {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 1rem;
+}
+
+.save-marriage-btn {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+  color: white;
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+  cursor: pointer;
+  position: relative;
+  z-index: 10;
+}
+
+.save-marriage-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+  color: white;
+  text-decoration: none;
+}
+
+.save-marriage-btn i {
+  font-size: 1rem;
+}
+
+/* Feedback Form */
+.feedback-container-large {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 800px;
+}
+
+.feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: white;
+  font-size: 0.875rem;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 0.75rem;
+  color: white;
+  font-size: 0.875rem;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--primary-gold);
+  box-shadow: 0 0 0 2px rgba(212, 175, 55, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+.contact-info {
+  display: none;
+  gap: 1rem;
+}
+
+.contact-info.show {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-gold), #E5C158);
+  border: none;
+  color: #000;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+}
+
+.feedback-message {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.feedback-message.success {
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  color: #22c55e;
+}
+
+.feedback-message.error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+}
+
+.feedback-message i {
+  font-size: 1.25rem;
+}
+
+/* ===== UTILITY CLASSES REMOVED - NOW IN unified-layout-system.css ===== */
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 2rem;
+  }
+  
+  .blacksmith-tabs {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .blacksmith-tab {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .features-grid {
+    /* ===== GRID PATTERN REPLACED WITH .grid-1fr UTILITY ===== */
+    gap: 1rem;
+  }
+  
+
+  
+  .poll-container-large,
+  .feedback-container-large {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+  
+  .tab-title {
+    font-size: 1.5rem;
+  }
+  
+  .poll-question {
+    font-size: 1.25rem;
+  }
+  
+  .hero-button {
+    padding: 0.6rem 1.25rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+    font-size: 1.75rem;
+  }
+  
+  .glass-section {
+    padding: 1rem;
+    margin: 0.5rem;
+  }
+  
+  .feature-card {
+    padding: 1rem;
+  }
+  
+  .feature-card.detailed {
+    padding: 1.5rem;
+  }
+} 

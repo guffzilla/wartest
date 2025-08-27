@@ -1,0 +1,538 @@
+/* =============================================================================
+   UNIFIED COLOR SYSTEM
+   Consolidates all color variables and schemes from across the project
+   ============================================================================= */
+
+/* =============================================================================
+   ROOT COLOR VARIABLES - SINGLE SOURCE OF TRUTH
+   ============================================================================= */
+:root {
+  /* ===== BRAND COLORS ===== */
+  --warcraft-gold: #D4AF37;
+  --warcraft-gold-dark: #B8941F;
+  --warcraft-gold-light: #E8C547;
+  
+  --alliance-blue: #2563EB;
+  --alliance-blue-dark: #1D4ED8;
+  --alliance-blue-light: #3B82F6;
+  
+  --horde-red: #DC2626;
+  --horde-red-dark: #B91C1C;
+  --horde-red-light: #EF4444;
+  
+  /* ===== NEUTRAL PALETTE ===== */
+  --neutral-50: #F8FAFC;
+  --neutral-100: #F1F5F9;
+  --neutral-200: #E2E8F0;
+  --neutral-300: #CBD5E1;
+  --neutral-400: #94A3B8;
+  --neutral-500: #64748B;
+  --neutral-600: #475569;
+  --neutral-700: #334155;
+  --neutral-800: #1E293B;
+  --neutral-900: #0F172A;
+  
+  /* ===== SEMANTIC COLORS ===== */
+  --success: #10B981;
+  --success-dark: #059669;
+  --success-light: #34D399;
+  
+  --error: #EF4444;
+  --error-dark: #DC2626;
+  --error-light: #F87171;
+  
+  --warning: #F59E0B;
+  --warning-dark: #D97706;
+  --warning-light: #FBBF24;
+  
+  --info: #3B82F6;
+  --info-dark: #2563EB;
+  --info-light: #60A5FA;
+  
+  /* ===== BACKGROUND SYSTEM ===== */
+  --bg-primary: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%);
+  --bg-secondary: rgba(30, 41, 59, 0.8);
+  --bg-tertiary: rgba(51, 65, 85, 0.6);
+  --bg-card: rgba(15, 23, 42, 0.8);
+  --bg-hover: rgba(30, 41, 59, 0.9);
+  --bg-overlay: rgba(0, 0, 0, 0.8);
+  
+  /* ===== GLASS EFFECTS ===== */
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  
+  /* ===== SHADOWS ===== */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 20px rgba(212, 175, 55, 0.3);
+  
+  /* ===== TEXT SHADOWS ===== */
+  --text-shadow-base: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  --text-shadow-gold: 1px 1px 2px rgba(0, 0, 0, 0.8), 0 0 8px rgba(212, 175, 55, 0.4);
+  
+  /* ===== BLACK THEME COLORS ===== */
+  --theme-black: #000000;
+  --theme-silver: #C0C0C0;
+  --theme-silver-dark: #808080;
+  --theme-silver-light: #E0E0E0;
+  
+  /* ===== BORDER SYSTEM ===== */
+  --border-silver: 1px solid var(--theme-silver);
+  --border-silver-thick: 2px solid var(--theme-silver);
+  --border-silver-heavy: 3px solid var(--theme-silver);
+  
+  --border-gold: 1px solid var(--warcraft-gold);
+  --border-gold-thick: 2px solid var(--warcraft-gold);
+  --border-gold-heavy: 3px solid var(--warcraft-gold);
+  
+  /* ===== LEGACY ALIASES (for compatibility) ===== */
+  --primary-gold: var(--warcraft-gold);
+  --primary-color: var(--warcraft-gold);
+  --primary-hover: var(--warcraft-gold-light);
+  
+  --text-primary: var(--neutral-100);
+  --text-secondary: var(--neutral-400);
+  --text-muted: var(--neutral-500);
+  
+  --border-primary: var(--glass-border);
+  --border-hover: var(--warcraft-gold);
+  
+  --spacing-sm: var(--space-2);
+  --spacing-md: var(--space-4);
+  --spacing-lg: var(--space-6);
+  --spacing-xl: var(--space-8);
+}
+
+/* =============================================================================
+   COLOR UTILITY CLASSES
+   ============================================================================= */
+
+/* ===== BRAND COLORS ===== */
+.text-gold { color: var(--warcraft-gold); }
+.text-gold-dark { color: var(--warcraft-gold-dark); }
+.text-gold-light { color: var(--warcraft-gold-light); }
+
+.text-alliance { color: var(--alliance-blue); }
+.text-alliance-dark { color: var(--alliance-blue-dark); }
+.text-alliance-light { color: var(--alliance-blue-light); }
+
+.text-horde { color: var(--horde-red); }
+.text-horde-dark { color: var(--horde-red-dark); }
+.text-horde-light { color: var(--horde-red-light); }
+
+/* ===== SEMANTIC COLORS ===== */
+.text-success { color: var(--success); }
+.text-success-dark { color: var(--success-dark); }
+.text-success-light { color: var(--success-light); }
+
+.text-error { color: var(--error); }
+.text-error-dark { color: var(--error-dark); }
+.text-error-light { color: var(--error-light); }
+
+.text-warning { color: var(--warning); }
+.text-warning-dark { color: var(--warning-dark); }
+.text-warning-light { color: var(--warning-light); }
+
+.text-info { color: var(--info); }
+.text-info-dark { color: var(--info-dark); }
+.text-info-light { color: var(--info-light); }
+
+/* ===== NEUTRAL COLORS ===== */
+.text-neutral-50 { color: var(--neutral-50); }
+.text-neutral-100 { color: var(--neutral-100); }
+.text-neutral-200 { color: var(--neutral-200); }
+.text-neutral-300 { color: var(--neutral-300); }
+.text-neutral-400 { color: var(--neutral-400); }
+.text-neutral-500 { color: var(--neutral-500); }
+.text-neutral-600 { color: var(--neutral-600); }
+.text-neutral-700 { color: var(--neutral-700); }
+.text-neutral-800 { color: var(--neutral-800); }
+.text-neutral-900 { color: var(--neutral-900); }
+
+/* ===== BACKGROUND COLORS ===== */
+.bg-gold { background-color: var(--warcraft-gold); }
+.bg-gold-dark { background-color: var(--warcraft-gold-dark); }
+.bg-gold-light { background-color: var(--warcraft-gold-light); }
+
+.bg-alliance { background-color: var(--alliance-blue); }
+.bg-alliance-dark { background-color: var(--alliance-blue-dark); }
+.bg-alliance-light { background-color: var(--alliance-blue-light); }
+
+.bg-horde { background-color: var(--horde-red); }
+.bg-horde-dark { background-color: var(--horde-red-dark); }
+.bg-horde-light { background-color: var(--horde-red-light); }
+
+.bg-success { background-color: var(--success); }
+.bg-error { background-color: var(--error); }
+.bg-warning { background-color: var(--warning); }
+.bg-info { background-color: var(--info); }
+
+.bg-neutral-50 { background-color: var(--neutral-50); }
+.bg-neutral-100 { background-color: var(--neutral-100); }
+.bg-neutral-200 { background-color: var(--neutral-200); }
+.bg-neutral-300 { background-color: var(--neutral-300); }
+.bg-neutral-400 { background-color: var(--neutral-400); }
+.bg-neutral-500 { background-color: var(--neutral-500); }
+.bg-neutral-600 { background-color: var(--neutral-600); }
+.bg-neutral-700 { background-color: var(--neutral-700); }
+.bg-neutral-800 { background-color: var(--neutral-800); }
+.bg-neutral-900 { background-color: var(--neutral-900); }
+
+/* ===== BORDER COLORS ===== */
+.border-gold { border-color: var(--warcraft-gold); }
+.border-gold-dark { border-color: var(--warcraft-gold-dark); }
+.border-gold-light { border-color: var(--warcraft-gold-light); }
+
+.border-alliance { border-color: var(--alliance-blue); }
+.border-horde { border-color: var(--horde-red); }
+
+.border-success { border-color: var(--success); }
+.border-error { border-color: var(--error); }
+.border-warning { border-color: var(--warning); }
+.border-info { border-color: var(--info); }
+
+.border-neutral-100 { border-color: var(--neutral-100); }
+.border-neutral-200 { border-color: var(--neutral-200); }
+.border-neutral-300 { border-color: var(--neutral-300); }
+.border-neutral-400 { border-color: var(--neutral-400); }
+.border-neutral-500 { border-color: var(--neutral-500); }
+.border-neutral-600 { border-color: var(--neutral-600); }
+.border-neutral-700 { border-color: var(--neutral-700); }
+.border-neutral-800 { border-color: var(--neutral-800); }
+
+/* =============================================================================
+   GRADIENT UTILITIES
+   ============================================================================= */
+
+/* ===== GOLD GRADIENTS ===== */
+.gradient-gold {
+  background: linear-gradient(135deg, var(--warcraft-gold) 0%, var(--warcraft-gold-dark) 100%);
+}
+
+.gradient-gold-reverse {
+  background: linear-gradient(135deg, var(--warcraft-gold-dark) 0%, var(--warcraft-gold) 100%);
+}
+
+.gradient-gold-light {
+  background: linear-gradient(135deg, var(--warcraft-gold-light) 0%, var(--warcraft-gold) 100%);
+}
+
+/* ===== ALLIANCE GRADIENTS ===== */
+.gradient-alliance {
+  background: linear-gradient(135deg, var(--alliance-blue) 0%, var(--alliance-blue-dark) 100%);
+}
+
+.gradient-alliance-light {
+  background: linear-gradient(135deg, var(--alliance-blue-light) 0%, var(--alliance-blue) 100%);
+}
+
+/* ===== HORDE GRADIENTS ===== */
+.gradient-horde {
+  background: linear-gradient(135deg, var(--horde-red) 0%, var(--horde-red-dark) 100%);
+}
+
+.gradient-horde-light {
+  background: linear-gradient(135deg, var(--horde-red-light) 0%, var(--horde-red) 100%);
+}
+
+/* ===== BACKGROUND GRADIENTS ===== */
+.gradient-bg-primary {
+  background: var(--bg-primary);
+}
+
+.gradient-bg-secondary {
+  background: var(--bg-secondary);
+}
+
+.gradient-bg-tertiary {
+  background: var(--bg-tertiary);
+}
+
+/* ===== GLASS GRADIENTS ===== */
+.gradient-glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+}
+
+.gradient-glass-light {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+}
+
+/* =============================================================================
+   SHADOW UTILITIES
+   ============================================================================= */
+
+.shadow-sm { box-shadow: var(--shadow-sm); }
+.shadow-md { box-shadow: var(--shadow-md); }
+.shadow-lg { box-shadow: var(--shadow-lg); }
+.shadow-xl { box-shadow: var(--shadow-xl); }
+.shadow-glow { box-shadow: var(--shadow-glow); }
+
+.shadow-gold { box-shadow: 0 0 12px rgba(212, 175, 55, 0.5); }
+.shadow-gold-glow { box-shadow: 0 0 20px rgba(212, 175, 55, 0.6); }
+
+.shadow-alliance { box-shadow: 0 0 12px rgba(37, 99, 235, 0.5); }
+.shadow-horde { box-shadow: 0 0 12px rgba(220, 38, 38, 0.5); }
+
+.shadow-success { box-shadow: 0 0 12px rgba(16, 185, 129, 0.5); }
+.shadow-error { box-shadow: 0 0 12px rgba(239, 68, 68, 0.5); }
+.shadow-warning { box-shadow: 0 0 12px rgba(245, 158, 11, 0.5); }
+.shadow-info { box-shadow: 0 0 12px rgba(59, 130, 246, 0.5); }
+
+/* =============================================================================
+   TEXT SHADOW UTILITIES
+   ============================================================================= */
+
+.text-shadow-base { text-shadow: var(--text-shadow-base); }
+.text-shadow-gold { text-shadow: var(--text-shadow-gold); }
+
+.text-shadow-alliance { 
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8), 0 0 8px rgba(37, 99, 235, 0.4); 
+}
+
+.text-shadow-horde { 
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8), 0 0 8px rgba(220, 38, 38, 0.4); 
+}
+
+/* =============================================================================
+   OPACITY UTILITIES
+   ============================================================================= */
+
+.opacity-0 { opacity: 0; }
+.opacity-25 { opacity: 0.25; }
+.opacity-50 { opacity: 0.5; }
+.opacity-75 { opacity: 0.75; }
+.opacity-100 { opacity: 1; }
+
+/* =============================================================================
+   THEME VARIATIONS
+   ============================================================================= */
+
+/* ===== DARK THEME ===== */
+[data-theme="dark"] {
+  --bg-primary: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%);
+  --bg-secondary: rgba(30, 41, 59, 0.8);
+  --bg-tertiary: rgba(51, 65, 85, 0.6);
+  --bg-card: rgba(15, 23, 42, 0.8);
+  --text-primary: var(--neutral-100);
+  --text-secondary: var(--neutral-400);
+}
+
+/* ===== LIGHT THEME ===== */
+[data-theme="light"] {
+  --bg-primary: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 50%, #E2E8F0 100%);
+  --bg-secondary: rgba(241, 245, 249, 0.8);
+  --bg-tertiary: rgba(226, 232, 240, 0.6);
+  --bg-card: rgba(248, 250, 252, 0.8);
+  --text-primary: var(--neutral-900);
+  --text-secondary: var(--neutral-600);
+}
+
+/* ===== HIGH CONTRAST THEME ===== */
+[data-theme="high-contrast"] {
+  --warcraft-gold: #FFD700;
+  --warcraft-gold-dark: #FFA500;
+  --warcraft-gold-light: #FFFF00;
+  --bg-primary: #000000;
+  --bg-secondary: rgba(0, 0, 0, 0.9);
+  --text-primary: #FFFFFF;
+  --text-secondary: #CCCCCC;
+}
+
+/* =============================================================================
+   COLOR SCHEMES FOR SPECIFIC COMPONENTS
+   ============================================================================= */
+
+/* ===== SUCCESS STATES ===== */
+.success-scheme {
+  color: var(--success);
+  background-color: rgba(16, 185, 129, 0.1);
+  border-color: var(--success);
+}
+
+.success-scheme:hover {
+  background-color: rgba(16, 185, 129, 0.2);
+}
+
+/* ===== ERROR STATES ===== */
+.error-scheme {
+  color: var(--error);
+  background-color: rgba(239, 68, 68, 0.1);
+  border-color: var(--error);
+}
+
+.error-scheme:hover {
+  background-color: rgba(239, 68, 68, 0.2);
+}
+
+/* ===== WARNING STATES ===== */
+.warning-scheme {
+  color: var(--warning);
+  background-color: rgba(245, 158, 11, 0.1);
+  border-color: var(--warning);
+}
+
+.warning-scheme:hover {
+  background-color: rgba(245, 158, 11, 0.2);
+}
+
+/* ===== INFO STATES ===== */
+.info-scheme {
+  color: var(--info);
+  background-color: rgba(59, 130, 246, 0.1);
+  border-color: var(--info);
+}
+
+.info-scheme:hover {
+  background-color: rgba(59, 130, 246, 0.2);
+}
+
+/* ===== ALLIANCE SCHEME ===== */
+.alliance-scheme {
+  color: var(--alliance-blue);
+  background-color: rgba(37, 99, 235, 0.1);
+  border-color: var(--alliance-blue);
+}
+
+.alliance-scheme:hover {
+  background-color: rgba(37, 99, 235, 0.2);
+}
+
+/* ===== HORDE SCHEME ===== */
+.horde-scheme {
+  color: var(--horde-red);
+  background-color: rgba(220, 38, 38, 0.1);
+  border-color: var(--horde-red);
+}
+
+.horde-scheme:hover {
+  background-color: rgba(220, 38, 38, 0.2);
+}
+
+/* =============================================================================
+   ANIMATION COLOR UTILITIES
+   ============================================================================= */
+
+/* ===== PULSE ANIMATIONS ===== */
+.pulse-gold {
+  animation: pulse-gold 2s ease-in-out infinite;
+}
+
+.pulse-alliance {
+  animation: pulse-alliance 2s ease-in-out infinite;
+}
+
+.pulse-horde {
+  animation: pulse-horde 2s ease-in-out infinite;
+}
+
+/* ===== SHIMMER EFFECTS ===== */
+
+/* ===== SHIMMER EFFECTS CONSOLIDATED ===== */
+.shimmer-gold,
+.shimmer-alliance,
+.shimmer-horde {
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+}
+
+.shimmer-gold {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(212, 175, 55, 0.1),
+    transparent
+  );
+}
+
+.shimmer-alliance {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(37, 99, 235, 0.1),
+    transparent
+  );
+}
+
+.shimmer-horde {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(220, 38, 38, 0.1),
+    transparent
+  );
+}
+
+/* ===== STATUS UTILITIES ===== */
+.status-draft {
+  background: rgba(156, 163, 175, 0.2);
+  color: #9ca3af;
+  border: 1px solid rgba(156, 163, 175, 0.3);
+}
+
+.status-success {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.status-info {
+  background: rgba(59, 130, 246, 0.2);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.status-warning {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.status-purple {
+  background: rgba(168, 85, 247, 0.2);
+  color: #a855f7;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.status-danger {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* =============================================================================
+   RESPONSIVE COLOR UTILITIES
+   ============================================================================= */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%);
+    --bg-secondary: rgba(30, 41, 59, 0.8);
+    --text-primary: var(--neutral-100);
+    --text-secondary: var(--neutral-400);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg-primary: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 50%, #E2E8F0 100%);
+    --bg-secondary: rgba(241, 245, 249, 0.8);
+    --text-primary: var(--neutral-900);
+    --text-secondary: var(--neutral-600);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-gold,
+  .pulse-alliance,
+  .pulse-horde,
+  .shimmer-gold,
+  .shimmer-alliance,
+  .shimmer-horde {
+    animation: none;
+  }
+}

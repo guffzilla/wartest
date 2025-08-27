@@ -1,0 +1,932 @@
+/* =============================================================================
+   UNIFIED LAYOUT SYSTEM
+   Consolidates all layout patterns from across the project
+   ============================================================================= */
+
+/* =============================================================================
+   GRID SYSTEM
+   ============================================================================= */
+
+/* Base Grid Container */
+.grid {
+  display: grid;
+  gap: var(--space-4);
+}
+
+/* Grid Columns - Responsive */
+.grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+.grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+/* Auto-fit Grids */
+.grid-auto-fit-xxs { grid-template-columns: repeat(auto-fit, minmax(50px, 1fr)); }
+.grid-auto-fit-100 { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); }
+.grid-auto-fit-xs { grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); }
+.grid-auto-fit-sm { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.grid-auto-fit-md { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+.grid-auto-fit-lg { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.grid-auto-fit-xl { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.grid-auto-fit-2xl { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.grid-auto-fit-3xl { grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); }
+.grid-auto-fit-4xl { grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); }
+
+/* Auto-fill Grids */
+.grid-auto-fill-xxs { grid-template-columns: repeat(auto-fill, minmax(50px, 1fr)); }
+.grid-auto-fill-80 { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
+.grid-auto-fill-100 { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+.grid-auto-fill-xs { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+.grid-auto-fill-sm { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.grid-auto-fill-md { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.grid-auto-fill-lg { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+.grid-auto-fill-xl { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+.grid-auto-fill-2xl { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+.grid-auto-fill-3xl { grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); }
+
+/* Grid Areas */
+.grid-areas-leaderboard {
+  grid-template-areas: "leaderboard ranks matches";
+  grid-template-columns: 1fr 300px 250px;
+}
+
+.grid-areas-simple {
+  grid-template-areas: "main sidebar";
+  grid-template-columns: 1fr 250px;
+}
+
+.grid-areas-single {
+  grid-template-areas: "main";
+  grid-template-columns: 1fr;
+}
+
+/* ===== UNIFIED GRID PATTERNS - CONSOLIDATED WITH STANDARD GRID UTILITIES ===== */
+
+/* Grid Gaps */
+.grid-gap-xs { gap: var(--space-2); }
+.grid-gap-sm { gap: var(--space-3); }
+.grid-gap-md { gap: var(--space-4); }
+.grid-gap-lg { gap: var(--space-6); }
+.grid-gap-xl { gap: var(--space-8); }
+
+/* =============================================================================
+   FLEXBOX SYSTEM
+   ============================================================================= */
+
+/* Base Flex Container */
+.flex {
+  display: flex;
+}
+
+/* Flex Direction */
+.flex-row { flex-direction: row; }
+.flex-col { flex-direction: column; }
+.flex-row-reverse { flex-direction: row-reverse; }
+.flex-col-reverse { flex-direction: column-reverse; }
+
+/* Flex Wrap */
+.flex-wrap { flex-wrap: wrap; }
+.flex-nowrap { flex-wrap: nowrap; }
+.flex-wrap-reverse { flex-wrap: wrap-reverse; }
+
+/* Justify Content */
+.justify-start { justify-content: flex-start; }
+.justify-end { justify-content: flex-end; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-around { justify-content: space-around; }
+.justify-evenly { justify-content: space-evenly; }
+
+/* Align Items */
+.items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
+.items-center { align-items: center; }
+.items-baseline { align-items: baseline; }
+.items-stretch { align-items: stretch; }
+
+/* Align Self */
+.self-start { align-self: flex-start; }
+.self-end { align-self: flex-end; }
+.self-center { align-self: center; }
+.self-baseline { align-self: baseline; }
+.self-stretch { align-self: stretch; }
+
+/* Flex Grow/Shrink */
+.flex-1 { flex: 1 1 0%; }
+.flex-auto { flex: 1 1 auto; }
+.flex-initial { flex: 0 1 auto; }
+.flex-none { flex: none; }
+
+.flex-grow { flex-grow: 1; }
+.flex-grow-0 { flex-grow: 0; }
+
+.flex-shrink { flex-shrink: 1; }
+.flex-shrink-0 { flex-shrink: 0; }
+
+/* =============================================================================
+   LAYOUT COMPONENTS
+   ============================================================================= */
+
+/* Main Layout Containers */
+.layout-main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-4);
+  width: 100%;
+}
+
+.layout-sidebar {
+  width: 280px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid var(--glass-border);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  padding: var(--space-6);
+}
+
+.layout-content {
+  flex: 1;
+  padding: var(--space-6);
+  overflow-y: auto;
+}
+
+/* Card Grid Layouts */
+.card-grid {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.card-grid-compact {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-4);
+}
+
+.card-grid-standard {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-6);
+}
+
+.card-grid-large {
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: var(--space-8);
+}
+
+/* Stats Grid Layouts */
+.stats-grid {
+  /* ===== GRID PATTERN CONSOLIDATED WITH .grid UTILITY ===== */
+  display: grid;
+  gap: var(--space-4);
+}
+
+.stats-grid-compact {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.stats-grid-standard {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+.stats-grid-large {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+/* Form Grid Layouts */
+.form-grid {
+  /* ===== GRID PATTERN CONSOLIDATED WITH .grid UTILITY ===== */
+  display: grid;
+  gap: var(--space-4);
+}
+
+.form-grid-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.form-grid-3 {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.form-grid-main-sidebar {
+  grid-template-columns: 1fr 250px;
+  grid-template-areas: "main sidebar";
+}
+
+/* =============================================================================
+   RESPONSIVE LAYOUTS
+   ============================================================================= */
+
+/* Mobile First Responsive Grids */
+@media (max-width: 768px) {
+  .grid-cols-2,
+  .grid-cols-3,
+  .grid-cols-4 {
+    grid-template-columns: 1fr;
+  }
+  
+  .grid-areas-leaderboard,
+  .grid-areas-simple {
+    grid-template-areas: "main";
+    grid-template-columns: 1fr;
+  }
+  
+  .form-grid-2,
+  .form-grid-3 {
+    grid-template-columns: 1fr;
+  }
+  
+  .form-grid-main-sidebar {
+    grid-template-columns: 1fr;
+    grid-template-areas: "main";
+  }
+  
+  .layout-sidebar {
+    width: 100%;
+    height: auto;
+    position: static;
+    border-right: none;
+    border-bottom: 1px solid var(--glass-border);
+  }
+}
+
+@media (max-width: 480px) {
+  .card-grid-compact,
+  .card-grid-standard,
+  .card-grid-large {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  
+  .stats-grid-compact,
+  .stats-grid-standard {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =============================================================================
+   UTILITY LAYOUT CLASSES
+   ============================================================================= */
+
+/* Spacing Utilities */
+.gap-xs { gap: var(--space-2); }
+.gap-sm { gap: var(--space-3); }
+.gap-md { gap: var(--space-4); }
+.gap-lg { gap: var(--space-6); }
+.gap-xl { gap: var(--space-8); }
+
+/* Width Utilities */
+.w-full { width: 100%; }
+.w-auto { width: auto; }
+.w-fit { width: fit-content; }
+.w-max { width: max-content; }
+.w-min { width: min-content; }
+
+/* Height Utilities */
+.h-full { height: 100%; }
+.h-auto { height: auto; }
+.h-fit { height: fit-content; }
+.h-max { height: max-content; }
+.h-min { height: min-content; }
+.h-screen { height: 100vh; }
+
+/* Min/Max Width/Height */
+.min-w-0 { min-width: 0; }
+.min-h-0 { min-height: 0; }
+.max-w-full { max-width: 100%; }
+.max-h-full { max-height: 100%; }
+
+/* Position Utilities */
+.relative { position: relative; }
+.absolute { position: absolute; }
+.fixed { position: fixed; }
+.sticky { position: sticky; }
+
+/* Overflow Utilities */
+.overflow-auto { overflow: auto; }
+.overflow-hidden { overflow: hidden; }
+.overflow-scroll { overflow: scroll; }
+.overflow-x-auto { overflow-x: auto; }
+.overflow-y-auto { overflow-y: auto; }
+
+/* Z-Index Utilities */
+.z-0 { z-index: 0; }
+.z-10 { z-index: 10; }
+.z-20 { z-index: 20; }
+.z-30 { z-index: 30; }
+.z-40 { z-index: 40; }
+.z-50 { z-index: 50; }
+.z-auto { z-index: auto; }
+
+/* =============================================================================
+   SPECIALIZED LAYOUTS
+   ============================================================================= */
+
+/* Profile Grid Layout */
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6);
+  align-items: start;
+  justify-items: center;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1600px;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 1200px) {
+  .profile-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-4);
+  }
+}
+
+@media (max-width: 768px) {
+  .profile-grid {
+    /* ===== GRID PATTERN REPLACED WITH .grid-1fr UTILITY ===== */
+    gap: var(--space-2);
+  }
+}
+
+/* Ladder Layout */
+.ladder-layout {
+  display: grid;
+  grid-template-columns: 1fr 300px 250px;
+  grid-template-areas: "leaderboard ranks matches";
+  gap: var(--space-6);
+  margin: var(--space-6) 0;
+}
+
+@media (max-width: 1200px) {
+  .ladder-layout {
+    grid-template-columns: 1fr 250px;
+    grid-template-areas: "leaderboard sidebar";
+  }
+}
+
+@media (max-width: 768px) {
+  .ladder-layout {
+    /* ===== GRID PATTERN REPLACED WITH .grid-1fr UTILITY ===== */
+    grid-template-areas: "main";
+  }
+}
+
+/* Content Layout */
+.content-layout {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-8) var(--space-8) var(--space-8);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Admin Layout */
+.admin-layout {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: var(--space-6);
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+
+}
+
+/* =============================================================================
+   ANIMATION UTILITIES
+   ============================================================================= */
+
+/* Transition Utilities */
+.transition { transition: all var(--transition-normal); }
+.transition-fast { transition: all var(--transition-fast); }
+.transition-slow { transition: all var(--transition-slow); }
+
+/* Transform Utilities */
+.transform { transform: translateZ(0); }
+.scale-95 { transform: scale(0.95); }
+.scale-100 { transform: scale(1); }
+.scale-105 { transform: scale(1.05); }
+.scale-110 { transform: scale(1.1); }
+
+.translate-y-0 { transform: translateY(0); }
+.translate-y-1 { transform: translateY(var(--space-1)); }
+.translate-y-2 { transform: translateY(var(--space-2)); }
+.translate-y-4 { transform: translateY(var(--space-4)); }
+.translate-y-8 { transform: translateY(var(--space-8)); }
+
+/* =============================================================================
+   ACCESSIBILITY UTILITIES
+   ============================================================================= */
+
+/* Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus Utilities */
+.focus\:outline-none:focus {
+  outline: none;
+}
+
+.focus\:ring:focus {
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+}
+
+/* =============================================================================
+   DISPLAY UTILITIES
+   ============================================================================= */
+
+/* Display Utilities */
+.hidden { display: none !important; }
+.block { display: block !important; }
+.flex { display: flex !important; }
+.inline { display: inline !important; }
+.inline-block { display: inline-block !important; }
+.inline-flex { display: inline-flex !important; }
+.inline-flex-center { display: inline-flex !important; align-items: center !important; }
+
+/* Grid Utilities */
+.grid-1fr { grid-template-columns: 1fr; }
+.grid-2fr { grid-template-columns: 1fr 1fr; }
+.grid-3fr { grid-template-columns: 1fr 1fr 1fr; }
+.grid-auto-fit { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+
+/* Flex Direction with Gap Utilities */
+.flex-col-gap-1 { display: flex; flex-direction: column; gap: var(--space-1); }
+.flex-col-gap-2 { display: flex; flex-direction: column; gap: var(--space-2); }
+.flex-col-gap-3 { display: flex; flex-direction: column; gap: var(--space-3); }
+.flex-col-gap-4 { display: flex; flex-direction: column; gap: var(--space-4); }
+
+.flex-row-gap-1 { display: flex; flex-direction: row; gap: var(--space-1); }
+.flex-row-gap-2 { display: flex; flex-direction: row; gap: var(--space-2); }
+.flex-row-gap-3 { display: flex; flex-direction: row; gap: var(--space-3); }
+.flex-row-gap-4 { display: flex; flex-direction: row; gap: var(--space-4); }
+
+/* Text Alignment */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+/* Width and Height */
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+
+/* Margin Utilities */
+.mb-4 { margin-bottom: var(--space-4); }
+.mb-6 { margin-bottom: var(--space-6); }
+.mt-4 { margin-top: var(--space-4); }
+.mt-6 { margin-top: var(--space-6); }
+
+/* Padding Utilities */
+.p-1 { padding: 1rem; }
+.p-4 { padding: var(--space-4); }
+.p-6 { padding: var(--space-6); }
+
+/* Border Radius */
+.rounded-lg { border-radius: var(--radius-lg); }
+.rounded-xl { border-radius: var(--radius-xl); }
+
+/* Opacity */
+.opacity-50 { opacity: 0.5; }
+.opacity-75 { opacity: 0.75; }
+
+/* Font Size Utilities */
+.text-base { font-size: 1rem; }
+.text-sm { font-size: 0.875rem; }
+.text-lg { font-size: 1.125rem; }
+.text-xl { font-size: 1.25rem; }
+.text-2xl { font-size: 1.5rem; }
+
+/* Margin Bottom Utilities */
+.mb-1-5 { margin-bottom: 1.5rem; }
+
+/* =============================================================================
+   ADDITIONAL UTILITY CLASSES FOR DUPLICATE CONSOLIDATION
+   ============================================================================= */
+
+/* ===== DUPLICATE FLEX UTILITIES REMOVED - ALREADY DEFINED ABOVE ===== */
+
+/* Flex Between Center Utilities */
+.flex-between-center { display: flex; justify-content: space-between; align-items: center; }
+
+/* ===== DUPLICATE FLEX COLUMN START UTILITIES REMOVED - ALREADY DEFINED ABOVE ===== */
+
+/* Inline Flex Center with Gap Utilities */
+.inline-flex-center-gap-1 { display: inline-flex; align-items: center; gap: 0.25rem; }
+.inline-flex-center-gap-2 { display: inline-flex; align-items: center; gap: 0.5rem; }
+.inline-flex-center-gap-3 { display: inline-flex; align-items: center; gap: 0.75rem; }
+.inline-flex-center-gap-4 { display: inline-flex; align-items: center; gap: 1rem; }
+
+/* Border Utilities */
+.border-b-none { border-bottom: none; }
+
+/* Last Child Utilities */
+.last-child-no-margin { margin-bottom: 0; }
+.last-child-no-border { border-bottom: none; }
+
+/* Textarea Utilities */
+.textarea-resize { resize: vertical; min-height: 80px; }
+
+/* Hover Background Utilities */
+.hover-bg-light:hover { background: rgba(255, 255, 255, 0.05); }
+
+/* ===== NEW UTILITIES FOR HIGH-IMPACT DUPLICATE CONSOLIDATION ===== */
+
+/* Container Utilities */
+.container-compact {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(212, 175, 55, 0.1);
+  border-radius: 12px;
+  padding: 1rem;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.container-compact:hover {
+  border-color: rgba(212, 175, 55, 0.3);
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.1);
+}
+
+/* Section Header Utilities */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--primary-gold);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.section-header i {
+  font-size: 1.2rem;
+  opacity: 0.8;
+}
+
+/* Form Grid Utilities */
+.form-grid-compact {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Disabled State Utilities */
+.disabled-state {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Hover Transform Utilities */
+.hover-scale-105:hover { transform: scale(1.05); }
+.hover-scale-110:hover { transform: scale(1.1); }
+.hover-translate-y-2:hover { transform: translateY(-2px); }
+.hover-translate-y-5:hover { transform: translateY(-5px); }
+
+/* ===== NEW PADDING UTILITIES FOR HIGH-IMPACT DUPLICATE CONSOLIDATION ===== */
+
+/* Modal Padding Utilities */
+.modal-padding-sm { padding: 0.5rem; }
+.modal-padding-md { padding: 1rem; }
+.modal-padding-lg { padding: 1.5rem; }
+.modal-padding-xl { padding: 2rem; }
+
+/* Modal Header Padding Utilities */
+.modal-header-padding-sm { padding: 1rem 1.5rem; }
+.modal-header-padding-md { padding: 1.5rem 2rem; }
+
+/* Modal Body Padding Utilities */
+.modal-body-padding-sm { padding: 1rem; }
+.modal-body-padding-md { padding: 1.5rem; }
+.modal-body-padding-lg { padding: 2rem; }
+
+/* Form Actions Utilities */
+.form-actions-column {
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.form-actions-column button {
+  width: 100%;
+}
+
+/* ===== NEW POSITION AND Z-INDEX UTILITIES FOR HIGH-IMPACT DUPLICATE CONSOLIDATION ===== */
+
+/* Position Utilities */
+.relative { position: relative; }
+.absolute { position: absolute; }
+.fixed { position: fixed; }
+.sticky { position: sticky; }
+
+/* Z-Index Utilities */
+.z-1 { z-index: 1; }
+.z-2 { z-index: 2; }
+.z-10 { z-index: 10; }
+.z-50 { z-index: 50; }
+.z-100 { z-index: 100; }
+.z-1000 { z-index: 1000; }
+.z-10000 { z-index: 10000; }
+.z-100001 { z-index: 100001; }
+
+/* ============================================================================= */
+
+/* =============================================================================
+   PRINT UTILITIES
+   ============================================================================= */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-only {
+    display: block !important;
+  }
+  
+  .layout-sidebar {
+    display: none !important;
+  }
+  
+  .layout-content {
+    width: 100% !important;
+    padding: 0 !important;
+  }
+}
+
+/* ===== ARENA LAYOUT RULES ===== */
+/* Extracted from arena.html inline styles - Rule-by-rule analysis */
+
+.arena-layout-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.arena-controls-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.game-tabs-container {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+
+
+.report-section {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.tabs-and-button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.game-tabs-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.game-tabs {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: center;
+  flex: 1;
+}
+
+.game-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.8rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow: hidden;
+  min-width: 100px;
+  justify-content: center;
+}
+
+.player-modal-header {
+  background: linear-gradient(135deg, #2c3e50, #34495e);
+  border-radius: 8px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.player-details h3 {
+  margin: 0 0 0.5rem 0;
+  color: #ffd700;
+  font-size: 1.8rem;
+}
+
+.tournament-board-container {
+  min-height: 200px;
+}
+
+.tournament-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.tournament-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 215, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+.tournament-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.tournament-name {
+  color: #ffd700;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.tournament-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.tournament-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.tournament-detail-label {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tournament-detail-value {
+  font-size: 0.9rem;
+  color: white;
+  font-weight: 500;
+}
+
+.tournament-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.tournament-loading {
+  text-align: center;
+  padding: 2rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.tournament-empty {
+  text-align: center;
+  padding: 2rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.tournament-empty i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+/* ===== RESPONSIVE DESIGN RULES ===== */
+/* Extracted from arena.html inline styles - Rule-by-rule analysis */
+
+@media (max-width: 1200px) {
+  .arena-controls-section {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .game-tabs-container {
+    order: 1;
+  }
+
+  .report-section {
+    order: 2;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .arena-layout-container {
+    padding: 0 1rem;
+  }
+
+  .arena-controls-section {
+    padding: 1rem;
+  }
+
+  .game-tabs {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .game-tab {
+    min-width: 100px;
+    padding: 0.5rem 1rem;
+  }
+
+  .tournament-details {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .tournament-actions {
+    flex-direction: column;
+  }
+
+  .tournament-btn {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* ===== LEADERBOARD RULES ===== */
+/* Extracted from arena.html inline styles - Rule-by-rule analysis */
+
+.leaderboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+}
+
+.tournament-board-section {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+}
+
+.tournament-board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.tournament-board-header h3 {
+  color: #ffd700;
+  margin: 0;
+  font-size: 1.2rem;
+}

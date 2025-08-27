@@ -1,0 +1,756 @@
+/* ==========================================================================
+   HERO PAGE - HEROIC STYLE ENHANCEMENT
+   Epic visual improvements for the "Be a Hero" page
+   ========================================================================== */
+
+/* =============================================================================
+   HEROIC VARIABLES - EPIC THEME COLORS & EFFECTS
+   ============================================================================= */
+:root {
+  /* Heroic Color Palette */
+  --hero-primary: #FFD700;
+  --hero-primary-dark: #FFA500;
+  --hero-secondary: #FF6B35;
+  --hero-accent: #8A2BE2;
+  --hero-epic: #DC143C;
+  
+  /* Background Gradients */
+  --hero-bg-main: linear-gradient(135deg, 
+    #0F172A 0%, 
+    #1E293B 25%, 
+    #374151 50%, 
+    #1E293B 75%, 
+    #0F172A 100%);
+  --hero-bg-card: linear-gradient(135deg,
+    rgba(15, 23, 42, 0.95) 0%,
+    rgba(30, 41, 59, 0.95) 50%,
+    rgba(15, 23, 42, 0.95) 100%);
+  --hero-bg-tier: linear-gradient(135deg,
+    rgba(255, 215, 0, 0.05) 0%,
+    rgba(255, 107, 53, 0.05) 50%,
+    rgba(138, 43, 226, 0.05) 100%);
+  
+  /* Epic Shadows */
+  --hero-shadow-epic: 
+    0 20px 60px rgba(255, 215, 0, 0.3),
+    0 10px 30px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  --hero-shadow-glow: 
+    0 0 30px rgba(255, 215, 0, 0.4),
+    0 0 60px rgba(255, 107, 53, 0.2);
+  --hero-shadow-tier: 
+    0 15px 35px rgba(0, 0, 0, 0.4),
+    0 5px 15px rgba(0, 0, 0, 0.2);
+  
+  /* Heroic Animations */
+  --hero-transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --hero-transition-fast: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* =============================================================================
+   GLOBAL HEROIC BODY STYLING
+   ============================================================================= */
+body {
+  background: var(--hero-bg-main);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Epic background animated particles */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(255, 107, 53, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 60% 20%, rgba(138, 43, 226, 0.06) 0%, transparent 50%);
+  z-index: -1;
+  animation: heroicFlow 20s ease-in-out infinite;
+}
+
+@keyframes heroicFlow {
+  0%, 100% { 
+    transform: scale(1) rotate(0deg);
+    opacity: 0.5;
+  }
+  33% { 
+    transform: scale(1.1) rotate(2deg);
+    opacity: 0.7;
+  }
+  66% { 
+    transform: scale(0.9) rotate(-1deg);
+    opacity: 0.6;
+  }
+}
+
+/* =============================================================================
+   EPIC HERO PAGE HEADER
+   ============================================================================= */
+.page-header {
+  position: relative;
+  text-align: center;
+  padding: 4rem 2rem 5rem;
+  background: 
+    linear-gradient(135deg, 
+      rgba(15, 23, 42, 0.9) 0%, 
+      rgba(30, 41, 59, 0.95) 50%, 
+      rgba(15, 23, 42, 0.9) 100%),
+    radial-gradient(circle at center, 
+      rgba(255, 215, 0, 0.1) 0%, 
+      transparent 70%);
+  border-bottom: 2px solid rgba(255, 215, 0, 0.3);
+  overflow: hidden;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.page-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: 
+    conic-gradient(from 0deg at 50% 50%, 
+      transparent 0deg, 
+      rgba(255, 215, 0, 0.05) 60deg, 
+      transparent 120deg, 
+      rgba(255, 107, 53, 0.03) 180deg, 
+      transparent 240deg, 
+      rgba(138, 43, 226, 0.04) 300deg, 
+      transparent 360deg);
+  animation: epicRotate 30s linear infinite;
+  z-index: -1;
+}
+
+@keyframes epicRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.page-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  background: linear-gradient(135deg, 
+    var(--hero-primary) 0%, 
+    var(--hero-secondary) 50%, 
+    var(--hero-accent) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 4px 20px rgba(255, 215, 0, 0.5);
+  margin-bottom: 1rem;
+  position: relative;
+  transform: translateY(0);
+  animation: heroicGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes heroicGlow {
+  0% { 
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.3));
+    transform: translateY(0px);
+  }
+  100% { 
+    filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.6));
+    transform: translateY(-3px);
+  }
+}
+
+/* Hero Subtitle Elements */
+.hero-subtitle {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.epic-tagline {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, 
+    var(--hero-secondary) 0%, 
+    var(--hero-accent) 50%, 
+    var(--hero-secondary) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.75rem;
+  letter-spacing: 1px;
+  animation: epicPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes epicPulse {
+  0% { 
+    filter: drop-shadow(0 0 5px rgba(255, 107, 53, 0.3));
+  }
+  100% { 
+    filter: drop-shadow(0 0 15px rgba(138, 43, 226, 0.5));
+  }
+}
+
+.hero-description {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 500;
+  margin-bottom: 0;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.5px;
+}
+
+/* =============================================================================
+   COMPACT CURRENCY SELECTOR (WITHIN MEMBERSHIP SECTION)
+   ============================================================================= */
+.hero-header-extension {
+  animation: heroicSlideIn 0.4s ease-out;
+}
+
+@keyframes heroicSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-header-extension .currency-selector {
+  background: rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 215, 0, 0.3) !important;
+  padding: 0.5rem 0.75rem !important;
+  font-size: 0.85rem !important;
+  font-weight: 500 !important;
+  transition: var(--hero-transition-fast) !important;
+  color: var(--hero-primary) !important;
+  border-radius: 6px !important;
+}
+
+.hero-header-extension .currency-selector:hover {
+  border-color: rgba(255, 215, 0, 0.5) !important;
+  background: rgba(0, 0, 0, 0.6) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* Ensure currency dropdown has proper z-index */
+.hero-header-extension .currency-selector {
+  z-index: 9999 !important;
+}
+
+.currency-selector div[style*="position: absolute"] {
+  z-index: 10000 !important;
+}
+
+/* =============================================================================
+   EPIC MEMBERSHIP SECTION STYLING
+   ============================================================================= */
+.membership-section {
+  background: var(--hero-bg-card);
+  border: 2px solid rgba(255, 215, 0, 0.2);
+  border-radius: 20px;
+  padding: 3rem 2rem;
+  margin: 2rem auto;
+  max-width: 1200px;
+  position: relative;
+  backdrop-filter: blur(20px);
+  box-shadow: var(--hero-shadow-epic);
+  overflow: hidden;
+}
+
+.membership-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, 
+    var(--hero-primary) 0%, 
+    var(--hero-secondary) 33%, 
+    var(--hero-accent) 66%, 
+    var(--hero-primary) 100%);
+  animation: heroicBorderFlow 3s ease-in-out infinite;
+}
+
+@keyframes heroicBorderFlow {
+  0%, 100% { 
+    background-position: 0% 50%;
+    opacity: 0.8;
+  }
+  50% { 
+    background-position: 100% 50%;
+    opacity: 1;
+  }
+}
+
+/* =============================================================================
+   ENHANCED MEMBERSHIP TIERS - HEROIC DESIGN
+   ============================================================================= */
+.membership-tiers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+  margin: 2rem 0;
+  padding: 1rem;
+}
+
+.membership-tier {
+  background: var(--hero-bg-tier);
+  border: 2px solid rgba(255, 215, 0, 0.2);
+  border-radius: 16px;
+  padding: 2rem;
+  position: relative;
+  transition: var(--hero-transition);
+  backdrop-filter: blur(15px);
+  box-shadow: var(--hero-shadow-tier);
+  overflow: hidden;
+  transform: translateY(0) scale(1);
+}
+
+/* Heroic tier border glow effect */
+.membership-tier::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, 
+    var(--hero-primary) 0%, 
+    var(--hero-secondary) 25%, 
+    var(--hero-accent) 50%, 
+    var(--hero-secondary) 75%, 
+    var(--hero-primary) 100%);
+  border-radius: 18px;
+  z-index: -1;
+  opacity: 0;
+  transition: var(--hero-transition-fast);
+}
+
+.membership-tier:hover {
+  transform: translateY(-12px) scale(1.03);
+  border-color: rgba(255, 215, 0, 0.6);
+  box-shadow: 
+    var(--hero-shadow-glow),
+    0 25px 50px rgba(0, 0, 0, 0.3);
+}
+
+.membership-tier:hover::before {
+  opacity: 0.7;
+  animation: heroicPulse 2s ease-in-out infinite;
+}
+
+@keyframes heroicPulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* Featured tier - Extra epic styling */
+.membership-tier.featured {
+  border-color: var(--hero-primary);
+  background: linear-gradient(135deg, 
+    var(--hero-bg-tier),
+    rgba(255, 215, 0, 0.08),
+    var(--hero-bg-tier));
+  box-shadow: 
+    var(--hero-shadow-glow),
+    var(--hero-shadow-tier);
+}
+
+.membership-tier.featured::after {
+  content: "⚡ MOST HEROIC ⚡";
+  position: absolute;
+  top: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--hero-primary), var(--hero-secondary));
+  color: #000;
+  padding: 0.5rem 1.5rem;
+  border-radius: 0 0 12px 12px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  z-index: 2;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+  animation: heroicFeatured 2s ease-in-out infinite alternate;
+}
+
+@keyframes heroicFeatured {
+  0% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); }
+  100% { text-shadow: 0 0 15px rgba(255, 255, 255, 0.8); }
+}
+
+/* Tier Names - More Heroic */
+.tier-name {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, 
+    var(--hero-primary) 0%, 
+    var(--hero-secondary) 50%, 
+    var(--hero-primary) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1rem;
+  text-align: center;
+  position: relative;
+  text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+}
+
+/* Tier Prices - Epic Styling */
+.tier-price {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  position: relative;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.tier-price .currency {
+  color: var(--hero-primary);
+  font-weight: 900;
+  font-size: 1.75rem;
+  filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.5));
+}
+
+/* Enhanced Tier Images */
+.tier-images {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+}
+
+.tier-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid var(--hero-primary);
+  object-fit: cover;
+  transition: var(--hero-transition);
+  position: relative;
+  box-shadow: 
+    0 4px 15px rgba(255, 215, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.tier-image:hover {
+  transform: scale(1.2) translateY(-5px) rotate(5deg);
+  border-color: var(--hero-secondary);
+  box-shadow: 
+    0 8px 25px rgba(255, 215, 0, 0.5),
+    0 0 20px rgba(255, 107, 53, 0.4);
+  filter: brightness(1.1);
+}
+
+/* Epic Tier Buttons */
+.tier-btn {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: var(--hero-transition);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+}
+
+.tier-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent, 
+    rgba(255, 255, 255, 0.2), 
+    transparent);
+  transition: left 0.6s ease;
+  z-index: 1;
+}
+
+.tier-btn:hover::before {
+  left: 100%;
+}
+
+.tier-btn > * {
+  position: relative;
+  z-index: 2;
+}
+
+.tier-btn.monthly {
+  background: linear-gradient(135deg, 
+    var(--hero-primary) 0%, 
+    var(--hero-secondary) 100%);
+  color: #000;
+  border-color: var(--hero-primary);
+  box-shadow: 
+    0 8px 25px rgba(255, 215, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.tier-btn.monthly:hover {
+  background: linear-gradient(135deg, 
+    var(--hero-secondary) 0%, 
+    var(--hero-accent) 100%);
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 
+    0 15px 35px rgba(255, 215, 0, 0.4),
+    0 5px 15px rgba(255, 107, 53, 0.3);
+  border-color: var(--hero-secondary);
+}
+
+/* =============================================================================
+   HEROIC DONATION SECTION
+   ============================================================================= */
+.donation-links {
+  background: var(--hero-bg-card);
+  border: 2px solid rgba(255, 107, 53, 0.3);
+  border-radius: 16px;
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 600px;
+  text-align: center;
+  backdrop-filter: blur(15px);
+  box-shadow: 
+    0 10px 30px rgba(255, 107, 53, 0.2),
+    0 4px 15px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.donation-links::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, 
+    var(--hero-secondary) 0%, 
+    var(--hero-accent) 50%, 
+    var(--hero-secondary) 100%);
+  animation: donationGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes donationGlow {
+  0% { opacity: 0.6; }
+  100% { opacity: 1; }
+}
+
+.donation-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, 
+    var(--hero-secondary) 0%, 
+    var(--hero-accent) 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 2px 10px rgba(255, 107, 53, 0.3);
+}
+
+.donation-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.donation-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: var(--hero-transition);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.donation-btn.paypal {
+  background: linear-gradient(135deg, #0070ba, #003087);
+  color: white;
+  border-color: #0070ba;
+  box-shadow: 0 6px 20px rgba(0, 112, 186, 0.3);
+}
+
+.donation-btn.paypal:hover {
+  background: linear-gradient(135deg, #005ea6, #002663);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 
+    0 10px 30px rgba(0, 112, 186, 0.4),
+    0 0 20px rgba(0, 112, 186, 0.3);
+}
+
+.donation-btn.coinbase {
+  background: linear-gradient(135deg, #f7931a, #ff6600);
+  color: white;
+  border-color: #f7931a;
+  box-shadow: 0 6px 20px rgba(247, 147, 26, 0.3);
+}
+
+.donation-btn.coinbase:hover {
+  background: linear-gradient(135deg, #e6850f, #e55500);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 
+    0 10px 30px rgba(247, 147, 26, 0.4),
+    0 0 20px rgba(247, 147, 26, 0.3);
+}
+
+/* =============================================================================
+   HEROIC MEMBERSHIP INFO
+   ============================================================================= */
+.membership-info {
+  background: linear-gradient(135deg, 
+    rgba(15, 23, 42, 0.8) 0%, 
+    rgba(30, 41, 59, 0.8) 100%);
+  border: 2px solid rgba(138, 43, 226, 0.3);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin: 2rem auto;
+  max-width: 500px;
+  backdrop-filter: blur(15px);
+  box-shadow: 
+    0 8px 25px rgba(138, 43, 226, 0.2),
+    0 3px 10px rgba(0, 0, 0, 0.3);
+}
+
+.membership-info p {
+  margin: 0.75rem 0;
+  color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-weight: 500;
+}
+
+.membership-info i {
+  color: var(--hero-accent);
+  font-size: 1.2rem;
+  filter: drop-shadow(0 0 5px rgba(138, 43, 226, 0.5));
+}
+
+/* =============================================================================
+   RESPONSIVE HEROIC DESIGN
+   ============================================================================= */
+@media (max-width: 768px) {
+  .page-header {
+    padding: 2rem 1rem 3rem;
+    min-height: 250px;
+  }
+  
+  .page-title {
+    font-size: 2.5rem;
+  }
+  
+  .epic-tagline {
+    font-size: 1.1rem;
+  }
+  
+  .hero-description {
+    font-size: 1rem;
+  }
+  
+  .hero-header-extension {
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    margin: 0 0 0.75rem 0;
+  }
+  
+  .hero-header-extension .hero-subtitle {
+    font-size: 0.85rem;
+    white-space: normal;
+    text-align: center;
+  }
+  
+  .hero-header-extension .currency-selector {
+    font-size: 0.8rem !important;
+    padding: 0.5rem 0.625rem !important;
+    min-width: 100px !important;
+  }
+  
+  .membership-section {
+    padding: 2rem 1rem;
+    margin: 1rem;
+  }
+  
+  .membership-tiers {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 0.5rem;
+  }
+  
+  .membership-tier {
+    padding: 1.5rem;
+  }
+  
+  .tier-name {
+    font-size: 1.5rem;
+  }
+  
+  .tier-price {
+    font-size: 1.75rem;
+  }
+  
+  .donation-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .donation-btn {
+    width: 100%;
+    max-width: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-title {
+    font-size: 2rem;
+  }
+  
+  .tier-images {
+    gap: 0.5rem;
+  }
+  
+  .tier-image {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+/* ===== HERO PAGE INLINE STYLES REFACTORED ===== */
+body[data-page="hero"] .glass-section.fade-in-up {
+  margin-top: 2rem;
+}

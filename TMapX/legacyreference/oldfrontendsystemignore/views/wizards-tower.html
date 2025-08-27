@@ -1,0 +1,602 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wizard's Tower - Warcraft Arena</title>
+  <link rel="stylesheet" href="/css/warcraft-app-modern.css">
+      <!-- Removed: game-specific.css (file doesn't exist) -->
+  <link rel="stylesheet" href="/css/black-theme.css">
+  <link rel="stylesheet" href="/css/wizards-tower-enhanced.css">
+  <link rel="stylesheet" href="/css/wiki-editor.css">
+  <link rel="stylesheet" href="/css/unified-layout-system.css">
+  <link rel="stylesheet" href="/css/navbar-universal.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Navigation -->
+    <div id="navbar-container"></div>
+
+    <!-- Main Content -->
+    <div class="wizards-tower-container">
+      <div class="page-header">
+        <div class="page-title-container">
+          <h1 class="page-title">
+            <i class="fas fa-tower-observation"></i>
+            Wizard's Tower
+          </h1>
+          <div class="page-subtitle">
+            Collaborative knowledge base for all Warcraft games
+          </div>
+        </div>
+        
+        <!-- User Wiki Stats (shows if logged in) -->
+        
+      </div>
+
+      <!-- Game Selection Tabs -->
+      <div class="game-tabs">
+        <button class="game-tab active" data-game="wc1">
+          <i class="fas fa-sword"></i>
+          Warcraft I
+        </button>
+        <button class="game-tab" data-game="wc2">
+          <i class="fas fa-shield"></i>
+          Warcraft II
+        </button>
+        <button class="game-tab" data-game="wc3">
+          <i class="fas fa-crown"></i>
+          Warcraft III
+        </button>
+
+      </div>
+
+      <!-- Sub-tabs for each game -->
+      <div class="sub-tabs-container">
+        <!-- WC1 Sub-tabs -->
+        <div class="sub-tabs active" data-game="wc1">
+          <button class="sub-tab active" data-subtab="human">
+            <i class="fas fa-users"></i>
+            Humans
+          </button>
+          <button class="sub-tab" data-subtab="orc">
+            <i class="fas fa-skull"></i>
+            Orcs
+          </button>
+          <button class="sub-tab" data-subtab="general">
+            <i class="fas fa-book"></i>
+            General
+          </button>
+          <button class="sub-tab" data-subtab="strategy">
+            <i class="fas fa-chess"></i>
+            Strategy
+          </button>
+        </div>
+
+        <!-- WC2 Sub-tabs -->
+        <div class="sub-tabs" data-game="wc2">
+          <button class="sub-tab active" data-subtab="human">
+            <i class="fas fa-users"></i>
+            Humans
+          </button>
+          <button class="sub-tab" data-subtab="orc">
+            <i class="fas fa-skull"></i>
+            Orcs
+          </button>
+          <button class="sub-tab" data-subtab="general">
+            <i class="fas fa-book"></i>
+            General
+          </button>
+          <button class="sub-tab" data-subtab="strategy">
+            <i class="fas fa-chess"></i>
+            Strategy
+          </button>
+        </div>
+
+        <!-- WC3 Sub-tabs -->
+        <div class="sub-tabs" data-game="wc3">
+          <button class="sub-tab active" data-subtab="human">
+            <i class="fas fa-users"></i>
+            Humans
+          </button>
+          <button class="sub-tab" data-subtab="orc">
+            <i class="fas fa-skull"></i>
+            Orcs
+          </button>
+          <button class="sub-tab" data-subtab="undead">
+            <i class="fas fa-ghost"></i>
+            Undead
+          </button>
+          <button class="sub-tab" data-subtab="nightelf">
+            <i class="fas fa-tree"></i>
+            Night Elves
+          </button>
+          <button class="sub-tab" data-subtab="neutral">
+            <i class="fas fa-star"></i>
+            Neutral
+          </button>
+          <button class="sub-tab" data-subtab="items">
+            <i class="fas fa-gem"></i>
+            Items
+          </button>
+          <button class="sub-tab" data-subtab="general">
+            <i class="fas fa-book"></i>
+            General
+          </button>
+          <button class="sub-tab" data-subtab="strategy">
+            <i class="fas fa-chess"></i>
+            Strategy
+          </button>
+        </div>
+      </div>
+
+      <!-- Content Areas -->
+      <div class="wiki-content active" data-game="wc1">
+        <!-- Loading indicator -->
+        <div id="loading-indicator" class="loading-container">
+          
+          <p>Loading unit data...</p>
+        </div>
+
+        <!-- WC1 Content -->
+        <div class="game-content active" data-game="wc1">
+          <!-- Humans Sub-content -->
+          <div class="sub-content active" data-subtab="human">
+            <div class="wiki-sections">
+              <!-- Human Units Section -->
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-users"></i>
+                  Human Units
+                </h3>
+                
+              </div>
+
+              <!-- Human Buildings Section -->
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-building"></i>
+                  Human Buildings
+                </h3>
+                
+              </div>
+            </div>
+          </div>
+
+          <!-- Orcs Sub-content -->
+          <div class="sub-content" data-subtab="orc">
+            <div class="wiki-sections">
+              <!-- Orc Units Section -->
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-skull"></i>
+                  Orc Units
+                </h3>
+                
+              </div>
+
+              <!-- Orc Buildings Section -->
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-building"></i>
+                  Orc Buildings
+                </h3>
+                
+              </div>
+            </div>
+          </div>
+
+          <!-- General Sub-content -->
+          <div class="sub-content" data-subtab="general">
+            <div class="wiki-sections">
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-book"></i>
+                  General Information
+                </h3>
+                <div class="wiki-content-text">
+                  <h4>About Warcraft I</h4>
+                  <p>Warcraft: Orcs &amp; Humans is the first game in the Warcraft series, released in 1994. It introduced the world to Azeroth and the conflict between humans and orcs.</p>
+                  
+                  <h4>Game Mechanics</h4>
+                  <ul>
+                    <li><strong>Resources:</strong> Gold is the primary resource</li>
+                    <li><strong>Population:</strong> Limited by food supply</li>
+                    <li><strong>Combat:</strong> Real-time strategy with unit management</li>
+                    <li><strong>Victory:</strong> Destroy all enemy buildings</li>
+                  </ul>
+
+                  <h4>Key Features</h4>
+                  <ul>
+                    <li>Two playable races: Humans and Orcs</li>
+                    <li>Unique units and buildings for each race</li>
+                    <li>Upgrade system for units and buildings</li>
+                    <li>Spellcasting units with special abilities</li>
+                    <li>Siege weapons for building destruction</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Strategy Sub-content -->
+          <div class="sub-content" data-subtab="strategy">
+            <div class="wiki-sections">
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-chess"></i>
+                  Strategy Guide
+                </h3>
+                <div class="wiki-content-text">
+                  <h4>Early Game</h4>
+                  <p>Focus on resource gathering and building your economy. Train workers and expand your base.</p>
+                  
+                  <h4>Mid Game</h4>
+                  <p>Build military units and research upgrades. Scout the map and prepare for combat.</p>
+                  
+                  <h4>Late Game</h4>
+                  <p>Mass your forces and launch coordinated attacks. Use siege weapons to destroy enemy buildings.</p>
+                  
+                  <h4>Tips &amp; Tricks</h4>
+                  <ul>
+                    <li>Always keep your workers busy</li>
+                    <li>Use spellcasters effectively</li>
+                    <li>Upgrade your units when possible</li>
+                    <li>Scout enemy positions</li>
+                    <li>Protect your spellcasters in battle</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="wiki-content" data-game="wc2">
+        <!-- Loading indicator -->
+        <div id="loading-indicator" class="loading-container">
+          
+          <p>Loading unit data...</p>
+        </div>
+
+        <!-- WC2 Content -->
+        <div class="game-content" data-game="wc2">
+          <!-- Humans Sub-content -->
+          <div class="sub-content" data-subtab="human">
+            <div class="wiki-sections">
+              <!-- Human Units Section -->
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-users"></i>
+                  Human Units
+                </h3>
+                
+              </div>
+
+              <!-- Human Buildings Section -->
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-building"></i>
+                  Human Buildings
+                </h3>
+                
+              </div>
+            </div>
+          </div>
+
+          <!-- Orcs Sub-content -->
+          <div class="sub-content" data-subtab="orc">
+            <div class="wiki-sections">
+              <!-- Orc Units Section -->
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-skull"></i>
+                  Orc Units
+                </h3>
+                
+              </div>
+
+              <!-- Orc Buildings Section -->
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-building"></i>
+                  Orc Buildings
+                </h3>
+                
+              </div>
+            </div>
+          </div>
+
+          <!-- General Sub-content -->
+          <div class="sub-content" data-subtab="general">
+            <div class="wiki-sections">
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-book"></i>
+                  General Information
+                </h3>
+                <div class="wiki-content-text">
+                  <h4>About Warcraft II</h4>
+                  <p>Warcraft II: Tides of Darkness is the second game in the Warcraft series, released in 1995. It expanded on the original with improved graphics, new units, and naval combat.</p>
+                  
+                  <h4>Game Mechanics</h4>
+                  <ul>
+                    <li><strong>Resources:</strong> Gold and Wood are the primary resources</li>
+                    <li><strong>Population:</strong> Limited by food supply</li>
+                    <li><strong>Combat:</strong> Land and naval battles</li>
+                    <li><strong>Victory:</strong> Destroy all enemy buildings</li>
+                  </ul>
+
+                  <h4>Key Features</h4>
+                  <ul>
+                    <li>Two playable races: Humans and Orcs</li>
+                    <li>Naval combat with ships and submarines</li>
+                    <li>Flying units for aerial combat</li>
+                    <li>Advanced spellcasting system</li>
+                    <li>Improved graphics and sound</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Strategy Sub-content -->
+          <div class="sub-content" data-subtab="strategy">
+            <div class="wiki-sections">
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-chess"></i>
+                  Strategy Guide
+                </h3>
+                <div class="wiki-content-text">
+                  <h4>Early Game</h4>
+                  <p>Focus on resource gathering with both gold and wood. Build farms for food and expand your base.</p>
+                  
+                  <h4>Mid Game</h4>
+                  <p>Build military units and research upgrades. Use naval units to control water resources.</p>
+                  
+                  <h4>Late Game</h4>
+                  <p>Mass your forces and launch coordinated attacks. Use flying units for scouting and harassment.</p>
+                  
+                  <h4>Tips &amp; Tricks</h4>
+                  <ul>
+                    <li>Control water resources for naval advantage</li>
+                    <li>Use flying units for scouting</li>
+                    <li>Upgrade your units when possible</li>
+                    <li>Build defensive towers</li>
+                    <li>Use spellcasters effectively</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="wiki-content" data-game="wc3">
+        <!-- Loading indicator -->
+        <div id="loading-indicator" class="loading-container">
+          
+          <p>Loading unit data...</p>
+        </div>
+
+        <!-- WC3 Content -->
+        <div class="game-content" data-game="wc3">
+          <!-- Humans Sub-content -->
+          <div class="sub-content" data-subtab="human">
+            <div class="wiki-sections">
+              <!-- Human Units Section -->
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-users"></i>
+                  Human Units
+                </h3>
+                
+              </div>
+
+              <!-- Human Buildings Section -->
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-building"></i>
+                  Human Buildings
+                </h3>
+                
+              </div>
+            </div>
+          </div>
+
+          <!-- Orcs Sub-content -->
+          <div class="sub-content" data-subtab="orc">
+            <div class="wiki-sections">
+              <!-- Orc Units Section -->
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-skull"></i>
+                  Orc Units
+                </h3>
+                
+              </div>
+
+              <!-- Orc Buildings Section -->
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-building"></i>
+                  Orc Buildings
+                </h3>
+                
+              </div>
+            </div>
+          </div>
+
+          <!-- Undead Sub-content -->
+          <div class="sub-content" data-subtab="undead">
+            <div class="wiki-sections">
+              <!-- Undead Units Section -->
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-ghost"></i>
+                  Undead Units
+                </h3>
+                
+              </div>
+
+              <!-- Undead Buildings Section -->
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-building"></i>
+                  Undead Buildings
+                </h3>
+                
+              </div>
+            </div>
+          </div>
+
+          <!-- Night Elves Sub-content -->
+          <div class="sub-content" data-subtab="nightelf">
+            <div class="wiki-sections">
+              <!-- Night Elf Units Section -->
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-tree"></i>
+                  Night Elf Units
+                </h3>
+                
+              </div>
+
+              <!-- Night Elf Buildings Section -->
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-building"></i>
+                  Night Elf Buildings
+                </h3>
+                
+              </div>
+            </div>
+          </div>
+
+          <!-- Neutral Sub-content -->
+          <div class="sub-content" data-subtab="neutral">
+            <div class="wiki-sections">
+              <!-- Neutral Creeps Section -->
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-paw"></i>
+                  Neutral Creeps
+                </h3>
+                
+              </div>
+
+              <!-- Neutral Mercenaries Section -->
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-sword"></i>
+                  Neutral Mercenaries
+                </h3>
+                
+              </div>
+
+              <!-- Neutral Heroes Section -->
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-crown"></i>
+                  Neutral Heroes
+                </h3>
+                
+              </div>
+            </div>
+          </div>
+
+          <!-- Items Sub-content -->
+          <div class="sub-content" data-subtab="items">
+            <div class="wiki-sections">
+              <!-- Consumable Items Section -->
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-flask"></i>
+                  Consumable Items
+                </h3>
+                
+              </div>
+
+              <!-- Permanent Items Section -->
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-shield"></i>
+                  Permanent Items
+                </h3>
+                
+              </div>
+
+              <!-- Artifact Items Section -->
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-gem"></i>
+                  Artifacts
+                </h3>
+                
+              </div>
+            </div>
+          </div>
+
+          <!-- General Sub-content -->
+          <div class="sub-content" data-subtab="general">
+            <div class="wiki-sections">
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-book"></i>
+                  General Information
+                </h3>
+                <div class="wiki-content-text">
+                  <h4>About Warcraft III</h4>
+                  <p>Warcraft III: Reign of Chaos introduced heroes, creeps, and RPG elements to the RTS genre.</p>
+                  
+                  <h4>Key Features</h4>
+                  <ul>
+                    <li>Hero units with experience and levels</li>
+                    <li>Four distinct races</li>
+                    <li>Creep camps and neutral units</li>
+                    <li>Item system</li>
+                    <li>Advanced spellcasting</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Strategy Sub-content -->
+          <div class="sub-content" data-subtab="strategy">
+            <div class="wiki-sections">
+              <div class="wiki-section">
+                <h3 class="section-title">
+                  <i class="fas fa-chess"></i>
+                  Strategy Guide
+                </h3>
+                <div class="wiki-content-text">
+                  <h4>Hero Management</h4>
+                  <p>Level up your heroes and choose the right abilities for your strategy.</p>
+                  
+                  <h4>Creep Management</h4>
+                  <p>Clear creep camps for experience and items while expanding your base.</p>
+                  
+                  <h4>Advanced Tactics</h4>
+                  <ul>
+                    <li>Micro-manage your heroes</li>
+                    <li>Use items effectively</li>
+                    <li>Control creep camps</li>
+                    <li>Balance economy and military</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="/js/modules/ApiClient.js"></script>
+  <script type="module" src="/js/modules/AuthManager.js"></script>
+  <script src="/js/modules/WikiEditor.js"></script>
+  <script src="/js/wizards-tower-enhanced.js"></script>
+  <script type="module" src="/js/main.js"></script>
+
+</body></html>

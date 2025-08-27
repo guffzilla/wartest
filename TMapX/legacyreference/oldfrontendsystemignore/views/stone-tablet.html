@@ -1,0 +1,212 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WC Arena - Next-Gen Forum</title>
+  
+  <!-- Preload critical resources -->
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="">
+  
+  <!-- Core Stylesheets -->
+  <link rel="stylesheet" href="/css/warcraft-app-modern.css">
+      <!-- Removed: game-specific.css (file doesn't exist) -->
+      <link rel="stylesheet" href="/css/unified-button-system.css">
+    <link rel="stylesheet" href="/css/unified-form-system.css">
+    <link rel="stylesheet" href="/css/unified-layout-system.css">
+    <link rel="stylesheet" href="/css/unified-color-system.css">
+    <link rel="stylesheet" href="/css/components/animations.css">
+    <link rel="stylesheet" href="/css/components/transitions.css">
+      <!-- Removed: poll-modal.css (file doesn't exist) -->
+  <link rel="stylesheet" href="/css/emoji-picker.css">
+  <link rel="stylesheet" href="/css/stone-tablet.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  
+  <!-- Universal Navbar Consistency - MUST be loaded last for proper override -->
+  <link rel="stylesheet" href="/css/navbar-universal.css">
+  
+  <!-- Socket.IO for live updates -->
+  <script src="/socket.io/socket.io.js"></script>
+  
+  
+</head>
+<body data-page="stone-tablet">
+  <!-- Navbar -->
+  <div id="navbar-container"></div>
+
+  <main class="forum-container" id="forum-container">
+    <!-- Forum Header -->
+    <header class="forum-header">
+              <h1 class="forum-title" data-theme="forum">📜 Stone Tablet</h1>
+    </header>
+
+    <!-- Game Selector Tabs -->
+    <section class="game-tabs-container">
+      <div class="game-tabs-wrapper">
+          <div class="game-tabs">
+          <button class="game-tab" data-game="wc1" data-game-full="Warcraft I">
+            <i class="fas fa-dragon"></i>
+            <span>WC I</span>
+          </button>
+          <button class="game-tab active" data-game="wc2" data-game-full="Warcraft II">
+            <i class="fas fa-shield-alt"></i>
+            <span>WC II</span>
+          </button>
+          <button class="game-tab" data-game="wc3" data-game-full="Warcraft III">
+            <i class="fas fa-chess-king"></i>
+            <span>WC III</span>
+          </button>
+            <button class="game-tab" data-game="clan" id="clan-forum-tab" aria-hidden="true">
+            <i class="fas fa-scroll"></i>
+            <span id="clan-tab-text">Clan</span>
+          </button>
+        </div>
+
+        <!-- Forum Stats -->
+        <div class="forum-stats">
+          <div class="forum-stat">
+            <div class="forum-stat-value" id="active-posts-count">0</div>
+            <div class="forum-stat-label">Active Posts</div>
+          </div>
+          <div class="forum-stat">
+            <div class="forum-stat-value" id="online-users-count">0</div>
+            <div class="forum-stat-label">Online Now</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Category Filters + Tournaments (placed directly under game tabs) -->
+    <div class="category-filters">
+      <div class="filters-left">
+        <button class="game-tab active" data-category="all" id="filter-all"><i class="fas fa-layer-group"></i><span>All</span></button>
+        <button class="game-tab" data-category="content" id="filter-content"><i class="fas fa-photo-video"></i><span>Content</span></button>
+        <button class="game-tab" data-category="strategy" id="filter-strategy"><i class="fas fa-chess-knight"></i><span>Strategy</span></button>
+      </div>
+      <div class="filters-right">
+        <button class="game-tab" data-game="tournaments" id="tab-tournaments"><i class="fas fa-trophy"></i><span>Tournaments</span></button>
+      </div>
+    </div>
+
+    <!-- Clan Stone Tablet Header removed -->
+
+    <!-- Main Forum Layout -->
+    <div class="forum-main">
+      <!-- Posts Feed -->
+      <div class="forum-feed">
+        <!-- Post Composer -->
+        <div class="post-composer hidden" id="post-composer">
+          <div class="composer-header">
+            <img src="/assets/img/default-avatar.svg" alt="Your Avatar" class="composer-avatar" id="composer-avatar">
+            <div class="composer-input-area">
+              <div class="composer-field-group">
+                <input type="text" id="composer-title" class="post-title-input" placeholder="Title (required)" maxlength="80">
+                <select id="composer-category" class="game-select" aria-label="Category (required)">
+                  <option value="" selected="" disabled="">Category</option>
+                  <option value="content">Content</option>
+                  <option value="strategy">Strategy</option>
+                </select>
+              </div>
+              <textarea class="composer-textarea" id="composer-textarea" placeholder="Etch your tale, strategy, or content..." rows="5"></textarea>
+            </div>
+          </div>
+          
+          <div class="composer-actions">
+            
+            
+            <div class="composer-buttons">
+              <button class="cancel-post-button" id="cancel-post-btn">
+                <i class="fas fa-times"></i>
+                Cancel
+              </button>
+              <button class="post-button" id="publish-post-btn" disabled="">
+                <i class="fas fa-pen-nib"></i>
+                Etch into the Tablet
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="typing-indicator" id="typing-indicator">
+          
+          <span id="typing-users">Someone is crafting a legendary post...</span>
+        </div>
+
+        <!-- Live Posts Feed -->
+        <div class="posts-feed" id="posts-feed">
+          <!-- Loading State -->
+          <div class="loading-posts" id="loading-posts">
+            
+            <span>Loading epic discussions...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <aside class="forum-sidebar">
+        <!-- Reddit Community -->
+        <div class="sidebar-section">
+          <h3 class="sidebar-title">
+            <i class="fab fa-reddit"></i>
+            Community Buzz
+          </h3>
+          
+        </div>
+
+        <!-- Online Warriors -->
+        <div class="sidebar-section">
+          <h3 class="sidebar-title">
+            <i class="fas fa-users"></i>
+            Online Warriors
+          </h3>
+          
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Hidden file input for image uploads -->
+  <input type="file" id="image-upload" accept="image/*">
+  <!-- Video upload removed - using embed functionality instead -->
+
+  <!-- Scripts -->
+  <script src="/js/utils.js"></script>
+  <script src="/js/api-config.js"></script>
+  <script type="module" src="/js/app.js"></script>
+  <script type="module" src="/js/main.js"></script>
+  
+  <!-- Forum Core - Required for loading forum data -->
+  <script type="module">
+    // Initialize ForumCore for stone tablet
+    import { ForumCore } from '/js/modules/ForumCore.js';
+    
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        // Initialize forum core
+        const forumCore = new ForumCore();
+        await forumCore.init();
+        
+        // Load initial posts
+        await forumCore.loadPosts();
+        
+        console.log('✅ ForumCore initialized successfully');
+      } catch (error) {
+        console.error('❌ Failed to initialize ForumCore:', error);
+        
+        // Show error state
+        const loadingElement = document.getElementById('loading-posts');
+        if (loadingElement) {
+          loadingElement.innerHTML = `
+            <div class="error-state">
+              <i class="fas fa-exclamation-triangle"></i>
+              <span>Failed to load discussions. Please refresh the page.</span>
+            </div>
+          `;
+        }
+      }
+    });
+  </script>
+
+
+</body></html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Enter the Arena - WC Arena</title>
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="">
+  <link rel="stylesheet" href="../css/login.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&amp;family=Uncial+Antiqua&amp;display=swap" rel="stylesheet">
+</head>
+<body data-page="login">
+
+
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="logo-emblem">
+          <img src="../assets/img/ranks/emblem.png" alt="WC Arena Emblem">
+
+
+        </div>
+      </div>
+
+      <h1 class="login-title">WC Arena</h1>
+      <p class="login-subtitle">Enter the legendary battlegrounds where champions are forged and legends are born</p>
+
+      <div class="login-buttons">
+        <div class="login-btn btn-google" data-provider="google">
+          <img src="../assets/img/socials/google.png" alt="Google">
+          <span>Forge Your Legacy with Google</span>
+        </div>
+        <div class="login-btn btn-discord" data-provider="discord">
+          <img src="../assets/img/socials/discord.png" alt="Discord">
+          <span>Join the Alliance via Discord</span>
+        </div>
+        <div class="login-btn btn-twitch" data-provider="twitch">
+          <img src="../assets/img/socials/twitch.png" alt="Twitch">
+          <span>Stream to Glory with Twitch</span>
+        </div>
+      </div>
+
+      <div class="server-status" id="serverStatus">
+        
+        <span>Checking server connection...</span>
+      </div>
+
+      <div class="error-message" id="errorMessage">
+        Error message will appear here
+      </div>
+
+      <div class="login-footer">
+        <p>By entering the arena, you pledge to uphold our <a href="#" class="terms-link">Sacred Code</a> and <a href="#" class="privacy-link">Honor's Promise</a></p>
+      </div>
+    </div>
+    
+    <div class="epic-quote">
+      "Victory is reserved for those who are willing to pay its price."<br>
+      <em>— Sun Tzu, The Art of War</em>
+    </div>
+  </div>
+
+  <!-- Moth and Flashlight System -->
+  <div id="flashlight-controls" class="flashlight-controls">
+    <button id="flashlight-toggle" class="control-btn">
+      <i class="fas fa-lightbulb"></i>
+    </button>
+    <button id="moth-toggle" class="control-btn">
+      <i class="fas fa-bug"></i>
+    </button>
+    <div id="moth-debug" class="moth-debug">
+      <div>Moths: <span id="moth-count">0</span></div>
+      <div>Flashlight: <span id="flashlight-status">OFF</span></div>
+      <div>FPS: <span id="moth-fps">0</span></div>
+    </div>
+  </div>
+
+  <script type="module" src="/js/login.js"></script>
+
+
+</body></html>

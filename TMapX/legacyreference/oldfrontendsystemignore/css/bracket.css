@@ -1,0 +1,196 @@
+/* Tournament Bracket Styles */
+
+.bracket-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  overflow-x: auto;
+}
+
+/* Single Elimination Bracket */
+.bracket-rounds {
+  display: flex;
+  gap: 40px;
+  position: relative;
+}
+
+.bracket-round {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 200px;
+}
+
+.bracket-match {
+  background-color: #3b4252;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+
+.bracket-match:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.match-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #88c0d0;
+  margin-bottom: 8px;
+}
+
+.match-players {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.player {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: #4c566a;
+}
+
+.player.winner {
+  background-color: #a3be8c;
+  color: #2e3440;
+}
+
+.player-name {
+  font-weight: 500;
+}
+
+.player-seed {
+  font-size: 0.8rem;
+  color: #88c0d0;
+}
+
+.match-status {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 4px;
+  border-radius: 4px;
+}
+
+.match-status.pending {
+  background-color: #4c566a;
+  color: #e5e9f0;
+}
+
+.match-status.in_progress {
+  background-color: #5e81ac;
+  color: #eceff4;
+}
+
+.match-status.completed {
+  background-color: #a3be8c;
+  color: #2e3440;
+}
+
+.match-status.bye {
+  background-color: #b48ead;
+  color: #eceff4;
+}
+
+/* Connecting Lines */
+.bracket-line {
+  position: absolute;
+  width: 2px;
+  background-color: #4c566a;
+  z-index: 1;
+}
+
+/* Double Elimination Bracket */
+.bracket-section {
+  margin-bottom: 40px;
+}
+
+.bracket-section h3 {
+  color: #88c0d0;
+  margin-bottom: 20px;
+}
+
+.winners-bracket {
+  border-bottom: 2px solid #4c566a;
+  padding-bottom: 20px;
+}
+
+/* Round Robin Bracket */
+.round-robin-rounds {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.round-robin-round {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+/* Match Details Modal */
+.match-details {
+  padding: 20px;
+}
+
+.match-details .match-players {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.match-details .player {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+}
+
+.match-details .vs {
+  margin: 0 20px;
+  color: #88c0d0;
+  font-weight: bold;
+}
+
+.match-info {
+  margin-top: 20px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.info-row .label {
+  color: #88c0d0;
+}
+
+.match-result {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #4c566a;
+}
+
+.match-result h3 {
+  color: #88c0d0;
+  margin-bottom: 10px;
+}
+
+.winner {
+  background-color: #a3be8c;
+  color: #2e3440;
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: bold;
+} 

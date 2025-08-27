@@ -1,0 +1,35 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Set Your Username - WC Arena</title>
+  <link rel="stylesheet" href="/css/warcraft-app-modern.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+
+  <!-- Universal Navbar Consistency - MUST be loaded last for proper override --></head><body data-page="setup-username">`r`n  <link rel="stylesheet" href="/css/navbar-universal.css">`r`n
+
+  <div class="setup-container">
+    <h1 class="setup-title">Welcome to WC Arena!</h1>
+    <p class="setup-description">
+      Before you continue, please choose a username for your account.
+      This will be your identity across the site.
+    </p>
+
+    <form id="username-form" class="username-form">
+      <div class="input-group">
+        <input type="text" id="username" class="username-input" placeholder="Choose a username" pattern="[a-zA-Z0-9_-]{3,20}" required="" autocomplete="off" minlength="3" maxlength="20">
+        <div class="username-requirements">
+          Username must be 3-20 characters and can only contain letters, numbers, underscores, and hyphens.
+        </div>
+      </div>
+
+      <button type="submit" id="submit-btn" class="submit-btn" disabled="">Create Username</button>
+    </form>
+
+
+  </div>
+
+  <!-- Load main.js first to handle navbar loading and chat system -->
+  <script type="module" src="/js/main.js"></script>
+
+
+</body></html>

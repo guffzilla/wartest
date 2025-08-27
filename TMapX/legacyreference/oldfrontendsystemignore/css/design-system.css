@@ -1,0 +1,227 @@
+/* ==========================================================================
+   WARCRAFT ARENA - UNIFIED DESIGN SYSTEM
+   The one true source of all design tokens, components, and styles
+   ========================================================================== */
+
+/* =============================================================================
+   DESIGN TOKENS - ALL VARIABLES IN ONE PLACE
+   ============================================================================= */
+:root {
+  /* ===== BRAND COLORS ===== */
+  --warcraft-gold: #D4AF37;
+  --warcraft-gold-dark: #B8941F;
+  --warcraft-gold-light: #E8C547;
+  
+  --alliance-blue: #2563EB;
+  --alliance-blue-dark: #1D4ED8;
+  --alliance-blue-light: #3B82F6;
+  
+  --horde-red: #DC2626;
+  --horde-red-dark: #B91C1C;
+  --horde-red-light: #EF4444;
+  
+  /* ===== NEUTRAL PALETTE ===== */
+  --neutral-50: #F8FAFC;
+  --neutral-100: #F1F5F9;
+  --neutral-200: #E2E8F0;
+  --neutral-300: #CBD5E1;
+  --neutral-400: #94A3B8;
+  --neutral-500: #64748B;
+  --neutral-600: #475569;
+  --neutral-700: #334155;
+  --neutral-800: #1E293B;
+  --neutral-900: #0F172A;
+  
+  /* ===== SEMANTIC COLORS ===== */
+  --success: #10B981;
+  --error: #EF4444;
+  --warning: #F59E0B;
+  --info: #3B82F6;
+  
+  /* ===== BACKGROUND SYSTEM ===== */
+  --bg-primary: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%);
+  --bg-secondary: rgba(30, 41, 59, 0.8);
+  --bg-tertiary: rgba(51, 65, 85, 0.6);
+  --bg-card: rgba(15, 23, 42, 0.8);
+  --bg-hover: rgba(30, 41, 59, 0.9);
+  --bg-overlay: rgba(0, 0, 0, 0.8);
+  
+  /* ===== GLASS EFFECTS ===== */
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  
+  /* ===== TYPOGRAPHY ===== */
+  --font-primary: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --font-display: 'Cinzel', serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  
+  /* ===== SPACING SCALE ===== */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  
+  /* ===== BORDER RADIUS ===== */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  
+  /* ===== SHADOWS ===== */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 20px rgba(212, 175, 55, 0.3);
+  
+  /* ===== TRANSITIONS ===== */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  
+  /* ===== Z-INDEX STACK ===== */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+  --z-toast: 1080;
+  
+  /* ===== LEGACY ALIASES (for compatibility) ===== */
+  --primary-gold: var(--warcraft-gold);
+  --primary-color: var(--warcraft-gold);
+  --text-primary: var(--neutral-100);
+  --text-secondary: var(--neutral-400);
+  --text-muted: var(--neutral-500);
+  --border-primary: var(--glass-border);
+  --spacing-sm: var(--space-2);
+  --spacing-md: var(--space-4);
+  --spacing-lg: var(--space-6);
+  --spacing-xl: var(--space-8);
+}
+
+/* =============================================================================
+   RESET & BASE STYLES
+   ============================================================================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-primary);
+  background: var(--bg-primary);
+  color: var(--neutral-100);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* =============================================================================
+   TYPOGRAPHY SYSTEM
+   ============================================================================= */
+.text-display { font-family: var(--font-display); }
+.text-mono { font-family: var(--font-mono); }
+
+.text-xs { font-size: var(--text-xs); }
+.text-sm { font-size: var(--text-sm); }
+.text-base { font-size: var(--text-base); }
+.text-lg { font-size: var(--text-lg); }
+.text-xl { font-size: var(--text-xl); }
+.text-2xl { font-size: var(--text-2xl); }
+.text-3xl { font-size: var(--text-3xl); }
+.text-4xl { font-size: var(--text-4xl); }
+
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+
+.text-primary { color: var(--warcraft-gold); }
+.text-alliance { color: var(--alliance-blue); }
+.text-horde { color: var(--horde-red); }
+.text-success { color: var(--success); }
+.text-error { color: var(--error); }
+.text-warning { color: var(--warning); }
+.text-info { color: var(--info); }
+.text-muted { color: var(--neutral-400); }
+
+/* =============================================================================
+   BUTTON SYSTEM
+   ============================================================================= */
+/* ===== BUTTON STYLES REMOVED - NOW IN unified-button-system.css ===== */
+
+/* =============================================================================
+   MODAL SYSTEM - REMOVED GENERAL STYLES
+   These styles are now applied specifically to individual modals
+   ============================================================================= */
+
+/* =============================================================================
+   CARD SYSTEM
+   ============================================================================= */
+.card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--glass-shadow);
+  padding: var(--space-6);
+  transition: all var(--transition-normal);
+}
+
+.card:hover {
+  background: var(--glass-border);
+  border-color: var(--warcraft-gold);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-glow);
+}
+
+.card-header {
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.card-title {
+  color: var(--warcraft-gold);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  margin: 0;
+}
+
+/* =============================================================================
+   FORM SYSTEM
+   ============================================================================= */
+/* ===== FORM STYLES REMOVED - NOW IN unified-form-system.css ===== */
+
+/* ===== UTILITY CLASSES REMOVED - NOW IN unified-layout-system.css ===== */
+
+ 

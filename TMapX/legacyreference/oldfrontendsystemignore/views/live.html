@@ -1,0 +1,570 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WC Content - WC Arena</title>
+          <link rel="stylesheet" href="/css/warcraft-app-modern.css">
+    <link rel="stylesheet" href="/css/content.css">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  
+  <!-- Universal Navbar Consistency - MUST be loaded last for proper override -->
+  <link rel="stylesheet" href="/css/navbar-universal.css">
+</head>
+<body>
+  <div id="navbar-container"></div>
+
+  <main>
+    <!-- Page Title -->
+    <div class="page-header">
+      <h1 class="page-title" data-theme="live">📺 Live Streams</h1>
+    </div>
+
+    <div class="content-container">
+      <div class="content-header">
+        <h1>WC Content</h1>
+        <p>Discover content creators and channels for WC 1, 2, and 3</p>
+      </div>
+
+      <!-- Content Creator Info -->
+      <div class="content-creator-info">
+        <div class="info-message">
+          <i class="fas fa-info-circle"></i>
+          <p>Want to become a content creator? Add your YouTube or Twitch username and select your content types in your <a href="/myprofile">profile</a>.</p>
+        </div>
+      </div>
+
+      <!-- Section Tabs -->
+      <div class="section-tabs">
+        <button class="section-tab active" data-section="streams">
+          <i class="fab fa-twitch"></i>
+          Twitch Channels
+        </button>
+        <button class="section-tab" data-section="channels">
+          <i class="fab fa-youtube"></i>
+          YouTube Channels
+        </button>
+      </div>
+
+      <!-- Twitch Channels Section -->
+      <div id="streams-section" class="content-section active">
+        <div class="content-filter">
+          <div class="filter-buttons">
+            <button class="filter-btn active" data-game="all">All Games</button>
+            <button class="filter-btn" data-game="wc12">WC 1/2</button>
+            <button class="filter-btn" data-game="wc3">WC 3</button>
+          </div>
+          <div class="content-count">
+            <span>Showing <span id="stream-count">0</span> channels</span>
+          </div>
+        </div>
+
+        <div id="loading-indicator" class="loading">
+          
+          <p>Loading channels...</p>
+        </div>
+
+        
+      </div>
+
+      <!-- YouTube Channels Section -->
+      <div id="channels-section" class="content-section">
+        <div class="content-filter">
+          <div class="filter-buttons">
+            <button class="channel-filter-btn active" data-game="all">All Games</button>
+            <button class="channel-filter-btn" data-game="wc12">WC 1/2</button>
+            <button class="channel-filter-btn" data-game="wc3">WC 3</button>
+          </div>
+        </div>
+
+        <div id="channels-loading" class="loading">
+          
+          <p>Loading channels...</p>
+        </div>
+
+        
+      </div>
+    </div>
+  </main>
+
+  <div id="footer-container"></div>
+
+  <!-- Scripts -->
+  <script src="/js/utils.js"></script>
+  <script type="module" src="/js/main.js"></script>
+  <script src="/js/live.js"></script>
+  
+            // DOM elements
+            const streamContainer = document.getElementById('stream-container');
+            const channelsContainer = document.getElementById('channels-container');
+            const streamCount = document.getElementById('stream-count');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const channelsLoading = document.getElementById('channels-loading');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const channelFilterButtons = document.querySelectorAll('.channel-filter-btn');
+            const sectionTabs = document.querySelectorAll('.section-tab');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            // Initial values
+            let currentGame = 'all';
+            let currentChannelGame = 'all';
+            let featuredChannels = [];
+            let lastStreamRefresh = 0;
+            const MIN_REFRESH_INTERVAL = 60 * 1000; // 1 minute minimum between refreshes
+
+            // Initialize
+            loadStreams();
+            loadFeaturedChannels();
+
+            // Update tab event listeners
+            sectionTabs.forEach(tab =&gt; {
+                tab.addEventListener('click', function() {
+                    sectionTabs.forEach(t =&gt; t.classList.remove('active'));
+                    this.classList.add('active');
+                    const sectionId = this.dataset.section;
+                    contentSections.forEach(section =&gt; section.classList.remove('active'));
+                    document.getElementById(`${sectionId}-section`).classList.add('active');
+                    if (sectionId === 'channels' &amp;&amp; !featuredChannels.length) {
+                        loadFeaturedChannels();
+                    } else if (sectionId === 'streams') {
+                        loadStreams();
+                    }
+                });
+            });
+
+            // Event listeners for stream filter buttons
+            filterButtons.forEach(button =&gt; {
+                button.addEventListener('click', function() {
+                    // Update active button
+                    filterButtons.forEach(btn =&gt; btn.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Update current game filter
+                    currentGame = this.dataset.game;
+                    loadStreams();
+                });
+            });
+
+            // Event listeners for channel filter buttons
+            channelFilterButtons.forEach(button =&gt; {
+                button.addEventListener('click', function() {
+                    // Update active button
+                    channelFilterButtons.forEach(btn =&gt; btn.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Update current game filter
+                    currentChannelGame = this.dataset.game;
+                    loadFeaturedChannels();
+                });
+            });
+
+            /**
+             * Load streams from the API with caching and rate limiting
+             */
+            function loadStreams(forceRefresh = false) {
+                const now = Date.now();
+
+                // Prevent excessive API calls
+                if (!forceRefresh &amp;&amp; now - lastStreamRefresh &lt; MIN_REFRESH_INTERVAL) {
+                    console.log('Skipping stream refresh - too soon since last refresh');
+                    return;
+                }
+
+                lastStreamRefresh = now;
+
+                if (loadingIndicator) loadingIndicator.style.display = 'flex';
+                if (streamContainer) streamContainer.innerHTML = '';
+
+                // Build endpoint based on current game filter
+                let endpoint;
+                if (currentGame === 'all') {
+                    endpoint = '/api/streams';
+                } else {
+                    endpoint = `/api/streams?game=${currentGame}`;
+                }
+
+                console.log('Fetching streams from:', endpoint);
+
+                fetch(endpoint)
+                    .then(response =&gt; {
+                        console.log('Response status:', response.status);
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok: ' + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(streams =&gt; {
+                        console.log(`Received ${streams.length} streams for game: ${currentGame}`);
+
+                        // Cache the streams in localStorage for resilience
+                        try {
+                            localStorage.setItem('cachedStreams', JSON.stringify({
+                                game: currentGame,
+                                timestamp: now,
+                                data: streams
+                            }));
+                        } catch (cacheError) {
+                            console.warn('Could not cache streams:', cacheError);
+                        }
+
+                        // Display the streams
+                        displayStreams(streams);
+
+                        // If no streams, show a message about adding streams from profile
+                        if (streams.length === 0 &amp;&amp; streamContainer) {
+                            streamContainer.innerHTML = `
+                                <div class="no-streams-message">
+                                    <i class="fas fa-broadcast-tower"></i>
+                                    <p>No live streams found at the moment.</p>
+                                    <p>Want to stream WC? Go to your <a href="/myprofile" class="featured-link">profile page</a> to set up your stream!</p>
+                                    <p>Just add your YouTube or Twitch username, select your content types, and you'll appear here.</p>
+                                </div>
+                            `;
+                        }
+
+                        if (streamCount) {
+                            streamCount.textContent = streams.length;
+                        }
+                    })
+                    .catch(error =&gt; {
+                        console.error('Error fetching streams:', error);
+
+                        // Try to use cached data if available
+                        try {
+                            const cachedData = JSON.parse(localStorage.getItem('cachedStreams'));
+                            if (cachedData &amp;&amp; cachedData.game === currentGame) {
+                                const cacheAge = now - cachedData.timestamp;
+                                const maxCacheAge = 30 * 60 * 1000; // 30 minutes
+
+                                if (cacheAge &lt; maxCacheAge) {
+                                    console.log(`Using cached stream data (${Math.round(cacheAge/1000/60)} minutes old)`);
+                                    displayStreams(cachedData.data, true);
+                                    return;
+                                }
+                            }
+                        } catch (cacheError) {
+                            console.warn('Could not read cached streams:', cacheError);
+                        }
+
+                        if (streamContainer) {
+                            streamContainer.innerHTML = `
+                                <div class="error-message">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <p>Error loading streams: ${error.message}. Please try again later.</p>
+                                </div>
+                            `;
+                        }
+                    })
+                    .finally(() =&gt; {
+                        if (loadingIndicator) loadingIndicator.style.display = 'none';
+                    });
+            }
+
+            /**
+             * Load YouTube channels from content creators
+             */
+            function loadFeaturedChannels() {
+                if (channelsLoading) channelsLoading.style.display = 'flex';
+                if (channelsContainer) channelsContainer.innerHTML = '';
+
+                // Use our endpoint to fetch YouTube channels from content creators
+                const endpoint = `/api/channels/youtube${currentChannelGame !== 'all' ? `?game=${currentChannelGame}` : ''}`;
+                console.log('Fetching YouTube channels from:', endpoint);
+
+                fetch(endpoint)
+                    .then(response =&gt; {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok: ' + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(channels =&gt; {
+                        console.log(`Received ${channels.length} channels for game: ${currentChannelGame}`);
+
+                        // Add some default properties for display
+                        featuredChannels = channels.map(channel =&gt; ({
+                            ...channel,
+                            subscribers: 'N/A',
+                            videos: channel.videoIds?.length || '0'
+                        }));
+
+                        // Display the channels we received
+                        displayChannels(featuredChannels);
+                    })
+                    .catch(error =&gt; {
+                        console.error('Error fetching channels:', error);
+
+                        // No fallback channels
+                        featuredChannels = [];
+                        displayChannels(featuredChannels);
+                    })
+                    .finally(() =&gt; {
+                        if (channelsLoading) channelsLoading.style.display = 'none';
+                    });
+            }
+
+            /**
+             * Display streams in the UI
+             * @param {Array} streams - Array of stream objects
+             * @param {boolean} fromCache - Whether the data is from cache
+             */
+            function displayStreams(streams, fromCache = false) {
+                if (!streamContainer) return;
+
+                if (streamCount) {
+                    streamCount.textContent = streams.length;
+                }
+
+                if (streams.length === 0) {
+                    streamContainer.innerHTML = `
+                        <div class="no-streams-message">
+                            <i class="fas fa-video-slash"></i>
+                            <p>No live WC streams found at the moment.</p>
+                            <p>Check back later or become a content creator yourself!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Create HTML for each stream
+                streams.forEach(stream =&gt; {
+                    const streamCard = document.createElement('div');
+                    streamCard.className = 'stream-card';
+
+                    // Extract Twitch username from URL if it's a Twitch stream
+                    let displayName = stream.channelName;
+                    if (stream.platform === 'twitch' &amp;&amp; stream.url.includes('twitch.tv/')) {
+                        displayName = stream.url.split('twitch.tv/').pop().split('/')[0];
+                    }
+
+                    // Ensure thumbnail URL is valid
+                    const thumbnailUrl = stream.thumbnail || '/assets/img/ranks/emblem.png';
+
+                    // Ensure channel icon is valid
+                    const channelIconUrl = stream.channelIcon || '/assets/img/ranks/emblem.png';
+
+                    if (stream.platform === 'twitch') {
+                        // Twitch-specific card format
+                        streamCard.innerHTML = `
+                            <div class="stream-thumbnail">
+                                <a href="${stream.url}" target="_blank">
+                                    <img src="${thumbnailUrl}" alt="${stream.title}" onerror="this.src='/assets/img/ranks/emblem.png'">
+                                    <div class="stream-overlay">
+                                        <div class="stream-status live">
+                                            
+                                            LIVE
+                                        </div>
+                                        
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="stream-info">
+                                <div class="stream-channel">
+                                    <img src="${channelIconUrl}" alt="${displayName}" class="channel-icon" onerror="this.src='/assets/img/ranks/emblem.png'">
+                                    <span class="channel-name">${displayName}</span>
+                                </div>
+                                <h3 class="stream-title">
+                                    <a href="${stream.url}" target="_blank">${stream.title}</a>
+                                </h3>
+                                <p class="stream-description">${stream.description || 'No description available'}</p>
+                                <div class="stream-meta">
+                                    <span class="stream-game">${getGameName(stream.game)}</span>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // Original format for other platforms
+                        streamCard.innerHTML = `
+                            <div class="stream-thumbnail">
+                                <a href="${stream.url}" target="_blank">
+                                    <img src="${thumbnailUrl}" alt="${stream.title}" onerror="this.src='/assets/img/ranks/emblem.png'">
+                                    <div class="stream-overlay">
+                                        <div class="stream-viewers">
+                                            <i class="fas fa-eye"></i> ${stream.viewers.toLocaleString()}
+                                        </div>
+                                        
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="stream-info">
+                                <div class="stream-channel">
+                                    <img src="${channelIconUrl}" alt="${stream.channelName}" class="channel-icon" onerror="this.src='/assets/img/ranks/emblem.png'">
+                                    <span class="channel-name">${stream.channelName}</span>
+                                </div>
+                                <h3 class="stream-title">
+                                    <a href="${stream.url}" target="_blank">${stream.title}</a>
+                                </h3>
+                                <p class="stream-description">${stream.description || 'No description available'}</p>
+                                <div class="stream-meta">
+                                    <span class="stream-game">${getGameName(stream.game)}</span>
+                                    <span class="stream-time">${formatStreamTime(stream.startedAt)}</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    streamContainer.appendChild(streamCard);
+                });
+            }
+
+            /**
+             * Display featured channels in the UI
+             * @param {Array} channels - Array of channel objects
+             */
+            function displayChannels(channels) {
+                if (!channelsContainer) return;
+                channelsContainer.innerHTML = '';
+
+                // Filter channels by game if needed
+                const filteredChannels = currentChannelGame === 'all'
+                    ? channels
+                    : channels.filter(channel =&gt; channel.games &amp;&amp; channel.games.includes(currentChannelGame));
+
+                if (filteredChannels.length === 0) {
+                    channelsContainer.innerHTML = `
+                        <div class="no-channels-message">
+                            <i class="fab fa-youtube"></i>
+                            <p>No YouTube channels found at the moment.</p>
+                            <p>Want to share your WC Content? Go to your <a href="/myprofile" class="featured-link">profile page</a>, add your YouTube username, and enable "Content Creator".</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // No need to add a button here since we have the info above
+
+                // First, display any featured channels with videos in a special way
+                const featuredChannels = filteredChannels.filter(channel =&gt; channel.featured &amp;&amp; channel.videoIds &amp;&amp; channel.videoIds.length &gt; 0);
+
+                if (featuredChannels.length &gt; 0) {
+                    const featuredSection = document.createElement('div');
+                    featuredSection.className = 'featured-channel-section';
+
+                    featuredChannels.forEach(channel =&gt; {
+                        const featuredHeader = document.createElement('div');
+                        featuredHeader.className = 'featured-channel-header';
+                        featuredHeader.innerHTML = `
+                            <div class="featured-channel-info">
+                                <img src="${channel.avatar}" alt="${channel.name}" class="featured-channel-avatar" onerror="this.src='/assets/img/ranks/emblem.png'">
+                                <div>
+                                    <h2 class="featured-channel-title">${channel.name}</h2>
+                                    <p class="featured-channel-description">${channel.description}</p>
+                                </div>
+                            </div>
+                            <a href="${channel.url}" target="_blank" class="featured-channel-link">Visit Channel</a>
+                        `;
+
+                        const videoGrid = document.createElement('div');
+                        videoGrid.className = 'featured-videos-grid';
+
+                        // Add videos
+                        if (channel.videoIds &amp;&amp; channel.videoIds.length &gt; 0) {
+                            channel.videoIds.forEach(videoId =&gt; {
+                                const videoCard = document.createElement('div');
+                                videoCard.className = 'featured-video-card';
+                                videoCard.innerHTML = `
+                                    
+                                `;
+                                videoGrid.appendChild(videoCard);
+                            });
+                        }
+
+                        featuredSection.appendChild(featuredHeader);
+                        featuredSection.appendChild(videoGrid);
+                    });
+
+                    channelsContainer.appendChild(featuredSection);
+                }
+
+                // Create HTML for each non-featured channel
+                const regularChannels = filteredChannels.filter(channel =&gt; !channel.featured || !channel.videoIds || channel.videoIds.length === 0);
+
+                if (regularChannels.length &gt; 0) {
+                    const regularChannelsGrid = document.createElement('div');
+                    regularChannelsGrid.className = 'regular-channels-grid';
+
+                    regularChannels.forEach(channel =&gt; {
+                        const channelCard = document.createElement('div');
+                        channelCard.className = 'channel-card';
+
+                        // Format the games list
+                        const gamesList = (channel.games || []).map(game =&gt; {
+                            const gameNames = {
+                                'wc1': 'WC 1',
+                                'wc2': 'WC 2',
+                                'wc3': 'WC 3',
+                                'wc12': 'WC 1/2'
+                            };
+                            return gameNames[game] || game;
+                        }).join(', ');
+
+                        channelCard.innerHTML = `
+                            <img src="${channel.banner}" alt="${channel.name}" class="channel-banner" onerror="this.src='/assets/img/ranks/emblem.png'">
+                            <div class="channel-info">
+                                <img src="${channel.avatar}" alt="${channel.name}" class="channel-avatar" onerror="this.src='/assets/img/ranks/emblem.png'">
+                                <h3 class="channel-title">${channel.name}</h3>
+                                <p class="channel-description">${channel.description}</p>
+                                <div class="channel-stats">
+                                    <div class="channel-stat">
+                                        <span class="stat-value">${channel.platform || 'N/A'}</span>
+                                        <span>Platform</span>
+                                    </div>
+                                    <div class="channel-stat">
+                                        <span class="stat-value">${gamesList || 'N/A'}</span>
+                                        <span>Games</span>
+                                    </div>
+                                </div>
+                                <a href="${channel.url}" target="_blank" class="channel-link">Visit Channel</a>
+                            </div>
+                        `;
+
+                        regularChannelsGrid.appendChild(channelCard);
+                    });
+
+                    channelsContainer.appendChild(regularChannelsGrid);
+                }
+            }
+
+            /**
+             * Convert game code to display name
+             */
+            function getGameName(gameCode) {
+                const gameNames = {
+                    'wc1': 'WC: Orcs &amp; Humans',
+                    'wc2': 'WC II',
+                    'wc3': 'WC III'
+                };
+
+                return gameNames[gameCode] || gameCode;
+            }
+
+            /**
+             * Format stream start time
+             */
+            function formatStreamTime(startTimeString) {
+                try {
+                    const startTime = new Date(startTimeString);
+                    const now = new Date();
+                    const diffMinutes = Math.floor((now - startTime) / (1000 * 60));
+
+                    if (diffMinutes &lt; 60) {
+                        return `${diffMinutes} minutes ago`;
+                    } else if (diffMinutes &lt; 1440) {
+                        const hours = Math.floor(diffMinutes / 60);
+                        return `${hours} hour${hours &gt; 1 ? 's' : ''} ago`;
+                    } else {
+                        const days = Math.floor(diffMinutes / 1440);
+                        return `${days} day${days &gt; 1 ? 's' : ''} ago`;
+                    }
+                } catch (err) {
+                    console.error('Error formatting time:', err);
+                    return 'Live';
+                }
+            }
+
+            // Set up auto-refresh every 10 minutes to match backend cache
+            setInterval(loadStreams, 10 * 60 * 1000);
+
+
+</body></html>

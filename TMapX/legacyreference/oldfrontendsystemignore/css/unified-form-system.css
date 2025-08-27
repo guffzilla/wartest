@@ -1,0 +1,550 @@
+/* =============================================================================
+   UNIFIED FORM SYSTEM
+   Consolidates all form styles from across the project
+   ============================================================================= */
+
+/* =============================================================================
+   FORM RESET
+   ============================================================================= */
+input,
+textarea,
+select,
+.form-input,
+.form-textarea,
+.form-select {
+  /* Reset conflicting styles */
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  outline: none;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+/* =============================================================================
+   CORE FORM ELEMENTS
+   ============================================================================= */
+input,
+textarea,
+select,
+.form-input,
+.form-textarea,
+.form-select {
+  width: 100%;
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  background: var(--glass-bg, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
+  border-radius: var(--radius-md, 8px);
+  color: var(--neutral-100, #ffffff);
+  font-family: var(--font-primary, 'Inter', sans-serif);
+  font-size: var(--text-sm, 0.875rem);
+  transition: all var(--transition-normal, 0.3s ease);
+  backdrop-filter: blur(5px);
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  outline: none;
+  border-color: var(--warcraft-gold, #D4AF37);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+  background: var(--glass-border, rgba(255, 255, 255, 0.08));
+}
+
+/* =============================================================================
+   FORM GROUPS
+   ============================================================================= */
+.form-group {
+  margin-bottom: var(--space-4, 1rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+.form-group:last-child {
+  /* ===== LAST CHILD PATTERN CONSOLIDATED WITH .last-child-no-margin UTILITY ===== */
+  margin-bottom: 0;
+}
+
+.form-label {
+  display: block;
+  color: var(--neutral-200, #e5e7eb);
+  font-size: var(--text-sm, 0.875rem);
+  font-weight: 500;
+  margin-bottom: var(--space-1, 0.25rem);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* =============================================================================
+   INPUT TYPES
+   ============================================================================= */
+
+/* Text Inputs */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="url"],
+input[type="tel"],
+input[type="search"],
+.form-input {
+  min-height: 44px;
+}
+
+/* Textarea */
+textarea,
+.form-textarea {
+  resize: vertical;
+  min-height: 80px;
+  max-height: 200px;
+  line-height: 1.5;
+}
+
+/* Select */
+select,
+.form-select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right var(--space-2, 0.5rem) center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: var(--space-8, 2rem);
+}
+
+select option {
+  background: var(--bg-primary, #1a1a1a);
+  color: var(--neutral-100, #ffffff);
+  padding: var(--space-2, 0.5rem);
+}
+
+/* Checkbox and Radio */
+input[type="checkbox"],
+input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--warcraft-gold, #D4AF37);
+  cursor: pointer;
+  margin-right: var(--space-2, 0.5rem);
+}
+
+/* Range Input */
+input[type="range"] {
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--warcraft-gold, #D4AF37);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: var(--warcraft-gold, #D4AF37);
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+}
+
+/* =============================================================================
+   FORM LAYOUTS
+   ============================================================================= */
+
+/* Form Row - Two Columns */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4, 1rem);
+  margin-bottom: var(--space-4, 1rem);
+}
+
+/* Form Section */
+.form-section {
+  background: var(--glass-bg, rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
+  border-radius: var(--radius-lg, 12px);
+  padding: var(--space-6, 1.5rem);
+  margin-bottom: var(--space-6, 1.5rem);
+  backdrop-filter: blur(10px);
+}
+
+.form-section h4 {
+  color: var(--warcraft-gold, #D4AF37);
+  font-size: var(--text-lg, 1.125rem);
+  font-weight: 600;
+  margin: 0 0 var(--space-4, 1rem) 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  gap: var(--space-3, 0.75rem);
+  justify-content: flex-end;
+  margin-top: var(--space-6, 1.5rem);
+  padding-top: var(--space-4, 1rem);
+  border-top: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
+}
+
+/* =============================================================================
+   FORM VALIDATION
+   ============================================================================= */
+
+/* Error States */
+.form-group.error input,
+.form-group.error textarea,
+.form-group.error select,
+input.error,
+textarea.error,
+select.error {
+  border-color: var(--error, #ef4444);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.form-error {
+  color: var(--error, #ef4444);
+  font-size: var(--text-xs, 0.75rem);
+  margin-top: var(--space-1, 0.25rem);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+}
+
+/* Success States */
+.form-group.success input,
+.form-group.success textarea,
+.form-group.success select,
+input.success,
+textarea.success,
+select.success {
+  border-color: var(--success, #22c55e);
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+}
+
+/* Help Text */
+.form-help {
+  color: var(--neutral-400, #9ca3af);
+  font-size: var(--text-xs, 0.75rem);
+  margin-top: var(--space-1, 0.25rem);
+  line-height: 1.4;
+}
+
+/* =============================================================================
+   SPECIAL FORM COMPONENTS
+   ============================================================================= */
+
+/* Search Input Group */
+.search-input-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2, 0.5rem);
+  background: var(--bg-tertiary, rgba(255, 255, 255, 0.02));
+  border: 2px solid var(--border-primary, rgba(255, 255, 255, 0.1));
+  border-radius: var(--radius-lg, 12px);
+  padding: var(--space-2, 0.5rem);
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 400px;
+  min-width: 250px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.search-input-group:focus-within {
+  border-color: var(--warcraft-gold, #D4AF37);
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1), 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.search-input-group input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-primary, #ffffff);
+  font-size: 1rem;
+  padding: var(--space-3, 0.75rem);
+  outline: none;
+  font-family: 'Cinzel', serif;
+  min-width: 0;
+}
+
+.search-input-group input::placeholder {
+  color: var(--text-secondary, #cccccc);
+  opacity: 0.7;
+}
+
+/* Player Search Container */
+.player-search-container {
+  position: relative;
+  margin-bottom: var(--space-4, 1rem);
+}
+
+.player-search-container input {
+  width: 100%;
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  background: var(--bg-tertiary, rgba(255, 255, 255, 0.02));
+  border: 2px solid var(--border-primary, rgba(255, 255, 255, 0.1));
+  border-radius: var(--radius-lg, 12px);
+  color: var(--text-primary, #ffffff);
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.player-search-container input:focus {
+  border-color: var(--warcraft-gold, #D4AF37);
+  box-shadow: 0 0 0 3px rgba(255, 215, 0, 0.1);
+}
+
+/* Filter Group */
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  margin-bottom: var(--space-4, 1rem);
+  flex-wrap: wrap;
+}
+
+.filter-group input,
+.filter-group select {
+  flex: 1;
+  min-width: 150px;
+}
+
+/* Override Group */
+.override-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3, 0.75rem);
+  margin-bottom: var(--space-3, 0.75rem);
+}
+
+.override-group:last-child {
+  /* ===== LAST CHILD PATTERN CONSOLIDATED WITH .last-child-no-margin UTILITY ===== */
+  margin-bottom: 0;
+}
+
+.override-group label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1, 0.25rem);
+  color: var(--text-primary, #ffffff);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  min-width: 150px;
+}
+
+.override-group select {
+  flex: 1;
+  background: var(--bg-tertiary, rgba(255, 255, 255, 0.02));
+  border: 1px solid var(--border-primary, rgba(255, 255, 255, 0.1));
+  border-radius: var(--radius-md, 8px);
+  padding: var(--space-2, 0.5rem) var(--space-3, 0.75rem);
+  color: var(--text-primary, #ffffff);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.override-group select:focus {
+  outline: none;
+  border-color: var(--warcraft-gold, #D4AF37);
+  box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.2);
+}
+
+.override-group select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* =============================================================================
+   FORM SUGGESTIONS
+   ============================================================================= */
+.map-suggestions {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary, #1a1a1a);
+  border: 1px solid var(--border-primary, rgba(255, 255, 255, 0.1));
+  border-radius: var(--radius-md, 8px);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: var(--shadow-md, 0 4px 6px -1px rgba(0, 0, 0, 0.1));
+}
+
+.map-suggestions.active {
+  display: block;
+}
+
+.map-suggestion-item {
+  padding: var(--space-2, 0.5rem);
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-secondary, rgba(255, 255, 255, 0.05));
+  transition: background 0.2s ease;
+}
+
+.map-suggestion-item:last-child {
+  /* ===== LAST CHILD BORDER PATTERN CONSOLIDATED WITH .last-child-no-border UTILITY ===== */
+  border-bottom: none;
+}
+
+.map-suggestion-item:hover {
+  background: var(--bg-hover, rgba(255, 255, 255, 0.05));
+}
+
+/* =============================================================================
+   FORM INDICATORS
+   ============================================================================= */
+.form-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-right: var(--space-2, 0.5rem);
+}
+
+.form-indicator.win {
+  background: var(--success, #22c55e);
+  color: white;
+}
+
+.form-indicator.loss {
+  background: var(--error, #ef4444);
+  color: white;
+}
+
+.form-indicator:hover {
+  transform: scale(1.1);
+}
+
+.form-letter {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: 700;
+}
+
+.form-tooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-primary, #1a1a1a);
+  color: var(--text-primary, #ffffff);
+  padding: var(--space-2, 0.5rem);
+  border-radius: var(--radius-sm, 4px);
+  font-size: var(--text-xs, 0.75rem);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+}
+
+.form-indicator:hover .form-tooltip {
+  opacity: 1;
+}
+
+.form-summary {
+  display: flex;
+  gap: var(--space-4, 1rem);
+  margin-top: var(--space-3, 0.75rem);
+}
+
+.form-summary .wins {
+  color: var(--success, #22c55e);
+}
+
+.form-summary .losses {
+  color: var(--error, #ef4444);
+}
+
+/* =============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================= */
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-3, 0.75rem);
+  }
+  
+  .search-input-group {
+    min-width: 180px;
+  }
+  
+  .filter-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .filter-group input,
+  .filter-group select {
+    min-width: auto;
+  }
+  
+  .override-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .override-group label {
+    min-width: auto;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-section {
+    padding: var(--space-4, 1rem);
+  }
+  
+  .search-input-group {
+    max-width: 100%;
+  }
+  
+  input,
+  textarea,
+  select,
+  .form-input,
+  .form-textarea,
+  .form-select {
+    font-size: var(--text-base, 1rem);
+    padding: var(--space-3, 0.75rem);
+  }
+}

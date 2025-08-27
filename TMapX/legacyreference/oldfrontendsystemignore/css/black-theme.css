@@ -1,0 +1,1505 @@
+/* ==========================================================================
+   COMPREHENSIVE BLACK THEME - WARCRAFT ARENA
+   Black backgrounds, silver outlines, gold hover/active states
+   No JavaScript required - Pure CSS solution
+   
+   IMPORTANT: This theme excludes .navbar-modern elements to maintain
+   consistent navbar appearance across all pages.
+   ========================================================================== */
+
+/* Import Warcraft-style fonts for enhanced styling */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Grenze:wght@400;500;600;700&display=swap');
+
+/* ==========================================================================
+   ROOT VARIABLES - BLACK THEME SYSTEM
+   ========================================================================== */
+:root {
+  /* Core Theme Colors */
+  --theme-black: #000000;
+  --theme-silver: #C0C0C0;
+  --theme-silver-dark: #808080;
+  --theme-silver-light: #E0E0E0;
+  --theme-gold: #D4AF37;
+  --theme-gold-dark: #B8941F;
+  --theme-gold-light: #E8C547;
+  
+  /* Background Variations */
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-tertiary: #1a1a1a;
+  --bg-overlay: rgba(0, 0, 0, 0.95);
+  
+  /* Silver Outline System */
+  --border-silver: 1px solid var(--theme-silver);
+  --border-silver-thick: 2px solid var(--theme-silver);
+  --border-silver-heavy: 3px solid var(--theme-silver);
+  
+  /* Gold Active/Hover System */
+  --border-gold: 1px solid var(--theme-gold);
+  --border-gold-thick: 2px solid var(--theme-gold);
+  --border-gold-heavy: 3px solid var(--theme-gold);
+  
+  /* Shadows and Glows */
+  --shadow-silver: 0 0 8px rgba(192, 192, 192, 0.3);
+  --shadow-gold: 0 0 12px rgba(212, 175, 55, 0.5);
+  --glow-gold: 0 0 20px rgba(212, 175, 55, 0.6);
+  
+  /* Text Shadows */
+  --text-shadow-base: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  --text-shadow-gold: 1px 1px 2px rgba(0, 0, 0, 0.8), 0 0 8px rgba(212, 175, 55, 0.4);
+  
+  /* Fonts */
+  --font-primary: 'Cinzel', serif;
+  --font-secondary: 'Grenze', serif;
+  
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+/* ==========================================================================
+   GLOBAL RESETS AND BASE STYLING
+   ========================================================================== */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  background: var(--theme-black);
+  color: var(--theme-silver);
+  font-family: var(--font-primary);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* ==========================================================================
+   UNIVERSAL CONTAINER STYLING
+   All containers get black background with silver outlines
+   Excludes .navbar-modern to maintain consistent navbar appearance
+   ========================================================================== */
+div:not(.navbar-modern):not(.navbar-modern *), section:not(.navbar-modern):not(.navbar-modern *), 
+article:not(.navbar-modern):not(.navbar-modern *), main:not(.navbar-modern):not(.navbar-modern *), 
+header:not(.navbar-modern):not(.navbar-modern *), footer:not(.navbar-modern):not(.navbar-modern *), 
+nav:not(.navbar-modern):not(.navbar-modern *), aside:not(.navbar-modern):not(.navbar-modern *),
+.container:not(.navbar-modern):not(.navbar-modern *), .wrapper:not(.navbar-modern):not(.navbar-modern *), 
+.content:not(.navbar-modern):not(.navbar-modern *), .panel:not(.navbar-modern):not(.navbar-modern *), 
+.box:not(.navbar-modern):not(.navbar-modern *) {
+  background: var(--theme-black);
+  border: var(--border-silver);
+  color: var(--theme-silver);
+  box-shadow: var(--shadow-silver);
+  transition: all var(--transition-normal);
+}
+
+/* Remove borders from specific layout containers to avoid over-bordering */
+body, html, main, .hero-section {
+  border: none;
+  box-shadow: none;
+}
+
+/* ==========================================================================
+   TYPOGRAPHY - ALL TEXT ELEMENTS
+   ========================================================================== */
+h1, h2, h3, h4, h5, h6, p, span, label, a, li, td, th, 
+.text, .title, .subtitle, .caption {
+  color: var(--theme-silver);
+  text-shadow: var(--text-shadow-base);
+  font-family: var(--font-primary);
+  transition: color var(--transition-fast);
+}
+
+/* Headers get enhanced styling */
+h1, h2, h3 {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* Links base styling */
+a {
+  text-decoration: none;
+  color: var(--theme-silver);
+  transition: all var(--transition-fast);
+}
+
+/* ==========================================================================
+   BUTTON STYLING - ALL INTERACTIVE BUTTONS (EXCLUDING CUSTOM STYLED COMPONENTS)
+   ========================================================================== */
+/* ===== BUTTON STYLES REMOVED - NOW IN unified-button-system.css ===== */
+
+/* ==========================================================================
+   FORM ELEMENTS - INPUTS, TEXTAREAS, SELECTS
+   ========================================================================== */
+input, textarea, select {
+  background: var(--theme-black);
+  color: var(--theme-silver);
+  border: var(--border-silver);
+  font-family: var(--font-primary);
+  text-shadow: var(--text-shadow-base);
+  box-shadow: var(--shadow-silver);
+  padding: 8px 12px;
+  transition: all var(--transition-fast);
+}
+
+/* Special input types */
+input[type="checkbox"], input[type="radio"] {
+  accent-color: var(--theme-gold);
+}
+
+/* Select options */
+select option {
+  background: var(--theme-black);
+  color: var(--theme-silver);
+}
+
+/* ==========================================================================
+   TABLE STYLING
+   ========================================================================== */
+table {
+  background: var(--theme-black);
+  border: var(--border-silver-thick);
+  border-collapse: separate;
+  border-spacing: 0;
+  box-shadow: var(--shadow-silver);
+}
+
+table th, table td {
+  background: var(--theme-black);
+  border: var(--border-silver);
+  color: var(--theme-silver);
+  text-shadow: var(--text-shadow-base);
+  padding: 12px;
+  transition: all var(--transition-fast);
+}
+
+table th {
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   CARD AND MODAL STYLING
+   ========================================================================== */
+.card, .modal, .modal-content, .dropdown-menu, .tooltip,
+.poll-container, .donation-goal-container, .support-section {
+  background: var(--theme-black);
+  border: var(--border-silver-thick);
+  color: var(--theme-silver);
+  box-shadow: var(--shadow-silver);
+  transition: all var(--transition-normal);
+}
+
+/* Modal overlays */
+.modal-overlay, .backdrop {
+  background: var(--bg-overlay);
+}
+
+/* ==========================================================================
+   NAVIGATION STYLING
+   ========================================================================== */
+/* Exclude modern navbar from black theme styling to maintain consistent appearance */
+nav:not(.navbar-modern), .nav:not(.navbar-modern), .navigation:not(.navbar-modern), .menu:not(.navbar-modern) {
+  background: var(--theme-black);
+  border-bottom: var(--border-silver-thick);
+  box-shadow: var(--shadow-silver);
+}
+
+/* Only apply black theme to non-navbar navigation links */
+.nav-link:not(.navbar-modern .nav-link):not(.navbar-modern *), 
+.navbar-link:not(.navbar-modern .navbar-link):not(.navbar-modern *), 
+.menu-item:not(.navbar-modern .menu-item):not(.navbar-modern *) {
+  color: var(--theme-silver);
+  border: var(--border-silver);
+  background: var(--theme-black);
+  transition: all var(--transition-fast);
+}
+
+/* ==========================================================================
+   SPECIAL UI COMPONENTS
+   ========================================================================== */
+/* Progress bars */
+.progress, .progress-bar-container {
+  background: var(--bg-secondary);
+  border: var(--border-silver);
+  box-shadow: var(--shadow-silver);
+}
+
+.progress-bar, .progress-fill {
+  background: linear-gradient(90deg, var(--theme-gold-dark), var(--theme-gold-light));
+  box-shadow: var(--shadow-gold);
+}
+
+/* Badges and labels */
+.badge, .label, .tag, .chip {
+  background: var(--theme-black);
+  color: var(--theme-silver);
+  border: var(--border-silver);
+  text-shadow: var(--text-shadow-base);
+}
+
+/* Icons */
+i, .icon, .fa, .fas, .far, .fab {
+  color: var(--theme-silver);
+  text-shadow: var(--text-shadow-base);
+  transition: color var(--transition-fast);
+}
+
+/* ==========================================================================
+   HOVER AND ACTIVE STATES - GOLD THEME
+   All interactive elements turn gold on hover/active
+   ========================================================================== */
+
+/* Button hover states */
+/* ===== BUTTON HOVER STYLES REMOVED - NOW IN unified-button-system.css ===== */
+
+/* Link hover states - exclude navbar elements */
+a:hover:not(.navbar-modern a):not(.navbar-modern *), 
+.nav-link:hover:not(.navbar-modern .nav-link):not(.navbar-modern *), 
+.navbar-link:hover:not(.navbar-modern .navbar-link):not(.navbar-modern *), 
+.menu-item:hover:not(.navbar-modern .menu-item):not(.navbar-modern *) {
+  color: var(--theme-gold);
+  text-shadow: var(--text-shadow-gold);
+}
+
+/* Container hover states for interactive containers */
+.card:hover, .poll-option:hover, .feature-item:hover,
+.support-link:hover, .download-features:hover {
+  border: var(--border-gold);
+  box-shadow: var(--shadow-gold);
+  color: var(--theme-gold);
+}
+
+/* Input focus states */
+input:focus, textarea:focus, select:focus {
+  border: var(--border-gold-thick);
+  box-shadow: var(--shadow-gold);
+  outline: none;
+  color: var(--theme-gold);
+}
+
+/* Table row hover */
+tr:hover, .table-row:hover {
+  background: var(--bg-secondary);
+}
+
+tr:hover td, .table-row:hover td {
+  color: var(--theme-gold);
+  text-shadow: var(--text-shadow-gold);
+}
+
+/* Icon hover states */
+i:hover, .icon:hover, .fa:hover, .fas:hover, .far:hover, .fab:hover {
+  color: var(--theme-gold);
+  text-shadow: var(--text-shadow-gold);
+}
+
+/* Active and selected states - exclude navbar elements */
+.active:not(.navbar-modern .active):not(.navbar-modern *), 
+.selected:not(.navbar-modern .selected):not(.navbar-modern *), 
+.current:not(.navbar-modern .current):not(.navbar-modern *), 
+button.active:not(.navbar-modern button.active):not(.navbar-modern *), 
+.btn.active:not(.navbar-modern .btn.active):not(.navbar-modern *),
+.nav-link.active:not(.navbar-modern .nav-link.active):not(.navbar-modern *), 
+.navbar-link.active:not(.navbar-modern .navbar-link.active):not(.navbar-modern *), 
+.menu-item.active:not(.navbar-modern .menu-item.active):not(.navbar-modern *) {
+  background: var(--theme-black);
+  color: var(--theme-gold);
+  border: var(--border-gold-heavy);
+  text-shadow: var(--text-shadow-gold);
+  box-shadow: var(--shadow-gold);
+}
+
+/* ==========================================================================
+   SCROLLBAR STYLING
+   ========================================================================== */
+::-webkit-scrollbar {
+  width: 12px;
+  background: var(--theme-black);
+  border: var(--border-silver);
+}
+
+::-webkit-scrollbar-track {
+  background: var(--theme-black);
+  border: var(--border-silver);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border: var(--border-silver);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-gold);
+  border: var(--border-gold);
+  box-shadow: var(--shadow-gold);
+}
+
+/* ==========================================================================
+   SPECIFIC COMPONENT OVERRIDES
+   Targeting specific components that might need special handling
+   ========================================================================== */
+
+/* Hero section */
+.hero-section {
+  background: var(--theme-black);
+  border: none;
+  box-shadow: none;
+}
+
+/* Download section */
+.download-hero-section, .hero-download-container {
+  background: var(--theme-black);
+  border: var(--border-silver-thick);
+  box-shadow: var(--shadow-silver);
+}
+
+/* Support section styling */
+.support-section {
+  background: var(--theme-black);
+  border: var(--border-silver-thick);
+  box-shadow: var(--shadow-silver);
+}
+
+/* Poll section */
+.poll-section {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  margin-top: 0.5rem;
+}
+
+/* Old poll styles removed - using enhanced styles below */
+
+/* OLD COMMUNITY LAYOUT REMOVED - USING NEW GRID SYSTEM */
+
+.feedback-form .form-group {
+  margin-bottom: 1rem;
+}
+
+.feedback-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--theme-silver);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.feedback-form input,
+.feedback-form select,
+.feedback-form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--bg-secondary);
+  border: var(--border-silver);
+  border-radius: 4px;
+  color: var(--theme-silver);
+  font-size: 0.9rem;
+  transition: all var(--transition-normal);
+}
+
+.feedback-form input:focus,
+.feedback-form select:focus,
+.feedback-form textarea:focus {
+  border: var(--border-gold-thick);
+  box-shadow: var(--shadow-gold);
+  outline: none;
+  color: var(--theme-gold);
+}
+
+.feedback-form textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.feedback-form select option {
+  background: var(--theme-black);
+  color: var(--theme-silver);
+}
+
+.feedback-form .contact-info {
+  background: var(--bg-secondary);
+  /* ===== PADDING PATTERN CONSOLIDATED WITH .p-1 UTILITY ===== */
+  padding: 1rem;
+  border-radius: 4px;
+  border: var(--border-silver);
+}
+
+.form-actions {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.form-actions .btn {
+  background: var(--theme-black);
+  border: var(--border-gold-thick);
+  color: var(--theme-gold);
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  text-shadow: var(--text-shadow-gold);
+  box-shadow: var(--shadow-gold);
+  transition: all var(--transition-normal);
+  cursor: pointer;
+}
+
+.form-actions .btn:hover {
+  background: var(--theme-gold);
+  color: var(--theme-black);
+  box-shadow: var(--glow-gold);
+  transform: translateY(-2px);
+}
+
+.feedback-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  margin-top: 1rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.feedback-message.success {
+  background: rgba(40, 167, 69, 0.2);
+  border: 1px solid #28a745;
+  color: #28a745;
+}
+
+.feedback-message.error {
+  background: rgba(220, 53, 69, 0.2);
+  border: 1px solid #dc3545;
+  color: #dc3545;
+}
+
+/* Donation progress bars */
+.donation-goal-progress, .poll-option-bar {
+  background: var(--bg-secondary);
+  border: var(--border-silver);
+}
+
+.donation-goal-bar, .poll-option-progress {
+  background: linear-gradient(90deg, var(--theme-gold-dark), var(--theme-gold-light));
+  box-shadow: var(--shadow-gold);
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN CONSIDERATIONS
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Maintain theme consistency on mobile */
+  .container, .card, .modal {
+    border-width: 1px;
+  }
+  
+  button, .btn {
+    padding: 8px 16px;
+  }
+}
+
+/* ==========================================================================
+   UTILITY CLASSES
+   ========================================================================== */
+.text-gold {
+  color: var(--theme-gold);
+  text-shadow: var(--text-shadow-gold);
+}
+
+.border-gold {
+  border: var(--border-gold-thick);
+  box-shadow: var(--shadow-gold);
+}
+
+.glow-gold {
+  box-shadow: var(--glow-gold);
+}
+
+.no-border {
+  border: none;
+  box-shadow: none;
+}
+
+.no-background {
+  background: transparent;
+}
+
+/* ==========================================================================
+   ANIMATION ENHANCEMENTS
+   ========================================================================== */
+/* ===== GOLD PULSE AND SHIMMER ANIMATIONS REMOVED - NOW IN unified-animation-system.css ===== */
+
+.shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(192, 192, 192, 0.1),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+  pointer-events: none;
+}
+
+/* ==========================================================================
+   NEW CLEAN SECTION LAYOUTS
+   ========================================================================== */
+
+/* Section Titles */
+.section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 2.5rem;
+  color: var(--theme-gold);
+  text-align: center;
+  margin-bottom: 3rem;
+  text-shadow: var(--text-shadow-gold);
+}
+
+/* Features Grid */
+.features-grid {
+  /* ===== GRID PATTERN REPLACED WITH .grid-auto-fit-xl UTILITY ===== */
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.feature-card {
+  background: var(--theme-black);
+  border: var(--border-silver-thick);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-silver);
+}
+
+.feature-card:hover {
+  border: var(--border-gold-thick);
+  box-shadow: var(--shadow-gold);
+  transform: translateY(-5px);
+}
+
+.feature-icon {
+  font-size: 3rem;
+  color: var(--theme-gold);
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.feature-card h3 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.4rem;
+  color: var(--theme-gold);
+  margin-bottom: 0.8rem;
+  text-shadow: var(--text-shadow-gold);
+}
+
+.feature-card p {
+  color: var(--theme-silver);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Community Grid - BULLETPROOF FLEXBOX */
+section .community-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 3rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+section .community-poll-card,
+section .community-feedback-card {
+  background: var(--theme-black);
+  border: var(--border-silver-thick);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: var(--shadow-silver);
+  transition: all var(--transition-normal);
+  flex: 1;
+  flex-basis: 0;
+  min-width: 0;
+}
+
+section .community-poll-card:hover,
+section .community-feedback-card:hover {
+  border: var(--border-gold);
+  box-shadow: var(--shadow-gold);
+}
+
+section .community-card-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  color: var(--theme-gold);
+  text-align: center;
+  /* ===== MARGIN BOTTOM PATTERN CONSOLIDATED WITH .mb-1-5 UTILITY ===== */
+  margin-bottom: 1.5rem;
+  text-shadow: var(--text-shadow-gold);
+}
+
+/* Poll Styles */
+.poll-question {
+  font-family: 'Cinzel', serif;
+  font-size: 1.3rem;
+  color: var(--theme-silver);
+  text-align: center;
+  margin-bottom: 2rem;
+  font-weight: 600;
+}
+
+.poll-results-text {
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 2rem;
+  text-align: center;
+  line-height: 1.6;
+}
+
+/* Form Styles */
+.checkbox-label {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+  margin: 0;
+  width: auto;
+}
+
+/* Responsive Design */
+
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .features-grid {
+    /* ===== GRID PATTERN REPLACED WITH .grid-1fr UTILITY ===== */
+    gap: 1.5rem;
+  }
+  
+  .feature-card {
+    padding: 1.5rem;
+  }
+  
+  .feature-icon {
+    font-size: 2.5rem;
+  }
+  
+  section .community-grid {
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  section .community-poll-card,
+  section .community-feedback-card {
+    padding: 1.5rem;
+    flex: none;
+  }
+  
+  section .community-card-title {
+    font-size: 1.5rem;
+  }
+  
+  .poll-question {
+    /* ===== FONT SIZE PATTERN CONSOLIDATED WITH .text-lg UTILITY ===== */
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  section .community-poll-card,
+  section .community-feedback-card {
+    padding: 1rem;
+    flex: none;
+  }
+  
+  .feature-card {
+    padding: 1rem;
+  }
+}
+
+/* ==========================================================================
+   BLACKSMITH TABBED INTERFACE
+   ========================================================================== */
+
+/* Tab Navigation */
+.blacksmith-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 3rem;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(20, 20, 30, 0.6));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 1rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+button.blacksmith-tab {
+  background: linear-gradient(135deg, rgba(40, 40, 50, 0.8), rgba(20, 20, 30, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 1.2rem 2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  position: relative;
+  text-decoration: none;
+  box-shadow: 
+    0 4px 15px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  overflow: hidden;
+}
+
+button.blacksmith-tab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+  transition: left 0.6s ease;
+}
+
+button.blacksmith-tab:hover::before {
+  left: 100%;
+}
+
+button.blacksmith-tab:hover {
+  background: linear-gradient(135deg, rgba(60, 60, 70, 0.9), rgba(40, 40, 50, 0.95));
+  color: #ffd700;
+  border: 1px solid rgba(255, 215, 0, 0.5);
+  box-shadow: 
+    0 8px 25px rgba(255, 215, 0, 0.15),
+    0 0 20px rgba(255, 215, 0, 0.2),
+    inset 0 1px 0 rgba(255, 215, 0, 0.1);
+  transform: translateY(-3px) scale(1.02);
+}
+
+button.blacksmith-tab.active {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 215, 0, 0.05));
+  color: #ffd700;
+  border: 1px solid #ffd700;
+  box-shadow: 
+    0 12px 30px rgba(255, 215, 0, 0.25),
+    0 0 30px rgba(255, 215, 0, 0.3),
+    inset 0 1px 0 rgba(255, 215, 0, 0.2),
+    inset 0 -1px 0 rgba(255, 215, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+button.blacksmith-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #ffd700, transparent);
+  border-radius: 2px;
+}
+
+.blacksmith-tab i {
+  font-size: 1.2rem;
+}
+
+/* Tab Content */
+.blacksmith-content {
+  min-height: 600px;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(15, 15, 25, 0.5));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 3rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.blacksmith-content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.3), transparent);
+}
+
+.tab-panel {
+  display: none;
+  animation: fadeInSlideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0;
+}
+
+.tab-panel.active {
+  display: block;
+  opacity: 1;
+}
+
+.tab-title {
+  font-family: 'Cinzel', serif;
+  font-size: 2.5rem;
+  color: var(--theme-gold);
+  text-align: center;
+  margin-bottom: 3rem;
+  text-shadow: 
+    0 0 20px rgba(255, 215, 0, 0.5),
+    0 2px 4px rgba(0, 0, 0, 0.8);
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.tab-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #ffd700, transparent);
+  border-radius: 2px;
+}
+
+/* Future Features Styling */
+.feature-card.future {
+  border: var(--border-silver);
+  background: linear-gradient(135deg, var(--theme-black) 0%, rgba(212, 175, 55, 0.1) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card.future::before {
+  content: 'COMING SOON';
+  position: absolute;
+  top: 10px;
+  right: -30px;
+  background: linear-gradient(45deg, var(--theme-gold), #ff6b35);
+  color: var(--theme-black);
+  padding: 5px 40px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  transform: rotate(45deg);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.feature-card.future:hover {
+  border: var(--border-gold);
+  box-shadow: var(--glow-gold);
+  background: linear-gradient(135deg, var(--theme-black) 0%, rgba(212, 175, 55, 0.2) 100%);
+}
+
+.feature-card.future .feature-icon {
+  color: var(--theme-gold);
+  opacity: 0.8;
+}
+
+/* Large Poll Container */
+.poll-container-large {
+  max-width: 700px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, rgba(40, 40, 50, 0.7), rgba(20, 20, 30, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  position: relative;
+}
+
+.poll-container-large::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), transparent, rgba(255, 215, 0, 0.1));
+  border-radius: 20px;
+  z-index: -1;
+}
+
+.poll-question {
+  font-family: 'Cinzel', serif;
+  font-size: 2rem;
+  color: #D4AF37;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  text-shadow: 0 2px 8px rgba(212, 175, 55, 0.5);
+  padding: 1.5rem;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.15), rgba(255, 215, 0, 0.05));
+  border-radius: 15px;
+  border: 2px solid rgba(212, 175, 55, 0.4);
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.poll-option {
+  /* ===== MARGIN BOTTOM PATTERN CONSOLIDATED WITH .mb-1-5 UTILITY ===== */
+  margin-bottom: 1.5rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(40, 40, 40, 0.9), rgba(30, 30, 30, 0.95));
+  border: 2px solid rgba(212, 175, 55, 0.4);
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.poll-option::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+  transition: left 0.6s ease;
+}
+
+.poll-option:hover::before {
+  left: 100%;
+}
+
+.poll-option:hover {
+  background: linear-gradient(135deg, rgba(50, 50, 50, 0.95), rgba(40, 40, 40, 1));
+  border: 2px solid rgba(212, 175, 55, 0.7);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(212, 175, 55, 0.2);
+}
+
+.poll-option-label {
+  font-family: 'Cinzel', serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #E5E5E5;
+  margin-bottom: 1rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.poll-option-bar {
+  background: rgba(60, 60, 60, 0.8);
+  border-radius: 10px;
+  height: 15px;
+  margin: 1rem 0;
+  overflow: hidden;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  position: relative;
+}
+
+.poll-option-progress {
+  background: linear-gradient(90deg, #D4AF37, #FFD700, #D4AF37);
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.8s ease;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+  position: relative;
+}
+
+.poll-option-progress::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 2s infinite;
+}
+
+.poll-option-stats {
+  display: flex;
+  justify-content: space-between;
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 0.5rem;
+}
+
+.poll-option-percentage {
+  font-weight: 700;
+  color: #D4AF37;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.poll-option-votes {
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Save Marriage Button */
+.save-marriage-btn {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+  border: 2px solid #ff5252;
+  color: white;
+  font-family: 'Cinzel', serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+  margin: 1.5rem auto;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  letter-spacing: 1px;
+}
+
+.save-marriage-btn:hover {
+  background: linear-gradient(135deg, #ff5252, #e53e3e);
+  border-color: #d32f2f;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+  color: white;
+}
+
+.save-marriage-btn i {
+  margin-right: 0.5rem;
+  color: #ffeb3b;
+}
+
+.poll-results {
+  text-align: center;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: rgba(212, 175, 55, 0.1);
+  border-radius: 12px;
+  border: 2px solid rgba(212, 175, 55, 0.3);
+}
+
+.poll-results-text {
+  font-family: 'Cinzel', serif;
+  font-size: 1.1rem;
+  color: #D4AF37;
+  margin-bottom: 1rem;
+}
+
+/* Large Feedback Container */
+.feedback-container-large {
+  max-width: 900px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, rgba(40, 40, 50, 0.7), rgba(20, 20, 30, 0.9));
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 3rem;
+  box-shadow: 
+    0 20px 50px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  position: relative;
+}
+
+.feedback-container-large::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  bottom: -1px;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), transparent, rgba(255, 215, 0, 0.05));
+  border-radius: 20px;
+  z-index: -1;
+}
+
+.feedback-form .form-group {
+  margin-bottom: 2rem;
+}
+
+.feedback-form label {
+  display: block;
+  margin-bottom: 0.8rem;
+  color: #ffd700;
+  font-family: 'Cinzel', serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.feedback-form input,
+.feedback-form textarea,
+.feedback-form select {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(135deg, rgba(60, 60, 70, 0.6), rgba(40, 40, 50, 0.8));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: #fff;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.feedback-form input:focus,
+.feedback-form textarea:focus,
+.feedback-form select:focus {
+  outline: none;
+  border: 1px solid rgba(255, 215, 0, 0.5);
+  box-shadow: 
+    0 0 20px rgba(255, 215, 0, 0.2),
+    inset 0 1px 0 rgba(255, 215, 0, 0.1);
+  background: linear-gradient(135deg, rgba(80, 80, 90, 0.7), rgba(60, 60, 70, 0.9));
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Tab Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Enhanced Content Styling */
+.features-grid {
+  /* ===== GRID PATTERN REPLACED WITH .grid-auto-fit-2xl UTILITY ===== */
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.feature-card {
+  background: linear-gradient(135deg, rgba(40, 40, 50, 0.6), rgba(20, 20, 30, 0.8));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  padding: 2rem;
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+  box-shadow: 
+    0 8px 25px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+  border-radius: 15px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: -1;
+}
+
+.feature-card:hover::before {
+  opacity: 1;
+}
+
+.feature-card:hover {
+  background: linear-gradient(135deg, rgba(60, 60, 70, 0.7), rgba(40, 40, 50, 0.9));
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 
+    0 15px 40px rgba(0, 0, 0, 0.3),
+    0 0 30px rgba(255, 215, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+.feature-icon {
+  font-size: 3rem;
+  color: var(--theme-gold);
+  margin-bottom: 1.5rem;
+  display: block;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+}
+
+.feature-card h4 {
+  font-family: 'Cinzel', serif;
+  font-size: 1.3rem;
+  color: #fff;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.feature-card p {
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* Version Introduction Styling */
+.version-intro {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05));
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 15px;
+  backdrop-filter: blur(5px);
+}
+
+.version-intro p {
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  color: #ffd700;
+  margin: 0;
+  text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+  line-height: 1.8;
+}
+
+/* Features Section Styling */
+.features-section {
+  margin-top: 2rem;
+}
+
+.features-header {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  color: #ffd700;
+  text-align: center;
+  margin-bottom: 2rem;
+  text-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.features-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #ffd700, transparent);
+  border-radius: 1px;
+}
+
+/* Detailed Feature Cards */
+.feature-card.detailed {
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: left;
+}
+
+.feature-card.detailed .feature-icon {
+  margin-bottom: 1.5rem;
+  flex-shrink: 0;
+}
+
+.feature-card.detailed h4 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.feature-card.detailed p {
+  flex-grow: 1;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  text-align: left;
+  padding: 0 0.5rem;
+}
+
+/* Responsive Design for Tabs */
+@media (max-width: 768px) {
+  .blacksmith-tabs {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    padding: 0.8rem;
+  }
+  
+  button.blacksmith-tab {
+    padding: 0.8rem 1.2rem;
+    font-size: 0.8rem;
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+    justify-content: center;
+    gap: 0.4rem;
+  }
+  
+  .tab-title {
+    font-size: 1.8rem;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .poll-container-large,
+  .feedback-container-large {
+    padding: 1.5rem;
+  }
+  
+  .blacksmith-content {
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  button.blacksmith-tab {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.7rem;
+    min-width: 100px;
+    letter-spacing: 0.5px;
+  }
+  
+  button.blacksmith-tab i {
+    display: none;
+  }
+  
+  .tab-title {
+    font-size: 1.5rem;
+  }
+  
+  .blacksmith-content {
+    padding: 1.5rem;
+  }
+}
+
+/* Hero Title Container - Centered */
+.hero-title-container {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* Enhanced Hero Subtitle */
+.hero-subtitle-container {
+  text-align: center;
+  margin: 2rem auto;
+  max-width: 600px;
+}
+
+.section-subtitle.enhanced {
+  font-family: 'Cinzel', serif;
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: #D4AF37;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(255, 215, 0, 0.05));
+  border: 2px solid rgba(212, 175, 55, 0.3);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  margin: 0;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.2);
+  transition: all 0.3s ease;
+}
+
+.section-subtitle.enhanced:hover {
+  border-color: rgba(212, 175, 55, 0.6);
+  box-shadow: 0 6px 25px rgba(212, 175, 55, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Improved Membership Centering */
+.membership-showcase.centered {
+  text-align: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.membership-showcase.centered .membership-tiers {
+  justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.membership-showcase.centered .membership-info {
+  max-width: 800px;
+  margin: 2rem auto;
+}
+
+.membership-showcase.centered .donation-links {
+  max-width: 600px;
+  margin: 2rem auto;
+}
+
+/* Responsive adjustments for hero title */
+@media (max-width: 768px) {
+  .hero-title-container {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .hero-title-container .currency-selector {
+    align-self: center;
+    margin-left: 0;
+  }
+}
+
+/* Pulse animation for drawing attention */
+@keyframes pulse {
+  0% { 
+    transform: scale(1); 
+    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.2);
+  }
+  50% { 
+    transform: scale(1.02); 
+    box-shadow: 0 8px 30px rgba(212, 175, 55, 0.4);
+  }
+  100% { 
+    transform: scale(1); 
+    box-shadow: 0 4px 20px rgba(212, 175, 55, 0.2);
+  }
+} 

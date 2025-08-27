@@ -1,0 +1,920 @@
+/* ==========================================================================
+   PLAYER PROFILE REDESIGNED - COMPLETE FRESH START
+   ========================================================================== */
+
+/* ===== CSS VARIABLES ===== */
+:root {
+  --profile-primary: #D4AF37;
+  --profile-primary-dark: #B8941F;
+  --profile-primary-light: #E8C547;
+  --profile-bg-dark: #0F172A;
+  --profile-bg-card: #1E293B;
+  --profile-bg-hover: #334155;
+  --profile-text-primary: #F8FAFC;
+  --profile-text-secondary: #CBD5E1;
+  --profile-text-muted: #64748B;
+  --profile-border: #475569;
+  --profile-border-light: #64748B;
+  --profile-success: #10B981;
+  --profile-warning: #F59E0B;
+  --profile-error: #EF4444;
+  --profile-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --profile-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --profile-radius: 0.5rem;
+  --profile-radius-lg: 0.75rem;
+  --profile-transition: 0.2s ease;
+
+  /* Tab Styles */
+  --player-tab-bg: rgba(255, 255, 255, 0.05);
+  --player-tab-border: 1px solid rgba(255, 255, 255, 0.1);
+  --player-tab-border-radius: 0.5rem 0.5rem 0 0;
+  --player-tab-padding: 0.75rem 1.25rem;
+  --player-tab-color: rgba(255, 255, 255, 0.7);
+  --player-tab-transition: all 0.3s ease;
+  --player-tab-font-size: 0.9rem;
+  --player-tab-font-weight: 500;
+  --player-tab-gap: 0.5rem;
+  --player-tab-hover-bg: rgba(255, 255, 255, 0.08);
+  --player-tab-hover-border: rgba(255, 215, 0, 0.3);
+  --player-tab-hover-color: rgba(255, 255, 255, 0.9);
+  --player-tab-active-bg: rgba(255, 215, 0, 0.1);
+  --player-tab-active-border: rgba(255, 215, 0, 0.3);
+  --player-tab-active-color: #ffd700;
+
+  /* Header Styles */
+  --player-header-bg: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 50%, rgba(51, 65, 85, 0.95) 100%);
+  --player-header-border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  --player-header-padding: 2rem 0;
+
+  /* Tabs Container Styles */
+  --player-tabs-bg: rgba(15, 23, 42, 0.8);
+  --player-tabs-border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  --player-tabs-padding: 0 2rem;
+
+  /* Matches Header Styles */
+  --player-matches-header-bg: rgba(44, 62, 80, 0.8);
+  --player-matches-header-border-radius: 0.5rem;
+  --player-matches-header-padding: 1rem 1.5rem;
+  --player-matches-header-margin-bottom: 1rem;
+
+  /* Grid Styles */
+  --player-overview-grid-gap: 1.5rem;
+  --player-overview-grid-margin-bottom: 2rem;
+  --player-stats-grid-gap: 1.5rem;
+  --player-stats-grid-margin-bottom: 2rem;
+}
+
+/* ===== RESET FOR PLAYER PROFILE PAGE ===== */
+.player-profile-page {
+  background: linear-gradient(135deg, var(--profile-bg-dark) 0%, #1E293B 50%, #334155 100%);
+  min-height: 100vh;
+  color: var(--profile-text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.6;
+}
+
+.player-profile-page * {
+  box-sizing: border-box;
+}
+
+/* ===== PROFILE HEADER SECTION ===== */
+.player-profile-header {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%);
+  padding: 2rem 1rem;
+  border-bottom: 1px solid var(--profile-border);
+  position: relative;
+  overflow: hidden;
+}
+
+.player-profile-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(212, 175, 55, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.player-profile-header-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.player-profile-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid var(--profile-primary);
+  background: var(--profile-bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--profile-shadow-lg);
+  flex-shrink: 0;
+}
+
+.player-profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.player-profile-avatar::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 3px solid var(--profile-bg-dark);
+  background: var(--profile-success);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.player-profile-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.player-profile-username {
+  font-family: 'Cinzel', serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--profile-primary);
+  margin: 0 0 0.5rem 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(135deg, var(--profile-primary) 0%, var(--profile-primary-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.player-profile-subtitle {
+  font-size: 1.125rem;
+  color: var(--profile-text-secondary);
+  margin: 0 0 1rem 0;
+  font-weight: 500;
+}
+
+.player-profile-stats {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.player-profile-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--profile-border-light);
+  border-radius: var(--profile-radius);
+  transition: var(--profile-transition);
+}
+
+.player-profile-stat:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--profile-primary);
+  transform: translateY(-2px);
+}
+
+.player-profile-stat-icon {
+  color: var(--profile-primary);
+  font-size: 1.25rem;
+}
+
+.player-profile-stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.player-profile-stat-value {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--profile-text-primary);
+  line-height: 1.2;
+}
+
+.player-profile-stat-label {
+  font-size: 0.75rem;
+  color: var(--profile-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+/* ===== PROFILE CONTENT SECTION ===== */
+.player-profile-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.player-profile-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid var(--profile-border);
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.player-profile-tab {
+  background: none;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--profile-radius) var(--profile-radius) 0 0;
+  color: var(--profile-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--profile-transition);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 2px solid transparent;
+}
+
+.player-profile-tab:hover {
+  color: var(--profile-primary);
+  background: rgba(212, 175, 55, 0.1);
+}
+
+.player-profile-tab.active {
+  color: var(--profile-primary);
+  background: rgba(212, 175, 55, 0.15);
+  border-bottom-color: var(--profile-primary);
+}
+
+.player-profile-tab-icon {
+  font-size: 1rem;
+}
+
+.player-profile-tab-content {
+  display: none;
+  animation: fadeIn 0.3s ease;
+}
+
+.player-profile-tab-content.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== OVERVIEW TAB ===== */
+.player-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  min-height: 500px;
+}
+
+.player-overview-card {
+  background: var(--profile-bg-card);
+  border: 1px solid var(--profile-border);
+  border-radius: var(--profile-radius-lg);
+  padding: 1.5rem;
+  transition: var(--profile-transition);
+}
+
+.player-overview-card:hover {
+  border-color: var(--profile-primary);
+  box-shadow: var(--profile-shadow-lg);
+  transform: translateY(-2px);
+}
+
+.player-overview-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--profile-border);
+}
+
+.player-overview-card-icon {
+  color: var(--profile-primary);
+  font-size: 1.5rem;
+}
+
+.player-overview-card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--profile-text-primary);
+  margin: 0;
+}
+
+.player-overview-card-content {
+  color: var(--profile-text-secondary);
+  line-height: 1.6;
+}
+
+.player-overview-stats {
+  /* ===== GRID PATTERN REPLACED WITH .grid-auto-fit-xs UTILITY ===== */
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.player-overview-stat {
+  text-align: center;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--profile-radius);
+  border: 1px solid var(--profile-border-light);
+}
+
+.player-overview-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--profile-primary);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.player-overview-stat-label {
+  font-size: 0.75rem;
+  color: var(--profile-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 500;
+}
+
+/* ===== MATCHES TAB ===== */
+.player-matches-container {
+  background: var(--profile-bg-card);
+  border: 1px solid var(--profile-border);
+  border-radius: var(--profile-radius-lg);
+  overflow: hidden;
+  min-height: 500px;
+}
+
+.player-matches-header {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--profile-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.player-matches-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--profile-text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.player-matches-filters {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.player-matches-filter {
+  background: none;
+  border: 1px solid var(--profile-border-light);
+  color: var(--profile-text-secondary);
+  padding: 0.5rem 1rem;
+  border-radius: var(--profile-radius);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: var(--profile-transition);
+}
+
+.player-matches-filter:hover {
+  border-color: var(--profile-primary);
+  color: var(--profile-primary);
+}
+
+.player-matches-filter.active {
+  background: var(--profile-primary);
+  border-color: var(--profile-primary);
+  color: var(--profile-bg-dark);
+}
+
+.player-matches-list {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.player-match-item {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr auto auto auto;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--profile-border);
+  align-items: center;
+  transition: var(--profile-transition);
+}
+
+.player-match-item:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.player-match-item:last-child {
+  border-bottom: none;
+}
+
+.player-match-result {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.player-match-result.win {
+  color: var(--profile-success);
+}
+
+.player-match-result.loss {
+  color: var(--profile-error);
+}
+
+.player-match-opponent {
+  font-weight: 500;
+  color: var(--profile-text-primary);
+}
+
+.player-match-map {
+  color: var(--profile-text-secondary);
+  font-size: 0.875rem;
+}
+
+.player-match-mmr {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.player-match-mmr.positive {
+  color: var(--profile-success);
+}
+
+.player-match-mmr.negative {
+  color: var(--profile-error);
+}
+
+.player-match-date {
+  color: var(--profile-text-muted);
+  font-size: 0.75rem;
+  text-align: right;
+}
+
+/* ===== STATS TAB ===== */
+.player-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  min-height: 500px;
+}
+
+.player-stats-card {
+  background: var(--profile-bg-card);
+  border: 1px solid var(--profile-border);
+  border-radius: var(--profile-radius-lg);
+  padding: 1.5rem;
+  transition: var(--profile-transition);
+}
+
+.player-stats-card:hover {
+  border-color: var(--profile-primary);
+  box-shadow: var(--profile-shadow-lg);
+  transform: translateY(-2px);
+}
+
+.player-stats-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--profile-border);
+}
+
+.player-stats-card-icon {
+  color: var(--profile-primary);
+  font-size: 1.25rem;
+}
+
+.player-stats-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--profile-text-primary);
+  margin: 0;
+}
+
+.player-stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.player-stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: var(--profile-radius);
+  border: 1px solid var(--profile-border-light);
+}
+
+.player-stat-label {
+  color: var(--profile-text-secondary);
+  font-size: 0.875rem;
+}
+
+.player-stat-value {
+  color: var(--profile-text-primary);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+/* ===== ACTIVITY TAB ===== */
+.player-activity-container {
+  background: var(--profile-bg-card);
+  border: 1px solid var(--profile-border);
+  border-radius: var(--profile-radius-lg);
+  overflow: hidden;
+  min-height: 500px;
+}
+
+.player-activity-header {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--profile-border);
+}
+
+.player-activity-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--profile-text-primary);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.player-activity-list {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.player-activity-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--profile-border);
+  transition: var(--profile-transition);
+}
+
+.player-activity-item:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.player-activity-item:last-child {
+  border-bottom: none;
+}
+
+.player-activity-icon {
+  color: var(--profile-primary);
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.player-activity-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.player-activity-title {
+  font-weight: 500;
+  color: var(--profile-text-primary);
+  margin: 0 0 0.25rem 0;
+  font-size: 0.875rem;
+}
+
+.player-activity-description {
+  color: var(--profile-text-secondary);
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+.player-activity-date {
+  color: var(--profile-text-muted);
+  font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  .player-profile-header-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.5rem;
+  }
+  
+  .player-profile-avatar {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .player-profile-username {
+    font-size: 2rem;
+  }
+  
+  .player-profile-stats {
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .player-profile-tabs {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  
+  .player-profile-tab {
+    border-radius: var(--profile-radius);
+    border-bottom: none;
+    border-left: 3px solid transparent;
+  }
+  
+  .player-profile-tab.active {
+    border-left-color: var(--profile-primary);
+    border-bottom-color: transparent;
+  }
+  
+  .player-overview-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .player-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .player-match-item {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    text-align: center;
+  }
+  
+  .player-match-date {
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .player-profile-header {
+    padding: 1.5rem 0.75rem;
+  }
+  
+  .player-profile-content {
+    padding: 1.5rem 0.75rem;
+  }
+  
+  .player-profile-username {
+    font-size: 1.75rem;
+  }
+  
+  .player-profile-stats {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .player-profile-stat {
+    width: 100%;
+    max-width: 200px;
+  }
+}
+
+/* ===== LOADING STATES ===== */
+.player-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: var(--profile-text-muted);
+  font-style: italic;
+}
+
+.player-loading::before {
+  content: '';
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--profile-border);
+  border-top: 2px solid var(--profile-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 0.75rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== ERROR STATES ===== */
+.player-error {
+  text-align: center;
+  padding: 3rem;
+  color: var(--profile-error);
+}
+
+.player-error-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.player-error-message {
+  font-size: 1.125rem;
+  margin: 0;
+}
+
+/* ===== EMPTY STATES ===== */
+.player-empty {
+  text-align: center;
+  padding: 3rem;
+  color: var(--profile-text-muted);
+}
+
+.player-empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.player-empty-message {
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* ===== CSS OVERRIDES TO PREVENT CONFLICTS ===== */
+/* These overrides ensure our new player profile styles take precedence */
+
+/* Override any conflicting activity-tab styles from profile-specific.css */
+.player-profile-page .activity-tab,
+.player-profile-page .activity-tabs {
+  all: unset;
+}
+
+.player-profile-page .activity-tab {
+  background: var(--player-tab-bg);
+  border: var(--player-tab-border);
+  border-radius: var(--player-tab-border-radius);
+  padding: var(--player-tab-padding);
+  color: var(--player-tab-color);
+  cursor: pointer;
+  transition: var(--player-tab-transition);
+  font-size: var(--player-tab-font-size);
+  font-weight: var(--player-tab-font-weight);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--player-tab-gap);
+}
+
+.player-profile-page .activity-tab:hover {
+  background: var(--player-tab-hover-bg);
+  border-color: var(--player-tab-hover-border);
+  color: var(--player-tab-hover-color);
+}
+
+.player-profile-page .activity-tab.active {
+  background: var(--player-tab-active-bg);
+  border-color: var(--player-tab-active-border);
+  color: var(--player-tab-active-color);
+}
+
+/* Override any conflicting matches-header styles from profile-specific.css */
+.player-profile-page .matches-header {
+  all: unset;
+}
+
+.player-profile-page .matches-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--player-matches-header-padding);
+  background: var(--player-matches-header-bg);
+  border-radius: var(--player-matches-header-border-radius);
+  margin-bottom: var(--player-matches-header-margin-bottom);
+}
+
+/* Override any conflicting modal styles that might affect our page */
+.player-profile-page .modal,
+.player-profile-page .modal-content,
+.player-profile-page .modal-header,
+.player-profile-page .modal-body {
+  all: unset;
+}
+
+/* Ensure our player profile specific styles always take precedence */
+.player-profile-page .player-profile-header {
+  background: var(--player-header-bg) !important;
+  border-bottom: var(--player-header-border-bottom) !important;
+  padding: var(--player-header-padding) !important;
+}
+
+.player-profile-page .player-profile-tabs {
+  background: var(--player-tabs-bg) !important;
+  border-bottom: var(--player-tabs-border-bottom) !important;
+  padding: var(--player-tabs-padding) !important;
+}
+
+.player-profile-page .player-profile-tab {
+  background: var(--player-tab-bg) !important;
+  border: var(--player-tab-border) !important;
+  border-radius: var(--player-tab-border-radius) !important;
+  padding: var(--player-tab-padding) !important;
+  color: var(--player-tab-color) !important;
+  transition: var(--player-tab-transition) !important;
+  font-size: var(--player-tab-font-size) !important;
+  font-weight: var(--player-tab-font-weight) !important;
+}
+
+.player-profile-page .player-profile-tab:hover {
+  background: var(--player-tab-hover-bg) !important;
+  border-color: var(--player-tab-hover-border) !important;
+  color: var(--player-tab-hover-color) !important;
+}
+
+.player-profile-page .player-profile-tab.active {
+  background: var(--player-tab-active-bg) !important;
+  border-color: var(--player-tab-active-border) !important;
+  color: var(--player-tab-active-color) !important;
+}
+
+.player-profile-page .player-matches-header {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: var(--player-matches-header-padding) !important;
+  background: var(--player-matches-header-bg) !important;
+  border-radius: var(--player-matches-header-border-radius) !important;
+  margin-bottom: var(--player-matches-header-margin-bottom) !important;
+}
+
+/* Override any grid styles that might conflict */
+.player-profile-page .player-overview-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+  gap: var(--player-overview-grid-gap) !important;
+  margin-bottom: var(--player-overview-grid-margin-bottom) !important;
+  min-height: 500px !important;
+}
+
+.player-profile-page .player-stats-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)) !important;
+  gap: var(--player-stats-grid-gap) !important;
+  margin-bottom: var(--player-stats-grid-margin-bottom) !important;
+  min-height: 500px !important;
+}
+
+.player-profile-page .player-matches-container {
+  min-height: 500px !important;
+}
+
+.player-profile-page .player-activity-container {
+  min-height: 500px !important;
+}
+
+/* Ensure all our specific player profile classes are not affected by general styles */
+.player-profile-page [class*="player-profile-"],
+.player-profile-page [class*="player-overview-"],
+.player-profile-page [class*="player-matches-"],
+.player-profile-page [class*="player-stats-"],
+.player-profile-page [class*="player-activity-"] {
+  box-sizing: border-box !important;
+}

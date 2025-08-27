@@ -1,8 +1,8 @@
+use pud_parser::PudParser;
 use std::path::PathBuf;
 use serde::{Serialize, Deserialize};
 
 mod pud_parser;
-use pud_parser::{PudParser, PudMapInfo};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct MapData {
@@ -203,15 +203,104 @@ async fn test_pud_parser(file_path: String) -> Result<String, String> {
     let mut parser = PudParser::new(&path)?;
     let pud_info = parser.parse()?;
 
-    // Return detailed information
-    let info = format!(
-        "Map: {}\nDimensions: {}x{}\nMax Players: {}\nFile Size: {} bytes",
+    // Return detailed information including terrain analysis
+    let mut info = format!(
+        "Map: {}\nDimensions: {}x{}\nMax Players: {}\nFile Size: {} bytes\n\nTerrain Analysis:\nWater: {:.1}%\nShore: {:.1}%\nForest: {:.1}%\nGrass: {:.1}%\nRock: {:.1}%\nDirt: {:.1}%\nTotal Tiles: {}\n\nUnits Found: {}\nResources Found: {}",
         path.file_name().unwrap().to_string_lossy(),
         pud_info.width,
         pud_info.height,
         pud_info.max_players,
-        std::fs::metadata(&path).unwrap().len()
+        std::fs::metadata(&path).unwrap().len(),
+        pud_info.terrain_analysis.water_percentage,
+        pud_info.terrain_analysis.shore_percentage,
+        pud_info.terrain_analysis.tree_percentage,
+        pud_info.terrain_analysis.grass_percentage,
+        pud_info.terrain_analysis.mountain_percentage,
+        pud_info.terrain_analysis.dirt_percentage,
+        pud_info.terrain_analysis.total_tiles,
+        pud_info.units.len(),
+        pud_info.resources.len()
     );
+    
+    // Add resource details
+    if !pud_info.resources.is_empty() {
+        info.push_str("\n\nResources:");
+        let mut goldmine_count = 0;
+        let mut total_gold = 0;
+        
+        for resource in &pud_info.resources {
+            let resource_name = match resource.resource_type {
+                0 => {
+                    goldmine_count += 1;
+                    total_gold += resource.amount;
+                    "Gold Mine"
+                },
+                1 => "Tree",
+                2 => "Oil Patch", 
+                3 => "Crystal Mine",
+                4 => "Forest",
+                _ => "Unknown",
+            };
+            
+            if resource.resource_type == 0 {
+                info.push_str(&format!("\n- {} at ({}, {}) - Gold: {}", 
+                    resource_name, resource.x, resource.y, resource.amount));
+            } else {
+                info.push_str(&format!("\n- {} at ({}, {}) - Amount: {}", 
+                    resource_name, resource.x, resource.y, resource.amount));
+            }
+        }
+        
+        if goldmine_count > 0 {
+            info.push_str(&format!("\n\nGoldmine Summary: {} goldmines with {} total gold", 
+                goldmine_count, total_gold));
+        }
+    }
+    
+    // Add unit details (focusing on starting positions)
+    if !pud_info.units.is_empty() {
+        info.push_str("\n\nUnits (Starting Positions):");
+        
+        // Group units by player to identify starting positions
+        let mut player_units: std::collections::HashMap<u8, Vec<&pud_parser::PudUnit>> = std::collections::HashMap::new();
+        for unit in &pud_info.units {
+            player_units.entry(unit.owner).or_insert_with(Vec::new).push(unit);
+        }
+        
+        for (player_id, units) in player_units {
+            info.push_str(&format!("\n\nPlayer {}:", player_id));
+            
+            // Find starting position (usually a Town Hall or first unit)
+            let mut starting_pos = None;
+            for unit in units {
+                let unit_name = match unit.unit_type {
+                    0 => "Peasant",
+                    1 => "Footman", 
+                    2 => "Knight",
+                    3 => "Archer",
+                    4 => "Ranger",
+                    5 => "Mage",
+                    6 => "Paladin",
+                    7 => "Ogre",
+                    8 => "Dwarves",
+                    9 => "Goblin Sappers",
+                    _ => "Unknown",
+                };
+                
+                info.push_str(&format!("\n- {} at ({}, {}) - Health: {}", 
+                    unit_name, unit.x, unit.y, unit.health));
+                
+                // Consider first unit as starting position
+                if starting_pos.is_none() {
+                    starting_pos = Some((unit.x, unit.y));
+                }
+            }
+            
+            if let Some((x, y)) = starting_pos {
+                info.push_str(&format!("\n  Starting Position: ({}, {})", x, y));
+            }
+        }
+    }
 
     Ok(info)
 }

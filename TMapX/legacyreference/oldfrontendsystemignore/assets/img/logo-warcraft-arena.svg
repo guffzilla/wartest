@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200px" height="200px" viewBox="0 0 200 200" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <linearGradient x1="0%" y1="0%" x2="100%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#88C0D0" offset="0%"></stop>
+            <stop stop-color="#5E81AC" offset="100%"></stop>
+        </linearGradient>
+        <filter x="-15%" y="-15%" width="130%" height="130%" filterUnits="objectBoundingBox" id="filter-2">
+            <feGaussianBlur stdDeviation="5" in="SourceGraphic"></feGaussianBlur>
+        </filter>
+    </defs>
+    <g id="Warcraft-Arena-Logo" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <circle id="Glow" fill="#88C0D0" filter="url(#filter-2)" cx="100" cy="100" r="80"></circle>
+        <path d="M100,20 C144.18278,20 180,55.81722 180,100 C180,144.18278 144.18278,180 100,180 C55.81722,180 20,144.18278 20,100 C20,55.81722 55.81722,20 100,20 Z M100,40 C66.862915,40 40,66.862915 40,100 C40,133.137085 66.862915,160 100,160 C133.137085,160 160,133.137085 160,100 C160,66.862915 133.137085,40 100,40 Z" id="Ring" fill="url(#linearGradient-1)" fill-rule="nonzero"></path>
+        <path d="M100,50 L120,80 L150,90 L130,120 L140,150 L100,140 L60,150 L70,120 L50,90 L80,80 L100,50 Z" id="Star" fill="url(#linearGradient-1)"></path>
+        <path d="M100,70 L110,90 L130,95 L115,110 L120,130 L100,120 L80,130 L85,110 L70,95 L90,90 L100,70 Z" id="Inner-Star" fill="#ECEFF4"></path>
+        <path d="M95,85 L100,95 L110,97 L102,105 L105,115 L95,110 L85,115 L88,105 L80,97 L90,95 L95,85 Z" id="Core" fill="#2E3440"></path>
+    </g>
+</svg>

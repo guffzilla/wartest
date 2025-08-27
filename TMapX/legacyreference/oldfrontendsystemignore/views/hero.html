@@ -1,0 +1,62 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Become a Hero - WC Arena</title>
+  <link rel="stylesheet" href="/css/warcraft-app-modern.css">
+  <link rel="stylesheet" href="/css/black-theme.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/navbar-universal.css">
+  <link rel="stylesheet" href="/css/hero-page-heroic.css">
+</head>
+<body data-page="hero">
+  <div id="navbar-container"></div>
+  <main>
+    <!-- Hero Page Header -->
+    <div class="page-header">
+      <h1 class="page-title" data-theme="blacksmith">🛡️ Become a Hero</h1>
+      <div class="hero-subtitle">
+        <p class="epic-tagline">⚡ Join the Elite Warriors Supporting WC Arena ⚡</p>
+        <p class="hero-description">Choose your path to greatness and unlock legendary benefits</p>
+      </div>
+      <!-- Currency selector and subtitle will be inserted here by MembershipManager -->
+    </div>
+
+    <!-- Membership Section -->
+    
+
+    <!-- Membership Info Section -->
+    <section class="glass-section fade-in-up">
+      <div class="membership-info centered">
+        <p><i class="fas fa-shield-alt"></i> Secure monthly subscriptions with Square</p>
+        <p><i class="fas fa-sync-alt"></i> Easy upgrade/downgrade anytime</p>
+        <p><i class="fas fa-times-circle"></i> Cancel subscription anytime - no long-term commitment</p>
+      </div>
+    </section>
+
+    <!-- Donation Section -->
+    <section class="glass-section fade-in-up">
+      <div class="donation-links centered">
+        <div class="donation-title">One-time donations to support server costs</div>
+        <div class="donation-buttons">
+          <a href="https://www.paypal.com/paypalme/wolfandman" target="_blank" class="donation-btn paypal">
+            <i class="fab fa-paypal"></i>
+            <span>PayPal Donation</span>
+          </a>
+          <a href="https://commerce.coinbase.com/checkout/fce0e325-d5b9-4b8c-a270-5508bdde7eeb" target="_blank" class="donation-btn coinbase">
+            <i class="fab fa-bitcoin"></i>
+            <span>Coinbase Donation</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <div id="footer-container"></div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+  <script type="module" src="/js/modules/ApiClient.js"></script>
+  <script type="module" src="/js/app.js"></script>
+  <script type="module" src="/js/main.js"></script>
+  <script src="/js/modules/MembershipManager.js?v=20241221-2"></script>
+
+ </body></html>

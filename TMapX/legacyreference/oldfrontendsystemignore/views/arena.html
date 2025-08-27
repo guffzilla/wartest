@@ -1,0 +1,1030 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://sandbox.web.squarecdn.com https://web.squarecdn.com https://pay.google.com https://js-sandbox.squarecdn.com https://js.squarecdn.com https://js.afterpay.com https://js-sandbox.afterpay.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://sandbox.web.squarecdn.com https://web.squarecdn.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com https://square-fonts-production-f.squarecdn.com https://d1g145x70srn7h.cloudfront.net; img-src 'self' data: https:; connect-src 'self' http://127.0.0.1:3000 http://localhost:3000 https://*.googleapis.com https://*.google.com https://connect.squareupsandbox.com https://connect.squareup.com https://pci-connect.squareupsandbox.com https://pci-connect.squareup.com https://pay.google.com https://*.afterpay.com https://*.clearpay.co.uk; frame-src 'self' https://www.youtube.com https://sandbox.web.squarecdn.com https://web.squarecdn.com https://pay.google.com https://*.afterpay.com https://*.clearpay.co.uk;">
+  <title>WC Arena - Arena</title>
+  
+  <!-- Preload critical fonts -->
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="">
+  
+  <!-- CSS Dependencies -->
+  <!-- UNIFIED MODAL SYSTEM - MUST LOAD FIRST TO PREVENT CONFLICTS -->
+      <link rel="stylesheet" href="/css/unified-modal-system.css">
+  
+  <!-- Base application styles -->
+  <link rel="stylesheet" href="/css/warcraft-app-modern.css">
+
+      <link rel="stylesheet" href="/css/ladder-consolidated.css">
+    <link rel="stylesheet" href="/css/unified-button-system.css">
+    <link rel="stylesheet" href="/css/unified-form-system.css">
+    <link rel="stylesheet" href="/css/unified-layout-system.css">
+    <link rel="stylesheet" href="/css/unified-color-system.css">
+    <link rel="stylesheet" href="/css/components/animations.css">
+    <link rel="stylesheet" href="/css/components/transitions.css">
+  
+  <link rel="stylesheet" href="/css/matches-tab-enhanced.css">
+  <link rel="stylesheet" href="/css/player-modal-enhanced.css">
+  <link rel="stylesheet" href="/css/maps/maps-cards.css">
+  <link rel="stylesheet" href="/css/tournament-modal-enhanced.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="/css/chat-unified.css">
+  <link rel="stylesheet" href="/css/navbar-universal.css">
+  
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&amp;family=Orbitron:wght@400;700;900&amp;display=swap" rel="stylesheet">
+  
+  <!-- Chart.js - Single version -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+</head>
+<body>
+  <div id="navbar-container"></div>
+
+  <main>
+    <!-- Arena Title Section -->
+    <div class="arena-layout-container">
+      <h1 class="arena-title">⚔️ ARENA</h1>
+
+      <!-- Enhanced Controls Section -->
+      <div class="arena-controls-section">
+        <!-- Report Button - Left -->
+        <div class="report-section">
+          <button id="report-match-btn" class="btn-report">
+            <i class="fas fa-trophy"></i>
+            <span id="report-match-text">REPORT MATCH</span>
+            <i class="fas fa-trophy"></i>
+          </button>
+        </div>
+
+        <!-- Game Tabs - Center -->
+        <div class="game-tabs-container">
+          <div class="game-tabs">
+            <button class="game-tab" data-game-type="wc1" data-game="wc1">
+              <i class="fas fa-dragon"></i>
+              <span>WC I</span>
+            </button>
+            <button class="game-tab active" data-game-type="wc2" data-game="wc2">
+              <i class="fas fa-shield-alt"></i>
+              <span>WC II</span>
+            </button>
+            <button class="game-tab" data-game-type="wc3" data-game="wc3">
+              <i class="fas fa-chess-king"></i>
+              <span>WC III</span>
+            </button>
+          </div>
+        </div>
+        
+
+      </div>
+    </div>
+
+
+    <!-- Main Ladder Content -->
+    <div id="ladder-main-content">
+      <!-- WC2/WC3 Search and Filters -->
+      <div class="controls-section" id="wc2-wc3-controls">
+        <!-- Player Search -->
+        <div class="player-search">
+          <div class="search-input-group">
+            <input type="text" id="player-search" placeholder="Search player name...">
+            <button id="search-btn" class="btn btn-search">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Map Search Filter -->
+        <div class="map-search">
+          <div class="search-input-group">
+            <input type="text" id="map-search" placeholder="Search specific map...">
+            <button id="map-search-btn" class="btn btn-search">
+              <i class="fas fa-map"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Match Type Filter -->
+        <div class="match-type-filter">
+          <div class="filter-buttons">
+            <button class="filter-btn active" data-match-type="all">All</button>
+            <button class="filter-btn" data-match-type="1v1">1v1</button>
+            <button class="filter-btn" data-match-type="2v2">2v2</button>
+            <button class="filter-btn" data-match-type="3v3">3v3</button>
+            <button class="filter-btn" data-match-type="4v4">4v4</button>
+            <button class="filter-btn" data-match-type="ffa">FFA</button>
+            <button class="filter-btn" data-match-type="vsai">vs AI</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- WC1 Search and Filters -->
+      <div class="controls-section" id="wc1-controls">
+        <!-- Player Search -->
+        <div class="player-search">
+          <div class="search-input-group">
+            <input type="text" id="wc1-player-search" placeholder="Search WC1 player name...">
+            <button id="wc1-search-btn" class="btn btn-search">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Match Type Filter -->
+        <div class="match-type-filter">
+          <div class="filter-buttons">
+            <button class="filter-btn active" data-match-type="all">All</button>
+            <button class="filter-btn" data-match-type="1v1">1v1</button>
+            <button class="filter-btn" data-match-type="vsai">vs AI</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content Layout -->
+      <div class="ladder-layout">
+        <!-- Leaderboard (Main Content) - Shrunk by 50% -->
+        <section class="leaderboard-section">
+          <div class="leaderboard-header">
+            <div class="header-left">
+              <button id="view-ranks-btn" class="btn btn-secondary btn-ranks">
+                <i class="fas fa-medal"></i>
+                View Ranks
+              </button>
+            </div>
+            <h2 id="leaderboard-title">Leaderboard</h2>
+          </div>
+          <div class="leaderboard-container">
+            <table class="leaderboard-table">
+              <thead>
+                <tr>
+                  <th class="rank-header">Rank</th>
+                  <th class="player-header">Player</th>
+                  <th class="mmr-header">MMR</th>
+                  <th class="wins-header">Wins</th>
+                  <th class="losses-header">Losses</th>
+                  <th class="ratio-header">Win %</th>
+                </tr>
+              </thead>
+              <tbody id="leaderboard-body">
+                <tr>
+                  <td colspan="6" class="loading-cell">Loading leaderboard data...</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="pagination-controls">
+              <button id="prev-page" class="btn btn-secondary">Previous</button>
+              <span id="page-info">Page 1 of 1</span>
+              <button id="next-page" class="btn btn-secondary">Next</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Tournament Board Section -->
+        <section class="tournament-board-section">
+          <div class="tournament-board-header">
+            <h3>🏆 Tournaments</h3>
+            <button id="create-tournament-btn" class="btn btn-primary btn-create-tournament">
+              <i class="fas fa-plus"></i>
+              Create Tournament
+            </button>
+          </div>
+          <div class="tournament-board-container" id="tournaments-container">
+            <div class="loading">Loading tournaments...</div>
+          </div>
+        </section>
+
+        <!-- Recent Matches Sidebar -->
+        <aside class="recent-matches-sidebar">
+          <h3>Recent Matches</h3>
+          <div class="recent-matches-container" id="recent-matches-container">
+            <div class="loading">Loading matches...</div>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Statistics Section -->
+      <section class="stats-section">
+        <h2>Ladder Statistics</h2>
+        <div class="stats-container" id="stats-container">
+          <!-- Overview Stats (will be dynamically inserted) -->
+          
+          <!-- Race Distribution -->
+          <div class="stats-card">
+            <h3>Race Distribution</h3>
+            <div class="stats-content">
+              <div class="stats-list">
+                <ul id="race-stats-list">
+                  <!-- Race list will be dynamically updated based on game type -->
+                  <li><span class="stats-name">Human</span><span class="stats-value">0</span></li>
+                  <li><span class="stats-name">Orc</span><span class="stats-value">0</span></li>
+                  <li><span class="stats-name">Random</span><span class="stats-value">0</span></li>
+                </ul>
+              </div>
+              
+            </div>
+          </div>
+
+          <!-- Game Modes Distribution -->
+          <div class="stats-card">
+            <h3>Match Types</h3>
+            <div class="stats-content">
+              <div class="stats-list">
+                <ul id="modes-stats-list">
+                  <li><span class="stats-name">1v1</span><span class="stats-value">0</span></li>
+                  <li><span class="stats-name">2v2</span><span class="stats-value">0</span></li>
+                  <li><span class="stats-name">3v3</span><span class="stats-value">0</span></li>
+                  <li><span class="stats-name">4v4</span><span class="stats-value">0</span></li>
+                  <li><span class="stats-name">FFA</span><span class="stats-value">0</span></li>
+                </ul>
+              </div>
+              
+            </div>
+          </div>
+
+          <!-- Rank Distribution -->
+          <div class="stats-card">
+            <h3>Rank Distribution</h3>
+            
+          </div>
+
+          <!-- MMR Distribution -->
+          <div class="stats-card">
+            <h3>MMR Distribution</h3>
+            
+          </div>
+
+          <!-- Top Maps -->
+          <div class="stats-card">
+            <h3>Popular Maps</h3>
+            <div class="stats-content">
+              <div class="stats-list">
+                <ul id="maps-stats-list">
+                  <li><span class="stats-name">Loading...</span><span class="stats-value">0</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity Chart -->
+          <div class="stats-card">
+            <h3>Recent Activity</h3>
+            
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Ranks Modal -->
+  <div id="ranks-modal" class="modal" data-static="true">
+    <div class="modal-content ranks-modal-content">
+      <div class="modal-header">
+        <h3 class="townhall-unified-title">🏆 Ranks</h3>
+        <button class="close-modal universal-close-btn" title="Close">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="ranks-description">
+          <p>The Warcraft Arena ladder system uses a Matchmaking Rating (MMR) to determine player rankings. Win matches to gain MMR and climb the ranks, or lose matches to drop in rating. Your rank is determined by your current MMR threshold. The higher your MMR, the more prestigious your rank becomes.</p>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- Enhanced Tournament Details Modal -->
+  <div id="tournament-details-modal" class="tournament-modal-enhanced">
+    <div class="tournament-modal-content">
+      <div class="modal-header tournament-modal-header">
+        <div>
+          <h3 class="tournament-modal-title modal-title" id="tournament-modal-title">
+            <i class="fas fa-trophy"></i>
+            Tournament Details
+          </h3>
+          <p class="tournament-modal-subtitle" id="tournament-modal-subtitle">Tournament information and participants</p>
+        </div>
+        <button class="tournament-modal-close universal-close-btn" title="Close">×</button>
+      </div>
+
+
+      <div class="tournament-form-actions" id="tournament-details-actions">
+        <button type="button" class="tournament-btn tournament-btn-secondary" id="close-tournament-details">Close</button>
+        <!-- Dynamic action buttons will be added here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Tournament Registration Modal -->
+  <div id="tournament-registration-modal" class="tournament-modal-enhanced">
+    <div class="tournament-modal-content">
+      <div class="modal-header tournament-modal-header">
+        <div>
+          <h3 class="tournament-modal-title modal-title">
+            <i class="fas fa-sign-in-alt"></i>
+            Register for Tournament
+          </h3>
+          <p class="tournament-modal-subtitle" id="registration-tournament-name">Select your player to register</p>
+        </div>
+        <button class="tournament-modal-close universal-close-btn" title="Close">×</button>
+      </div>
+
+
+      <div class="tournament-form-actions">
+        <button type="button" class="tournament-btn tournament-btn-secondary" id="cancel-registration">Cancel</button>
+        <button type="button" class="tournament-btn tournament-btn-primary" id="confirm-registration" disabled="">
+          <i class="fas fa-check"></i> Register
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enhanced Create Tournament Modal -->
+  <div id="create-tournament-modal" class="tournament-modal-enhanced">
+    <div class="tournament-modal-content">
+      <div class="modal-header tournament-modal-header">
+        <div>
+          <h3 class="tournament-modal-title modal-title">
+            <i class="fas fa-trophy"></i>
+            Create Tournament
+          </h3>
+          <p class="tournament-modal-subtitle">Design your epic tournament and challenge the best players</p>
+        </div>
+        <button class="tournament-modal-close universal-close-btn" title="Close">×</button>
+      </div>
+      
+      <div class="tournament-modal-body">
+        <form id="create-tournament-form" class="tournament-form-enhanced">
+          <!-- Compact Layout: Two Columns -->
+          <div class="tournament-form-compact-layout">
+            <!-- Left Column: Basic Info & Format -->
+            <div class="tournament-form-left-column">
+              <!-- Basic Information -->
+              <div class="tournament-form-section tournament-form-section-compact">
+                <h4><i class="fas fa-info-circle"></i> Basic Information</h4>
+                <div class="tournament-form-group">
+                  <label for="tournament-name">Tournament Name</label>
+                  <input type="text" id="tournament-name" name="name" placeholder="Enter tournament name..." required="">
+                </div>
+                <div class="tournament-form-group">
+                  <label for="tournament-description">Description</label>
+                  <textarea id="tournament-description" name="description" placeholder="Describe your tournament..." rows="2"></textarea>
+                </div>
+              </div>
+
+              <!-- Tournament Format -->
+              <div class="tournament-form-section tournament-form-section-compact">
+                <h4><i class="fas fa-sitemap"></i> Tournament Format</h4>
+                <div class="tournament-type-selector tournament-type-selector-compact">
+                  <div class="game-type-option">
+                    <input type="radio" id="type-single" name="type" value="single_elimination" required="" checked="">
+                    <label for="type-single">
+                      <i class="fas fa-chevron-down"></i>
+                      <span>Single Elimination</span>
+                    </label>
+                  </div>
+                  <div class="game-type-option">
+                    <input type="radio" id="type-double" name="type" value="double_elimination" required="">
+                    <label for="type-double">
+                      <i class="fas fa-arrows-alt-v"></i>
+                      <span>Double Elimination</span>
+                    </label>
+                  </div>
+                  <div class="game-type-option">
+                    <input type="radio" id="type-round" name="type" value="round_robin" required="">
+                    <label for="type-round">
+                      <i class="fas fa-sync-alt"></i>
+                      <span>Round Robin</span>
+                    </label>
+                  </div>
+                  <div class="game-type-option">
+                    <input type="radio" id="type-swiss" name="type" value="swiss" required="">
+                    <label for="type-swiss">
+                      <i class="fas fa-th"></i>
+                      <span>Swiss System</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column: Participants, Schedule & Preview -->
+            <div class="tournament-form-right-column">
+              <!-- Participants -->
+              <div class="tournament-form-section tournament-form-section-compact">
+                <h4><i class="fas fa-users"></i> Participants</h4>
+                <div class="tournament-form-group">
+                  <label for="tournament-max-participants">Maximum Participants</label>
+                  <div class="participants-slider">
+                    <input type="range" id="tournament-max-participants" name="maxParticipants" min="4" max="128" value="16" step="4">
+                    <div class="participants-value" id="participants-value">16</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Schedule -->
+              <div class="tournament-form-section tournament-form-section-compact">
+                <h4><i class="fas fa-calendar-alt"></i> Schedule</h4>
+                <div class="schedule-grid">
+                  <div class="tournament-form-group">
+                    <label for="tournament-start-date">Start Date &amp; Time</label>
+                    <input type="datetime-local" id="tournament-start-date" name="startDate" required="">
+                  </div>
+                  <div class="tournament-form-group">
+                    <label for="tournament-end-date">End Date &amp; Time</label>
+                    <input type="datetime-local" id="tournament-end-date" name="endDate" required="">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tournament Preview -->
+              <div class="tournament-form-section tournament-form-section-compact">
+                <h4><i class="fas fa-eye"></i> Tournament Preview</h4>
+                <div class="tournament-preview tournament-preview-compact">
+                  <div class="preview-grid">
+                    <div class="preview-item">
+                      <span class="preview-label">Name:</span>
+                      <span class="preview-value" id="preview-name">-</span>
+                    </div>
+                    <div class="preview-item">
+                      <span class="preview-label">Game:</span>
+                      <span class="preview-value" id="preview-game">-</span>
+                    </div>
+                    <div class="preview-item">
+                      <span class="preview-label">Format:</span>
+                      <span class="preview-value" id="preview-format">-</span>
+                    </div>
+                    <div class="preview-item">
+                      <span class="preview-label">Participants:</span>
+                      <span class="preview-value" id="preview-participants">16</span>
+                    </div>
+                    <div class="preview-item">
+                      <span class="preview-label">Duration:</span>
+                      <span class="preview-value" id="preview-duration">-</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <div class="tournament-form-actions">
+        <button type="button" class="tournament-btn tournament-btn-secondary" id="cancel-tournament">Cancel</button>
+        <button type="submit" class="tournament-btn tournament-btn-primary" form="create-tournament-form">
+          <i class="fas fa-plus"></i> Create Tournament
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Report Match Modal -->
+  <div id="report-match-modal" class="modal" data-static="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="report-modal-title">Report Match</h3>
+        <div id="report-game-badge" class="game-type-badge" title="Active game type">WC II</div>
+        <button class="close-modal universal-close-btn" title="Close">×</button>
+      </div>
+
+        <form id="report-match-form">
+          <!-- Game Settings -->
+          <div class="form-section">
+            <h4>Game Settings</h4>
+
+            <!-- Active game type display (synced by ReportMatch.js) -->
+            <div class="form-group">
+              <label>Game:</label>
+              <div id="report-game-indicator" class="game-indicator">WC II</div>
+            </div>
+            
+            <div class="form-group">
+              <label for="match-type">Match Type:</label>
+              <select id="match-type" name="matchType" required="">
+                <option value="1v1">1v1</option>
+                <option value="2v2">2v2</option>
+                <option value="3v3">3v3</option>
+                <option value="4v4">4v4</option>
+                <option value="ffa">FFA</option>
+                <option value="vsai">Vs AI</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="map">Map:</label>
+              <input type="text" id="map" name="map" required="" placeholder="Enter map name">
+              
+            </div>
+
+            <div class="form-group">
+              <label for="resource-level">Resource Level:</label>
+              <div class="resource-buttons">
+                <input type="radio" id="resource-high" name="resourceLevel" value="high" required="">
+                <label for="resource-high">High</label>
+                
+                <input type="radio" id="resource-medium" name="resourceLevel" value="medium" required="">
+                <label for="resource-medium">Medium</label>
+                
+                <input type="radio" id="resource-low" name="resourceLevel" value="low" required="">
+                <label for="resource-low">Low</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Players Section -->
+          <div class="form-section">
+            <h4>Players</h4>
+            
+          </div>
+
+          <!-- Screenshots -->
+          <div class="form-group">
+            <label for="screenshots">Screenshots (required):</label>
+            <input type="file" id="screenshots" name="screenshots" accept=".png" multiple="" required="">
+            <small class="help-text">
+              PNG format only. Must be taken within the last 2 days and unedited.
+            </small>
+          </div>
+
+          <!-- Battle Report -->
+          <div class="form-group">
+            <label for="battle-report">Battle Report:</label>
+            <textarea id="battle-report" name="battleReport" rows="3" placeholder="Describe the battle, strategy, key moments, etc..."></textarea>
+          </div>
+
+          <!-- Tournament Dropdown (Conditional) -->
+          <div class="form-group tournament-dropdown-group" id="tournament-dropdown-group">
+            <label for="tournament-select">Report as Tournament Match:</label>
+            <select id="tournament-select" name="tournamentId">
+              <option value="">Select Tournament (Optional)</option>
+            </select>
+            <small class="help-text">If this match was part of a tournament, select it here</small>
+          </div>
+
+          <!-- YouTube Link -->
+          <div class="form-group">
+            <label for="youtube-link">YouTube Commentary (Optional):</label>
+            <input type="url" id="youtube-link" name="youtubeLink" placeholder="https://youtube.com/watch?v=... or https://youtu.be/...">
+            <small class="help-text">Link to a YouTube video commentary of this match</small>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Submit Report</button>
+        </form>
+      </div>
+    </div>
+
+
+  <!-- Tournament Management Modal -->
+  <div id="tournament-management-modal" class="tournament-modal-enhanced">
+    <div class="tournament-modal-content">
+      <div class="modal-header tournament-modal-header">
+        <div>
+          <h3 class="tournament-modal-title modal-title">
+            <i class="fas fa-cog"></i>
+            Manage Tournament
+          </h3>
+          <p class="tournament-modal-subtitle">Manage your tournament settings and participants</p>
+        </div>
+        <button class="tournament-modal-close universal-close-btn" title="Close">×</button>
+      </div>
+
+
+      <div class="tournament-form-actions">
+        <button type="button" class="tournament-btn tournament-btn-danger" id="delete-tournament-btn">
+          <i class="fas fa-trash"></i> Delete Tournament
+        </button>
+        <button type="button" class="tournament-btn tournament-btn-secondary" id="close-management-modal">Cancel</button>
+        <button type="button" class="tournament-btn tournament-btn-primary" id="save-tournament-changes">
+          <i class="fas fa-save"></i> Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="delete-confirmation-modal" class="modal" data-static="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3><i class="fas fa-exclamation-triangle"></i> Confirm Deletion</h3>
+        <button class="close-modal">×</button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this tournament? This action cannot be undone.</p>
+        <p><strong>Tournament:</strong> </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="cancel-delete">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirm-delete">
+          <i class="fas fa-trash"></i> Delete Tournament
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- WC1 Report Match Modal -->
+  <div id="wc1-report-match-modal" class="modal">
+    <div class="modal-content wc1-modal-content">
+        <div class="modal-header">
+          <h3 id="wc1-modal-title">Report WC1</h3>
+          <button class="close-modal" title="Close">×</button>
+        </div>
+
+        <div class="modal-body">
+          <form id="wc1-report-match-form" class="wc1-form-enhanced">
+          <!-- Compact Match Setup -->
+          <div class="wc1-setup-section">
+            
+            <!-- Match Type and Race - Inline -->
+            <div class="wc1-inline-row">
+              <div class="wc1-field-group wc1-half-width">
+                <label class="wc1-field-label">Match Type</label>
+                <div class="wc1-toggle-compact">
+                <input type="radio" id="wc1-match-type-vsai" name="matchType" value="vsai" checked="" required="">
+                  <label for="wc1-match-type-vsai" class="wc1-toggle-btn">
+                    <i class="fas fa-robot"></i> vs AI
+                </label>
+                
+                <input type="radio" id="wc1-match-type-1v1" name="matchType" value="1v1" required="">
+                  <label for="wc1-match-type-1v1" class="wc1-toggle-btn">
+                    <i class="fas fa-user"></i> 1v1
+                </label>
+              </div>
+            </div>
+            
+              <div class="wc1-field-group wc1-half-width">
+                <label class="wc1-field-label">Your Race</label>
+                <div class="wc1-toggle-compact">
+                  <input type="radio" id="wc1-human" name="race" value="human" required="">
+                  <label for="wc1-human" class="wc1-toggle-btn">
+                    <i class="fas fa-shield-alt"></i> Human
+                  </label>
+                  
+                  <input type="radio" id="wc1-orc" name="race" value="orc" required="">
+                  <label for="wc1-orc" class="wc1-toggle-btn">
+                    <i class="fas fa-hammer"></i> Orc
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Scenario Selection - Buttons that Transform into Dropdowns -->
+            <div class="wc1-field-group">
+              <label class="wc1-field-label">Scenario</label>
+              <div class="wc1-scenario-selector">
+                <!-- Forest Button/Dropdown -->
+                <div class="scenario-button-dropdown">
+                  <button type="button" class="scenario-cat-btn" data-category="forest">
+                    <i class="fas fa-tree"></i> Forest
+                  </button>
+                  <select class="scenario-dropdown-select" data-category="forest">
+
+                  <option value="Forest 1">Forest 1</option>
+                  <option value="Forest 2">Forest 2</option>
+                  <option value="Forest 3">Forest 3</option>
+                  <option value="Forest 4">Forest 4</option>
+                  <option value="Forest 5">Forest 5</option>
+                  <option value="Forest 6">Forest 6</option>
+                  <option value="Forest 7">Forest 7</option>
+                  </select>
+                </div>
+                
+                <!-- Swamp Button/Dropdown -->
+                <div class="scenario-button-dropdown">
+                  <button type="button" class="scenario-cat-btn" data-category="swamp">
+                    <i class="fas fa-tint"></i> Swamp
+                  </button>
+                  <select class="scenario-dropdown-select" data-category="swamp">
+
+                  <option value="Swamp 1">Swamp 1</option>
+                  <option value="Swamp 2">Swamp 2</option>
+                  <option value="Swamp 3">Swamp 3</option>
+                  <option value="Swamp 4">Swamp 4</option>
+                  <option value="Swamp 5">Swamp 5</option>
+                  <option value="Swamp 6">Swamp 6</option>
+                  <option value="Swamp 7">Swamp 7</option>
+                  </select>
+                </div>
+                
+                <!-- Dungeon Button/Dropdown -->
+                <div class="scenario-button-dropdown">
+                  <button type="button" class="scenario-cat-btn" data-category="dungeon">
+                    <i class="fas fa-dungeon"></i> Dungeon
+                  </button>
+                  <select class="scenario-dropdown-select" data-category="dungeon">
+
+                  <option value="Dungeon 1">Dungeon 1</option>
+                  <option value="Dungeon 2">Dungeon 2</option>
+                  <option value="Dungeon 3">Dungeon 3</option>
+                  <option value="Dungeon 4">Dungeon 4</option>
+                  <option value="Dungeon 5">Dungeon 5</option>
+                  <option value="Dungeon 6">Dungeon 6</option>
+                  <option value="Dungeon 7">Dungeon 7</option>
+              </select>
+            </div>
+
+                <!-- Random Button (No dropdown needed) -->
+                <div class="scenario-button-dropdown">
+                  <button type="button" class="scenario-cat-btn" data-category="random" data-value="Random Map">
+                    <i class="fas fa-dice"></i> Random
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Hidden input for form submission -->
+              <input type="hidden" id="wc1-map" name="map" required="" class="wc1-scenario-hidden-input">
+            </div>
+
+            <!-- WC1 Unit Sliders -->
+            <div class="wc1-field-group">
+              <label class="wc1-field-label" id="wc1-starting-units-label">Starting Units</label>
+              
+              <!-- Human Units (shown when Human race selected) -->
+              <div id="wc1-human-units" class="wc1-units-grid">
+                <div class="wc1-unit-selector">
+                  <label for="wc1-peasants">
+                    <i class="fas fa-hammer"></i>
+                    Peasants
+                </label>
+                  <div class="wc1-unit-slider-container">
+                    <input type="range" id="wc1-peasants" name="peasants" min="0" max="7" value="3" class="wc1-unit-slider">
+                    <span class="wc1-unit-count">2</span>
+                  </div>
+                </div>
+                
+                <div class="wc1-unit-selector">
+                  <label for="wc1-footmen">
+                    <i class="fas fa-sword"></i>
+                    Footmen
+                  </label>
+                  <div class="wc1-unit-slider-container">
+                    <input type="range" id="wc1-footmen" name="footmen" min="0" max="7" value="1" class="wc1-unit-slider">
+                    <span class="wc1-unit-count">0</span>
+                  </div>
+                </div>
+                
+                <div class="wc1-unit-selector">
+                  <label for="wc1-archers">
+                    <i class="fas fa-bow-arrow"></i>
+                    Archers
+                  </label>
+                  <div class="wc1-unit-slider-container">
+                    <input type="range" id="wc1-archers" name="archers" min="0" max="7" value="1" class="wc1-unit-slider">
+                    <span class="wc1-unit-count">0</span>
+                  </div>
+                </div>
+                
+                <div class="wc1-unit-selector">
+                  <label for="wc1-knights">
+                    <i class="fas fa-chess-knight"></i>
+                    Knights
+                  </label>
+                  <div class="wc1-unit-slider-container">
+                    <input type="range" id="wc1-knights" name="knights" min="0" max="7" value="1" class="wc1-unit-slider">
+                    <span class="wc1-unit-count">0</span>
+                  </div>
+                </div>
+                
+                <div class="wc1-unit-selector">
+                  <label for="wc1-human-catapults">
+                    <i class="fas fa-dot-circle"></i>
+                    Catapults
+                  </label>
+                  <div class="wc1-unit-slider-container">
+                    <input type="range" id="wc1-human-catapults" name="human-catapults" min="0" max="7" value="1" class="wc1-unit-slider">
+                    <span class="wc1-unit-count">0</span>
+                  </div>
+                </div>
+                
+                <div class="wc1-unit-selector">
+                  <label for="wc1-clerics">
+                    <i class="fas fa-cross"></i>
+                    Clerics
+                  </label>
+                  <div class="wc1-unit-slider-container">
+                    <input type="range" id="wc1-clerics" name="clerics" min="0" max="7" value="1" class="wc1-unit-slider">
+                    <span class="wc1-unit-count">0</span>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Orc Units (shown when Orc race selected) -->
+              <div id="wc1-orc-units" class="wc1-units-grid">
+                <div class="wc1-unit-selector">
+                  <label for="wc1-peons">
+                  <i class="fas fa-hammer"></i>
+                    Peons
+                </label>
+                  <div class="wc1-unit-slider-container">
+                    <input type="range" id="wc1-peons" name="peons" min="0" max="7" value="3" class="wc1-unit-slider">
+                    <span class="wc1-unit-count">2</span>
+              </div>
+            </div>
+
+                <div class="wc1-unit-selector">
+                  <label for="wc1-grunts">
+                    <i class="fas fa-fist-raised"></i>
+                    Grunts
+                  </label>
+                  <div class="wc1-unit-slider-container">
+                    <input type="range" id="wc1-grunts" name="grunts" min="0" max="7" value="1" class="wc1-unit-slider">
+                    <span class="wc1-unit-count">0</span>
+                  </div>
+                </div>
+                
+                <div class="wc1-unit-selector">
+                  <label for="wc1-spearmen">
+                    <i class="fas fa-spear"></i>
+                    Spearmen
+                  </label>
+                  <div class="wc1-unit-slider-container">
+                    <input type="range" id="wc1-spearmen" name="spearmen" min="0" max="7" value="1" class="wc1-unit-slider">
+                    <span class="wc1-unit-count">0</span>
+                  </div>
+                </div>
+                
+                <div class="wc1-unit-selector">
+                  <label for="wc1-raiders">
+                    <i class="fas fa-horse"></i>
+                    Raiders
+                  </label>
+                  <div class="wc1-unit-slider-container">
+                    <input type="range" id="wc1-raiders" name="raiders" min="0" max="7" value="1" class="wc1-unit-slider">
+                    <span class="wc1-unit-count">0</span>
+                  </div>
+                </div>
+                
+                <div class="wc1-unit-selector">
+                  <label for="wc1-orc-catapults">
+                    <i class="fas fa-dot-circle"></i>
+                    Catapults
+                  </label>
+                  <div class="wc1-unit-slider-container">
+                    <input type="range" id="wc1-orc-catapults" name="orc-catapults" min="0" max="7" value="1" class="wc1-unit-slider">
+                    <span class="wc1-unit-count">0</span>
+                  </div>
+                </div>
+                
+                <div class="wc1-unit-selector">
+                  <label for="wc1-necrolytes">
+                    <i class="fas fa-skull"></i>
+                    Necrolytes
+                  </label>
+                  <div class="wc1-unit-slider-container">
+                    <input type="range" id="wc1-necrolytes" name="necrolytes" min="0" max="7" value="1" class="wc1-unit-slider">
+                    <span class="wc1-unit-count">0</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Battle Outcome - Compact -->
+            <div class="wc1-field-group">
+              <label class="wc1-field-label">Battle Outcome</label>
+              <div class="wc1-outcome-compact">
+                <input type="radio" id="wc1-win" name="result" value="win" required="">
+                <label for="wc1-win" class="wc1-outcome-btn wc1-victory-btn">
+                  <i class="fas fa-crown"></i> I Won
+                </label>
+                
+                <input type="radio" id="wc1-loss" name="result" value="loss" required="">
+                <label for="wc1-loss" class="wc1-outcome-btn wc1-defeat-btn">
+                  <i class="fas fa-skull-crossbones"></i> I Lost
+                </label>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Optional Details -->
+          <div class="wc1-details-section">
+            
+            <!-- 1v1 Opponent Field (Hidden by default) - Moved above battle notes -->
+            <div class="wc1-field-group" id="opponent-field">
+              <label class="wc1-field-label">Opponent Name</label>
+              <div class="wc1-opponent-input-wrapper">
+                <input type="text" id="wc1-opponent" name="opponentName" class="wc1-input" placeholder="Enter opponent's name..." maxlength="50">
+                
+                <!-- Player Suggestions Panel for WC1 -->
+                <div class="wc1-player-suggestions" id="wc1-player-suggestions">
+                  <div class="suggestions-tabs">
+                    <button type="button" class="suggestion-tab active" data-tab="recent">Recent</button>
+                    <button type="button" class="suggestion-tab" data-tab="similar">Similar Rank</button>
+                    <button type="button" class="suggestion-tab" data-tab="search">Search</button>
+                  </div>
+                  
+                  <div class="suggestions-content">
+                    
+                    
+                    <div class="suggestion-tab-content" id="wc1-search-results">
+                      <input type="text" class="wc1-player-search" placeholder="Search players..." maxlength="50">
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Battle Notes (Optional) -->
+            <div class="wc1-field-group">
+              <label class="wc1-field-label">Battle Notes <span class="optional">(Optional)</span></label>
+              <textarea id="wc1-battle-report" name="battleReport" class="wc1-input" placeholder="Describe your strategy, key moments, or what you learned..." rows="3" maxlength="500">              </textarea>
+              <div class="char-counter">
+                <span id="battle-report-count">0</span>/500
+              </div>
+            </div>
+
+            <!-- Screenshot Upload -->
+            <div class="wc1-field-group">
+              <label class="wc1-field-label">Battle Screenshot <span class="optional">(Optional)</span></label>
+              <div class="wc1-screenshot-upload">
+                <input type="file" id="wc1-screenshot" name="screenshot" accept="image/*">
+                <button type="button" class="wc1-upload-btn">
+                  <i class="fas fa-camera"></i>
+                  <span>Upload Screenshot</span>
+                </button>
+                <div class="wc1-screenshot-preview" id="wc1-screenshot-preview">
+                  <img id="wc1-screenshot-img" alt="Screenshot preview">
+                  <button type="button" class="wc1-remove-screenshot">
+                    <i class="fas fa-times"></i>
+                  </button>
+                </div>
+                <div class="wc1-upload-progress" id="wc1-upload-progress">
+                  
+                  <span class="progress-text" id="wc1-progress-text">Processing image...</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Submit Actions -->
+          <div class="wc1-actions">
+            <button type="button" class="wc1-btn wc1-btn-cancel" id="wc1-cancel-report">
+              <i class="fas fa-times"></i> Cancel
+            </button>
+            <button type="submit" class="wc1-btn wc1-btn-submit">
+              <i class="fas fa-sword"></i>
+              <span class="submit-text">Report Battle</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="footer-container"></div>
+
+  <!-- JavaScript Dependencies -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+  
+  <!-- Shared Services -->
+  <script src="/js/services/LadderDataService.js"></script>
+  <script src="/js/services/RankService.js"></script>
+  <script src="/js/services/RecentMatchesService.js"></script>
+  <script src="/js/services/SearchManager.js"></script>
+  <script src="/js/services/UserDataService.js"></script>
+  
+  <!-- Phase 3 Services -->
+  <script src="/js/services/AdvancedCacheService.js"></script>
+  <script src="/js/services/PerformanceMonitorService.js"></script>
+  <script src="/js/services/AdvancedPrefetchService.js"></script>
+  <script src="/js/services/ProgressiveLoadingService.js"></script>
+  
+  <script src="/js/utils.js"></script>
+  
+  <!-- Match Reporting Enhancements CSS -->
+  <link rel="stylesheet" href="/css/match-reporting-enhancements.css">
+  
+  <!-- WC1 Modal Enhanced CSS -->
+  
+
+  <script type="module" src="/js/modules/ApiClient.js"></script>
+  <script type="module" src="/js/main.js"></script>
+  <script type="module" src="/js/mmr-calculator.js"></script>
+  <script type="module" src="/js/rank-animation.js"></script>
+  
+
+  <script type="module" src="/js/utils/NotificationSystem.js"></script>
+  <script type="module" src="/js/modules/ImageCompressor.js"></script>
+  <script type="module" src="/js/ultraCompressionIntegration.js"></script>
+  <script type="module" src="/js/modules/LadderManager.js"></script>
+  
+  <script type="module" src="/js/modules/GameSwitchManager.js"></script>
+  <script src="/js/api-config.js"></script>
+  <script type="module" src="/js/app.js"></script>
+  <script type="module" src="/js/playerDetails.js?v=1.0.5"></script>
+  <script type="module" src="/js/modules/ModalManager.js"></script>
+  <script type="module" src="/js/modules/UniversalModalMigrator.js"></script>
+  
+  <!-- Navbar script -->
+  <!-- Navbar JavaScript loaded via main.js -->
+  
+          <!-- Unified Moth System Manager -->
+        <script type="module" src="/js/utils/mothSystemManager.js"></script>
+
+
+</body></html>

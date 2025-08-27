@@ -1,0 +1,1584 @@
+/* =============================================================================
+   UNIFIED ANIMATION SYSTEM
+   Consolidates all animations from across the project
+   ============================================================================= */
+
+/* =============================================================================
+   CORE KEYFRAME ANIMATIONS
+   ============================================================================= */
+
+/* ===== BASIC ANIMATIONS ===== */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDownFade {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.9);
+    visibility: visible;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    visibility: visible;
+  }
+}
+
+@keyframes slideInRight {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutRight {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
+@keyframes slideInLeft {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes zoomIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -30px, 0);
+  }
+  70% {
+    transform: translate3d(0, -15px, 0);
+  }
+  90% {
+    transform: translate3d(0, -4px, 0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ===== SPECIALIZED ANIMATIONS ===== */
+
+/* Glow and Shimmer Effects */
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 5px rgba(212, 175, 55, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes loadingShimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes gradientShift {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes goldenShimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Heroic and Epic Animations */
+@keyframes heroicFlow {
+  0% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(5deg); }
+  100% { transform: translateY(0) rotate(0deg); }
+}
+
+@keyframes epicRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes heroicGlow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    filter: brightness(1);
+  }
+  50% { 
+    box-shadow: 0 0 40px rgba(212, 175, 55, 0.6);
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes epicPulse {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.4);
+  }
+  50% { 
+    transform: scale(1.1);
+    box-shadow: 0 0 50px rgba(212, 175, 55, 0.8);
+  }
+}
+
+@keyframes heroicSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-100px) scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes heroicBorderFlow {
+  0% { border-color: rgba(212, 175, 55, 0.3); }
+  50% { border-color: rgba(212, 175, 55, 0.8); }
+  100% { border-color: rgba(212, 175, 55, 0.3); }
+}
+
+@keyframes heroicPulse {
+  0%, 100% { 
+    transform: scale(1);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+  }
+  50% { 
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+  }
+}
+
+@keyframes heroicFeatured {
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-5px) scale(1.02); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+/* Modal and UI Animations */
+@keyframes modalSlideIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes modalShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes headerShimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+@keyframes iconPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@keyframes sectionShimmer {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+@keyframes iconFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes titleIconPulse {
+  0%, 100% { 
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% { 
+    transform: scale(1.05);
+    filter: brightness(1.2);
+  }
+}
+
+@keyframes warboardShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes modalEntrance {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes crownFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-3px) rotate(2deg); }
+}
+
+@keyframes skullBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-5px) scale(1.1); }
+}
+
+@keyframes vsPulse {
+  0%, 100% { 
+    transform: scale(1);
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+  }
+  50% { 
+    transform: scale(1.1);
+    text-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
+  }
+}
+
+/* Rank and Achievement Animations */
+@keyframes scaleIn {
+  0% { transform: scale(0.8); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes glow {
+  0% { filter: drop-shadow(0 0 5px rgba(136, 192, 208, 0.5)); }
+  100% { filter: drop-shadow(0 0 15px rgba(136, 192, 208, 0.9)); }
+}
+
+@keyframes arrowPulse {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.2); }
+}
+
+@keyframes achievementSlideIn {
+  0% { transform: translateX(100%); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes achievementGlow {
+  0% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+  100% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.8); }
+}
+
+@keyframes rank-up-bounce {
+  0% { transform: translateX(-50%) translateY(0) scale(1); }
+  50% { transform: translateX(-50%) translateY(-10px) scale(1.1); }
+  100% { transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+/* Loading and Progress Animations */
+@keyframes loadingDots {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+@keyframes progressBar {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+@keyframes goldenProgress {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+@keyframes goldenPulse {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% { 
+    transform: scale(1.1);
+    opacity: 0.6;
+  }
+}
+
+@keyframes goldenSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes goldenStep {
+  0%, 100% { 
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% { 
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+/* Chat and Notification Animations */
+@keyframes chatNotificationBlink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
+
+@keyframes slideInMessage {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInNotification {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes contextMenuFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes newReplyPulse {
+  0%, 100% { 
+    background-color: rgba(212, 175, 55, 0.1);
+  }
+  50% { 
+    background-color: rgba(212, 175, 55, 0.3);
+  }
+}
+
+/* Content and Particle Animations */
+@keyframes particle-float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+@keyframes gradient-shine {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes section-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes epic-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes loading-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+@keyframes pulse-live-enhanced {
+  0%, 100% { 
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+  }
+  50% { 
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
+  }
+}
+
+@keyframes float-icon {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes starGlow {
+  0%, 100% { 
+    filter: brightness(1) drop-shadow(0 0 5px rgba(255, 215, 0, 0.3));
+  }
+  50% { 
+    filter: brightness(1.3) drop-shadow(0 0 15px rgba(255, 215, 0, 0.6));
+  }
+}
+
+/* Match and Tournament Animations */
+@keyframes suggestionSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mapCardHover {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.05); }
+}
+
+@keyframes victoryText {
+  0% { 
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  50% { 
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Navbar and UI Animations */
+@keyframes mothFloat { 
+  0%, 100% { transform: translateY(0); } 
+  50% { transform: translateY(-2px); } 
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.33);
+  }
+  40%, 50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+
+/* Chart and Data Animations */
+@keyframes chartFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Utility Animations */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+  20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+
+@keyframes flip {
+  0% {
+    transform: perspective(400px) rotateY(0);
+    animation-timing-function: ease-out;
+  }
+  40% {
+    transform: perspective(400px) translateZ(150px) rotateY(170deg);
+    animation-timing-function: ease-out;
+  }
+  50% {
+    transform: perspective(400px) translateZ(150px) rotateY(190deg) scale(1);
+    animation-timing-function: ease-in;
+  }
+  80% {
+    transform: perspective(400px) rotateY(360deg) scale(0.95);
+    animation-timing-function: ease-in;
+  }
+  100% {
+    transform: perspective(400px) scale(1);
+    animation-timing-function: ease-in;
+  }
+}
+
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes backgroundShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes donationGlow {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+  }
+  50% { 
+    box-shadow: 0 0 40px rgba(212, 175, 55, 0.6);
+  }
+}
+
+/* =============================================================================
+   ANIMATION UTILITY CLASSES
+   ============================================================================= */
+
+/* ===== BASIC ANIMATION CLASSES ===== */
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-ping {
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animate-fadeOut {
+  animation: fadeOut 0.3s ease-out;
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.animate-fadeInDown {
+  animation: fadeInDown 0.6s ease-out;
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.5s ease-out;
+}
+
+.animate-slideOutRight {
+  animation: slideOutRight 0.3s ease-out;
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft 0.5s ease-out;
+}
+
+.animate-slideInDown {
+  animation: slideInDown 0.5s ease-out;
+}
+
+.animate-zoomIn {
+  animation: zoomIn 0.5s ease-out;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+.animate-flip {
+  animation: flip 1s ease-in-out;
+}
+
+.animate-glow {
+  animation: glowPulse 2s ease-in-out infinite;
+}
+
+/* ===== SPECIALIZED ANIMATION CLASSES ===== */
+
+/* Heroic and Epic Classes */
+.animate-heroic-flow {
+  animation: heroicFlow 3s ease-in-out infinite;
+}
+
+.animate-epic-rotate {
+  animation: epicRotate 2s linear infinite;
+}
+
+.animate-heroic-glow {
+  animation: heroicGlow 2s ease-in-out infinite;
+}
+
+.animate-epic-pulse {
+  animation: epicPulse 2s ease-in-out infinite;
+}
+
+.animate-heroic-slide-in {
+  animation: heroicSlideIn 0.8s ease-out;
+}
+
+.animate-heroic-border-flow {
+  animation: heroicBorderFlow 2s ease-in-out infinite;
+}
+
+.animate-heroic-pulse {
+  animation: heroicPulse 2s ease-in-out infinite;
+}
+
+.animate-heroic-featured {
+  animation: heroicFeatured 3s ease-in-out infinite;
+}
+
+/* Modal and UI Classes */
+.animate-modal-slide-in {
+  animation: modalSlideIn 0.4s ease-out;
+}
+
+.animate-modal-shimmer {
+  animation: modalShimmer 2s linear infinite;
+}
+
+.animate-header-shimmer {
+  animation: headerShimmer 3s ease-in-out infinite;
+}
+
+.animate-icon-pulse {
+  animation: iconPulse 2s ease-in-out infinite;
+}
+
+.animate-section-shimmer {
+  animation: sectionShimmer 2s ease-in-out infinite;
+}
+
+.animate-icon-float {
+  animation: iconFloat 3s ease-in-out infinite;
+}
+
+.animate-title-icon-pulse {
+  animation: titleIconPulse 2s ease-in-out infinite;
+}
+
+.animate-warboard-shimmer {
+  animation: warboardShimmer 2s linear infinite;
+}
+
+.animate-modal-entrance {
+  animation: modalEntrance 0.5s ease-out;
+}
+
+.animate-crown-float {
+  animation: crownFloat 3s ease-in-out infinite;
+}
+
+.animate-skull-bounce {
+  animation: skullBounce 2s ease-in-out infinite;
+}
+
+.animate-vs-pulse {
+  animation: vsPulse 2s ease-in-out infinite;
+}
+
+/* Rank and Achievement Classes */
+.animate-scale-in {
+  animation: scaleIn 0.5s ease-out;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animate-arrow-pulse {
+  animation: arrowPulse 1s ease-in-out infinite;
+}
+
+.animate-achievement-slide-in {
+  animation: achievementSlideIn 0.5s ease-out;
+}
+
+.animate-achievement-glow {
+  animation: achievementGlow 2s ease-in-out infinite;
+}
+
+.animate-rank-up-bounce {
+  animation: rank-up-bounce 0.6s ease-out;
+}
+
+/* Loading and Progress Classes */
+.animate-loading-dots {
+  animation: loadingDots 1.4s infinite ease-in-out both;
+}
+
+.animate-progress-bar {
+  animation: progressBar 2s linear infinite;
+}
+
+.animate-golden-progress {
+  animation: goldenProgress 2s ease-in-out infinite;
+}
+
+.animate-golden-pulse {
+  animation: goldenPulse 2s ease-in-out infinite;
+}
+
+.animate-golden-spin {
+  animation: goldenSpin 1.5s linear infinite;
+}
+
+.animate-golden-step {
+  animation: goldenStep 1.5s ease-in-out infinite;
+}
+
+/* Chat and Notification Classes */
+.animate-chat-notification-blink {
+  animation: chatNotificationBlink 1s ease-in-out infinite;
+}
+
+.animate-slide-in-message {
+  animation: slideInMessage 0.3s ease-out;
+}
+
+.animate-slide-in-notification {
+  animation: slideInNotification 0.3s ease-out;
+}
+
+.animate-context-menu-fade-in {
+  animation: contextMenuFadeIn 0.2s ease-out;
+}
+
+.animate-new-reply-pulse {
+  animation: newReplyPulse 2s ease-in-out infinite;
+}
+
+/* Content and Particle Classes */
+.animate-particle-float {
+  animation: particle-float 6s ease-in-out infinite;
+}
+
+.animate-gradient-shine {
+  animation: gradient-shine 3s linear infinite;
+}
+
+.animate-section-fade-in {
+  animation: section-fade-in 0.8s ease-out;
+}
+
+.animate-epic-spin {
+  animation: epic-spin 2s linear infinite;
+}
+
+.animate-loading-pulse {
+  animation: loading-pulse 1.5s ease-in-out infinite;
+}
+
+.animate-pulse-live-enhanced {
+  animation: pulse-live-enhanced 2s ease-in-out infinite;
+}
+
+.animate-float-icon {
+  animation: float-icon 3s ease-in-out infinite;
+}
+
+.animate-star-glow {
+  animation: starGlow 2s ease-in-out infinite;
+}
+
+/* Match and Tournament Classes */
+.animate-suggestion-slide-in {
+  animation: suggestionSlideIn 0.3s ease-out;
+}
+
+.animate-map-card-hover {
+  animation: mapCardHover 0.3s ease-out;
+}
+
+.animate-victory-text {
+  animation: victoryText 0.8s ease-out;
+}
+
+/* Navbar and UI Classes */
+.animate-moth-float {
+  animation: mothFloat 3s ease-in-out infinite;
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+/* Chart and Data Classes */
+.animate-chart-fade-in {
+  animation: chartFadeIn 0.6s ease-out;
+}
+
+/* Utility Classes */
+.animate-shimmer {
+  animation: shimmer 3s infinite;
+}
+
+.animate-gradient-shift {
+  animation: gradientShift 3s ease-in-out infinite;
+}
+
+.animate-golden-shimmer {
+  animation: goldenShimmer 2s ease-in-out infinite;
+}
+
+.animate-background-shift {
+  animation: backgroundShift 3s ease-in-out infinite;
+}
+
+.animate-donation-glow {
+  animation: donationGlow 2s ease-in-out infinite;
+}
+
+/* =============================================================================
+   HOVER ANIMATIONS
+   ============================================================================= */
+
+.hover-lift {
+  transition: transform var(--transition-normal);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+.hover-scale {
+  transition: transform var(--transition-normal);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-glow {
+  transition: box-shadow var(--transition-normal);
+}
+
+.hover-glow:hover {
+  box-shadow: var(--shadow-glow);
+}
+
+.hover-rotate {
+  transition: transform var(--transition-normal);
+}
+
+.hover-rotate:hover {
+  transform: rotate(5deg);
+}
+
+.hover-skew {
+  transition: transform var(--transition-normal);
+}
+
+.hover-skew:hover {
+  transform: skew(-5deg);
+}
+
+/* =============================================================================
+   LOADING ANIMATIONS
+   ============================================================================= */
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--glass-border);
+  border-top: 4px solid var(--warcraft-gold);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-dots {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.loading-dots .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--warcraft-gold);
+  animation: loadingDots 1.4s infinite ease-in-out both;
+}
+
+.loading-dots .dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dots .dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+.loading-progress {
+  width: 100%;
+  height: 4px;
+  background: var(--glass-border);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.loading-progress::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent,
+    var(--warcraft-gold),
+    transparent
+  );
+  animation: progressBar 2s linear infinite;
+}
+
+/* =============================================================================
+   ENTRANCE ANIMATIONS
+   ============================================================================= */
+
+.entrance-delay-1 {
+  animation-delay: 0.1s;
+}
+
+.entrance-delay-2 {
+  animation-delay: 0.2s;
+}
+
+.entrance-delay-3 {
+  animation-delay: 0.3s;
+}
+
+.entrance-delay-4 {
+  animation-delay: 0.4s;
+}
+
+.entrance-delay-5 {
+  animation-delay: 0.5s;
+}
+
+/* =============================================================================
+   SCROLL ANIMATIONS
+   ============================================================================= */
+
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 0.6s ease-out;
+}
+
+.scroll-reveal.revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.scroll-reveal-left {
+  opacity: 0;
+  transform: translateX(-50px);
+  transition: all 0.6s ease-out;
+}
+
+.scroll-reveal-left.revealed {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.scroll-reveal-right {
+  opacity: 0;
+  transform: translateX(50px);
+  transition: all 0.6s ease-out;
+}
+
+.scroll-reveal-right.revealed {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* =============================================================================
+   NOTIFICATION ANIMATIONS
+   ============================================================================= */
+
+.notification-enter {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.notification-exit {
+  animation: slideInRight 0.3s ease-out reverse;
+}
+
+/* =============================================================================
+   MODAL ANIMATIONS
+   ============================================================================= */
+
+.modal-enter {
+  animation: fadeIn 0.3s ease-out,
+             zoomIn 0.3s ease-out;
+}
+
+.modal-exit {
+  animation: fadeIn 0.2s ease-out reverse;
+}
+
+/* =============================================================================
+   BUTTON ANIMATIONS
+   ============================================================================= */
+
+.btn-loading {
+  position: relative;
+  color: transparent;
+}
+
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin-left: -8px;
+  margin-top: -8px;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  color: inherit;
+}
+
+/* =============================================================================
+   PAGE TRANSITION ANIMATIONS
+   ============================================================================= */
+
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+.page-transition-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+
+/* =============================================================================
+   PERFORMANCE OPTIMIZATIONS
+   ============================================================================= */
+
+.gpu-accelerated {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.reduce-motion {
+  animation-duration: 0.01ms;
+  animation-iteration-count: 1;
+  transition-duration: 0.01ms;
+}
+
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+    transition-duration: 0.01ms;
+    scroll-behavior: auto;
+  }
+}
+
+/* =============================================================================
+   STAGGER ANIMATIONS
+   ============================================================================= */
+
+.stagger-children > * {
+  animation-delay: calc(var(--stagger-delay, 0.1s) * var(--stagger-index, 0));
+}
+
+.stagger-children > *:nth-child(1) { --stagger-index: 1; }
+.stagger-children > *:nth-child(2) { --stagger-index: 2; }
+.stagger-children > *:nth-child(3) { --stagger-index: 3; }
+.stagger-children > *:nth-child(4) { --stagger-index: 4; }
+.stagger-children > *:nth-child(5) { --stagger-index: 5; }
+.stagger-children > *:nth-child(6) { --stagger-index: 6; }
+.stagger-children > *:nth-child(7) { --stagger-index: 7; }
+.stagger-children > *:nth-child(8) { --stagger-index: 8; }
+.stagger-children > *:nth-child(9) { --stagger-index: 9; }
+.stagger-children > *:nth-child(10) { --stagger-index: 10; } 
+
+/* =============================================================================
+   SHIMMER ANIMATIONS
+   ============================================================================= */
+
+@keyframes shimmer-slide {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes shimmer-left {
+  0% { left: -100%; }
+  100% { left: 100%; }
+} 
+
+/* =============================================================================
+   COLOR-SPECIFIC PULSE ANIMATIONS
+   ============================================================================= */
+
+@keyframes pulse-gold {
+  0%, 100% { 
+    box-shadow: var(--shadow-gold);
+  }
+  50% { 
+    box-shadow: var(--shadow-gold-glow);
+  }
+}
+
+@keyframes pulse-alliance {
+  0%, 100% { 
+    box-shadow: var(--shadow-alliance);
+  }
+  50% { 
+    box-shadow: 0 0 20px rgba(37, 99, 235, 0.6);
+  }
+}
+
+@keyframes pulse-horde {
+  0%, 100% { 
+    box-shadow: var(--shadow-horde);
+  }
+  50% { 
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.6);
+  }
+} 
+
+/* =============================================================================
+   BUTTON-SPECIFIC ANIMATIONS
+   ============================================================================= */
+
+@keyframes pulse-glow {
+  0% { box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3); }
+  100% { box-shadow: 0 15px 40px rgba(255, 107, 53, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.5); }
+}
+
+@keyframes rotate-glow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+} 
+
+/* =============================================================================
+   MODAL-SPECIFIC ANIMATIONS
+   ============================================================================= */
+
+@keyframes slideIn {
+  from { 
+    transform: translateY(-50px) scale(0.9);
+    opacity: 0;
+  }
+  to { 
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from { 
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  to { 
+    transform: translateY(-50px) scale(0.9);
+    opacity: 0;
+  }
+} 
+
+/* =============================================================================
+   WARCRAFT APP SPECIFIC ANIMATIONS
+   ============================================================================= */
+
+@keyframes sparkle {
+  0%, 100% { 
+    opacity: 0; 
+    transform: scale(0); 
+  }
+  50% { 
+    opacity: 1; 
+    transform: scale(1); 
+  }
+}
+
+@keyframes gentle-pulse {
+  0%, 100% { 
+    transform: rotate(10deg) scale(1.1); 
+  }
+  50% { 
+    transform: rotate(10deg) scale(1.15); 
+  }
+} 
+
+/* =============================================================================
+   WARCRAFT APP PULSE ANIMATIONS
+   ============================================================================= */
+
+@keyframes blacksmithPulse {
+  0%, 100% {
+    background-position: 0% 50%;
+    filter: brightness(1) saturate(1);
+  }
+  25% {
+    background-position: 50% 0%;
+    filter: brightness(1.2) saturate(1.3);
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: brightness(1.4) saturate(1.5);
+  }
+  75% {
+    background-position: 50% 100%;
+    filter: brightness(1.2) saturate(1.3);
+  }
+}
+
+@keyframes arenaPulse {
+  0%, 100% {
+    background-position: 0% 50%;
+    filter: brightness(1) saturate(1);
+  }
+  25% {
+    background-position: 50% 0%;
+    filter: brightness(1.2) saturate(1.3);
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: brightness(1.4) saturate(1.5);
+  }
+  75% {
+    background-position: 50% 100%;
+    filter: brightness(1.2) saturate(1.3);
+  }
+}
+
+@keyframes livePulse {
+  0%, 100% {
+    background-position: 0% 50%;
+    filter: brightness(1) saturate(1);
+  }
+  25% {
+    background-position: 50% 0%;
+    filter: brightness(1.2) saturate(1.3);
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: brightness(1.4) saturate(1.5);
+  }
+  75% {
+    background-position: 50% 100%;
+    filter: brightness(1.2) saturate(1.3);
+  }
+}
+
+@keyframes wizardsTowerPulse {
+  0%, 100% {
+    background-position: 0% 50%;
+    filter: brightness(1) saturate(1);
+  }
+  25% {
+    background-position: 50% 0%;
+    filter: brightness(1.1) saturate(1.2);
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: brightness(1.2) saturate(1.3);
+  }
+  75% {
+    background-position: 50% 100%;
+    filter: brightness(1.1) saturate(1.2);
+  }
+}
+
+@keyframes townhallPulse {
+  0%, 100% {
+    background-position: 0% 50%;
+    filter: brightness(1) saturate(1);
+  }
+  25% {
+    background-position: 50% 0%;
+    filter: brightness(1.1) saturate(1.2);
+  }
+  50% {
+    background-position: 100% 50%;
+    filter: brightness(1.2) saturate(1.3);
+  }
+  75% {
+    background-position: 50% 100%;
+    filter: brightness(1.1) saturate(1.2);
+  }
+} 
+
+/* =============================================================================
+   WARCRAFT APP TEXT GLOW ANIMATIONS
+   ============================================================================= */
+
+@keyframes textGlowBlacksmith {
+  0%, 100% {
+    color: var(--primary-gold);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 
+                 0 0 10px rgba(212, 175, 55, 0.3);
+  }
+  25% {
+    color: #FF8C00;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 
+                 0 0 15px rgba(255, 140, 0, 0.4);
+  }
+  50% {
+    color: #DC143C;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 
+                 0 0 20px rgba(220, 20, 60, 0.5);
+  }
+  75% {
+    color: #FF8C00;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 
+                 0 0 15px rgba(255, 140, 0, 0.4);
+  }
+}
+
+@keyframes textGlowArena {
+  0%, 100% {
+    color: #FFD700;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 
+                 0 0 15px rgba(255, 215, 0, 0.5);
+  }
+  25% {
+    color: #00BFFF;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 
+                 0 0 20px rgba(0, 191, 255, 0.6);
+  }
+  50% {
+    color: #1E90FF;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 
+                 0 0 25px rgba(30, 144, 255, 0.7);
+  }
+  75% {
+    color: #00BFFF;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 
+                 0 0 20px rgba(0, 191, 255, 0.6);
+  }
+}
+
+@keyframes textGlowLive {
+  0%, 100% {
+    color: #FF6B6B;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 
+                 0 0 15px rgba(255, 107, 107, 0.5);
+  }
+  25% {
+    color: #4ECDC4;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 
+                 0 0 20px rgba(78, 205, 196, 0.6);
+  }
+  50% {
+    color: #45B7D1;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 
+                 0 0 25px rgba(69, 183, 209, 0.7);
+  }
+  75% {
+    color: #4ECDC4;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 
+                 0 0 20px rgba(78, 205, 196, 0.6);
+  }
+}
+
+@keyframes textGlowTownhall {
+  0%, 100% {
+    color: #D4AF37;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 
+                 0 0 15px rgba(212, 175, 55, 0.5);
+  }
+  25% {
+    color: #B8860B;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 
+                 0 0 20px rgba(184, 134, 11, 0.6);
+  }
+  50% {
+    color: #CD853F;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 
+                 0 0 25px rgba(205, 133, 63, 0.7);
+  }
+  75% {
+    color: #B8860B;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8), 
+                 0 0 20px rgba(184, 134, 11, 0.6);
+  }
+} 
+
+/* ===== LOGIN PAGE ANIMATIONS ===== */
+@keyframes epicGradientShift {
+  0% { background-position: 0% 50%; }
+  25% { background-position: 100% 50%; }
+  50% { background-position: 100% 100%; }
+  75% { background-position: 0% 100%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes magicalSparkle {
+  0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+  100% { transform: translateY(-100vh) rotate(360deg) scale(0.5); opacity: 0; }
+}
+
+@keyframes floatingRunes {
+  0% { transform: translateY(100vh) rotate(0deg); }
+  100% { transform: translateY(-100vh) rotate(360deg); }
+}
+
+@keyframes cardEntrance {
+  0% {
+    transform: translateY(100px) scale(0.9);
+    opacity: 0;
+    filter: blur(10px);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes borderGlow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes logoFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(5deg); }
+}
+
+@keyframes decoration-float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(5deg); }
+}
+
+@keyframes titleGlow {
+  0%, 100% { text-shadow: 
+    0 0 20px rgba(255, 215, 0, 0.8),
+    0 0 40px rgba(255, 215, 0, 0.6),
+    0 0 60px rgba(255, 215, 0, 0.4); }
+  50% { text-shadow: 
+    0 0 30px rgba(255, 215, 0, 1),
+    0 0 50px rgba(255, 215, 0, 0.8),
+    0 0 70px rgba(255, 215, 0, 0.6); }
+}
+

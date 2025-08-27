@@ -1,0 +1,484 @@
+/* ===== WIZARDS TOWER ENHANCED CSS ===== */
+/* Enhanced styling for the Wizard's Tower page */
+
+/* App Container Override for Wizards Tower */
+.app-container {
+  padding-top: calc(80px + var(--space-6));
+}
+
+/* Wiki User Stats */
+.wiki-user-stats {
+  display: none;
+}
+
+/* ===== WIZARDS TOWER CONTAINER PATTERN CONSOLIDATED WITH .wiki-card-content UTILITY ===== */
+
+/* Page Header */
+.page-header {
+  text-align: center;
+  margin-bottom: 3rem;
+  padding: 2rem 0;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(139, 69, 19, 0.1) 100%);
+  border-radius: 15px;
+  border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.page-title {
+  font-family: 'Cinzel', serif;
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--primary-gold);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.page-title i {
+  font-size: 2.5rem;
+  color: var(--primary-gold);
+}
+
+/* Game Tabs */
+/* ===== GAME TABS PATTERN CONSOLIDATED WITH .sub-tabs UTILITY ===== */
+
+.game-tab {
+  background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+  border: 2px solid #444;
+  color: #ccc;
+  padding: 1rem 2rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 150px;
+  justify-content: center;
+}
+
+.game-tab:hover {
+  border-color: var(--primary-gold);
+  color: var(--primary-gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+.game-tab.active {
+  background: linear-gradient(135deg, var(--primary-gold) 0%, #b8860b 100%);
+  border-color: var(--primary-gold);
+  color: #000;
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.5);
+}
+
+.game-tab i {
+  font-size: 1.2rem;
+}
+
+/* Sub-tabs */
+
+.sub-tabs {
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+
+
+.sub-tab {
+  background: linear-gradient(135deg, #333 0%, #222 100%);
+  border: 1px solid #555;
+  color: #aaa;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  /* ===== FONT SIZE PATTERN CONSOLIDATED WITH .text-base UTILITY ===== */
+  /* ===== FLEX PATTERN CONSOLIDATED WITH .inline-flex-center-gap-2 UTILITY ===== */
+  min-width: 120px;
+  justify-content: center;
+}
+
+.sub-tab:hover {
+  border-color: var(--primary-gold);
+  color: var(--primary-gold);
+  /* ===== HOVER PATTERN CONSOLIDATED WITH .hover-translate-y-2 UTILITY ===== */
+}
+
+.sub-tab.active {
+  background: linear-gradient(135deg, #444 0%, #333 100%);
+  border-color: var(--primary-gold);
+  color: var(--primary-gold);
+  box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+}
+
+.sub-tab i {
+  /* ===== FONT SIZE PATTERN CONSOLIDATED WITH .text-base UTILITY ===== */
+}
+
+/* Content Areas */
+.wiki-content {
+  /* ===== DISPLAY PATTERN REPLACED WITH .hidden UTILITY ===== */
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease-in-out;
+}
+
+.wiki-content.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+
+
+.game-content.active {
+  /* ===== DISPLAY PATTERN REPLACED WITH .block UTILITY ===== */
+}
+
+
+
+.sub-content.active {
+  /* ===== DISPLAY PATTERN REPLACED WITH .block UTILITY ===== */
+}
+
+/* Loading Indicator */
+.loading-container {
+  /* ===== DISPLAY PATTERN REPLACED WITH .hidden UTILITY ===== */
+  /* ===== FLEX PATTERN CONSOLIDATED WITH .flex-col-center UTILITY ===== */
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(212, 175, 55, 0.3);
+  border-top: 4px solid var(--primary-gold);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-container p {
+  color: var(--primary-gold);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+/* Wiki Sections */
+.wiki-sections {
+  display: grid;
+  gap: 3rem;
+}
+
+.wiki-section {
+  background: linear-gradient(135deg, rgba(44, 44, 44, 0.8) 0%, rgba(26, 26, 26, 0.8) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 15px;
+  padding: 2rem;
+  backdrop-filter: blur(10px);
+}
+
+.section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--primary-gold);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-bottom: 2px solid rgba(212, 175, 55, 0.3);
+  padding-bottom: 0.75rem;
+}
+
+/* ===== SECTION TITLE ICON PATTERN CONSOLIDATED WITH .section-title UTILITY ===== */
+
+/* Wiki Grid */
+.wiki-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+/* Wiki Cards */
+.wiki-card {
+  background: linear-gradient(135deg, rgba(51, 51, 51, 0.9) 0%, rgba(34, 34, 34, 0.9) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  backdrop-filter: blur(5px);
+}
+
+.wiki-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--primary-gold);
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+}
+
+.wiki-card-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.wiki-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.wiki-card:hover .wiki-card-image img {
+  transform: scale(1.05);
+}
+
+.wiki-card-image::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.wiki-card-content {
+  padding: 1.5rem;
+}
+
+.wiki-card-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--primary-gold);
+  margin: 0 0 0.75rem 0;
+  line-height: 1.2;
+}
+
+.wiki-card-description {
+  color: #ccc;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  font-family: 'Inter', sans-serif;
+}
+
+.wiki-card-stats {
+  /* ===== GRID PATTERN REPLACED WITH .grid-auto-fit-xs UTILITY ===== */
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  background: rgba(212, 175, 55, 0.1);
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.stat-label {
+  color: #aaa;
+  font-weight: 500;
+  font-family: 'Inter', sans-serif;
+}
+
+.stat-value {
+  color: var(--primary-gold);
+  font-weight: 600;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Wiki Content Text */
+.wiki-content-text {
+  color: #ccc;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+}
+
+.wiki-content-text h4 {
+  color: var(--primary-gold);
+  font-family: 'Cinzel', serif;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.75rem 0;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+  padding-bottom: 0.5rem;
+}
+
+.wiki-content-text h4:first-child {
+  margin-top: 0;
+}
+
+.wiki-content-text p {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.wiki-content-text ul {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.wiki-content-text li {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.wiki-content-text strong {
+  color: var(--primary-gold);
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .wiki-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  
+  
+  .page-title {
+    font-size: 2rem;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .game-tabs {
+    /* ===== FLEX DIRECTION PATTERN REPLACED WITH .flex-col UTILITY ===== */
+    align-items: center;
+  }
+  
+  .game-tab {
+    width: 100%;
+    max-width: 300px;
+  }
+  
+  .sub-tabs {
+    /* ===== FLEX DIRECTION PATTERN REPLACED WITH .flex-col UTILITY ===== */
+    align-items: center;
+  }
+  
+  .sub-tab {
+    width: 100%;
+    max-width: 250px;
+  }
+  
+
+  
+  .section-title {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+
+  
+  .wiki-card-image {
+    height: 150px;
+  }
+}
+
+/* Animation Classes */
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Loading States */
+.wiki-card.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.wiki-card.loading .wiki-card-image {
+  background: linear-gradient(90deg, #333 25%, #444 50%, #333 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Search Highlight */
+.wiki-card.search-highlight {
+  border-color: var(--primary-gold);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, rgba(34, 34, 34, 0.9) 100%);
+  box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+/* Error States */
+.wiki-card-image img[src*="default"] {
+  opacity: 0.5;
+}
+
+.wiki-card-image img[src*="default"]::after {
+  content: 'Image not available';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #666;
+  font-size: 0.9rem;
+  font-family: 'Inter', sans-serif;
+} 

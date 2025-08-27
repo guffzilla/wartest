@@ -1,0 +1,284 @@
+/**
+ * WC3 Extracted Images Styles
+ * Styles for displaying extracted WC3 minimap images
+ */
+
+/* Map card image enhancements for extracted minimaps */
+.wc3-map-card .wc3-map-thumbnail.extracted-minimap {
+  position: relative;
+  border: 2px solid #4a90e2;
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+.wc3-map-card .wc3-map-thumbnail.extracted-minimap img {
+  border-radius: 8px;
+  transition: transform 0.3s ease;
+}
+
+.wc3-map-card .wc3-map-thumbnail.extracted-minimap:hover img {
+  transform: scale(1.05);
+}
+
+/* Minimap badge for extracted images */
+.minimap-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: linear-gradient(135deg, #4a90e2, #357abd);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+}
+
+.minimap-badge i {
+  margin-right: 2px;
+}
+
+/* Interactive Star Ratings for WC3 Cards */
+.wc3-map-card .wc3-map-rating-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.wc3-map-card .interactive-stars {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.wc3-map-card .interactive-stars.rating-stars-small {
+  gap: 1px;
+}
+
+.wc3-map-card .interactive-stars .rating-star {
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6b7280;
+}
+
+.wc3-map-card .interactive-stars .rating-star:hover {
+  transform: scale(1.2);
+  color: #ffd700;
+}
+
+.wc3-map-card .interactive-stars .rating-star.fas {
+  color: #ffd700;
+}
+
+.wc3-map-card .average-rating-text {
+  font-size: 0.85rem;
+  color: #6b7280;
+  font-weight: 500;
+  min-width: 25px;
+}
+
+/* Static star ratings for guests */
+.wc3-map-card .rating-stars {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.wc3-map-card .rating-stars i {
+  font-size: 14px;
+  color: #ffd700;
+}
+
+.wc3-map-card .rating-stars .far {
+  color: #6b7280;
+}
+
+/* Fullscreen modal enhancements */
+.map-fullscreen-modal .extracted-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #4a90e2, #357abd);
+  color: white;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-left: 12px;
+  vertical-align: middle;
+}
+
+.map-fullscreen-modal .extracted-badge i {
+  margin-right: 4px;
+}
+
+.map-fullscreen-modal .image-quality-note {
+  text-align: center;
+  color: #4a90e2;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-top: 8px;
+  padding: 8px;
+  background: rgba(74, 144, 226, 0.1);
+  border-radius: 6px;
+  border: 1px solid rgba(74, 144, 226, 0.2);
+}
+
+/* Enhanced image display for extracted minimaps */
+.map-fullscreen-modal .map-image-container-fullscreen img {
+  max-width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Special styling for extracted minimap images */
+.extracted-minimap img {
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+
+/* Hover effects for map cards with extracted images */
+.wc3-map-card .wc3-map-thumbnail.extracted-minimap:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(74, 144, 226, 0.4);
+}
+
+/* Loading state for extracted images */
+.wc3-map-card .wc3-map-thumbnail.extracted-minimap.loading {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading-shimmer 1.5s infinite;
+}
+
+@keyframes loading-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Quality indicator for different image types */
+.wc3-map-card .wc3-map-thumbnail::after {
+  content: '';
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #28a745;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.wc3-map-card .wc3-map-thumbnail.extracted-minimap::after {
+  opacity: 1;
+  background: #4a90e2;
+  box-shadow: 0 0 6px rgba(74, 144, 226, 0.6);
+}
+
+.wc3-map-card .wc3-map-thumbnail.default-thumbnail::after {
+  opacity: 1;
+  background: #6c757d;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .minimap-badge {
+    font-size: 0.7rem;
+    padding: 3px 6px;
+  }
+  
+  .map-fullscreen-modal .extracted-badge {
+    font-size: 0.75rem;
+    padding: 3px 8px;
+    margin-left: 8px;
+  }
+  
+  .map-fullscreen-modal .image-quality-note {
+    font-size: 0.8rem;
+    padding: 6px;
+  }
+  
+  /* Mobile star rating adjustments */
+  .wc3-map-card .interactive-stars .rating-star {
+    font-size: 12px;
+  }
+  
+  .wc3-map-card .average-rating-text {
+    font-size: 0.8rem;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .wc3-map-card .wc3-map-thumbnail.extracted-minimap {
+    border-color: #5ba3f5;
+    box-shadow: 0 4px 12px rgba(91, 163, 245, 0.4);
+  }
+  
+  .minimap-badge {
+    background: linear-gradient(135deg, #5ba3f5, #4a90e2);
+  }
+  
+  .map-fullscreen-modal .extracted-badge {
+    background: linear-gradient(135deg, #5ba3f5, #4a90e2);
+  }
+  
+  .map-fullscreen-modal .image-quality-note {
+    color: #5ba3f5;
+    background: rgba(91, 163, 245, 0.15);
+    border-color: rgba(91, 163, 245, 0.3);
+  }
+  
+  /* Dark mode star ratings */
+  .wc3-map-card .average-rating-text {
+    color: #9ca3af;
+  }
+  
+  .wc3-map-card .interactive-stars .rating-star {
+    color: #4b5563;
+  }
+  
+  .wc3-map-card .rating-stars .far {
+    color: #4b5563;
+  }
+}
+
+/* Animation for newly loaded extracted images */
+.wc3-map-card .wc3-map-thumbnail.extracted-minimap img {
+  animation: fadeInScale 0.6s ease-out;
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Star rating animation effects */
+.wc3-map-card .interactive-stars .rating-star {
+  animation: starPulse 0.3s ease-out;
+}
+
+@keyframes starPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+} 

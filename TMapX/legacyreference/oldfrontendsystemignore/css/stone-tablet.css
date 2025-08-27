@@ -1,0 +1,1429 @@
+/* Stone Tablet Page - Clean, Minimal Layout */
+body[data-page="stone-tablet"] {
+  margin: 0;
+  padding: 0;
+  background: #0a0a0a;
+  color: #fff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Main container - full width */
+body[data-page="stone-tablet"] .main-container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+body[data-page="stone-tablet"] .content-wrapper {
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Page header */
+body[data-page="stone-tablet"] .page-header {
+  background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+  padding: 1.5rem 2rem;
+  border-bottom: 2px solid #333;
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+body[data-page="stone-tablet"] .header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+body[data-page="stone-tablet"] .page-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  color: #ffd700;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+body[data-page="stone-tablet"] .page-subtitle {
+  color: #aaa;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Stone Tablet specific button styles */
+body[data-page="stone-tablet"] .stone-tablet-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #8B4513, #A0522D);
+  border: 2px solid #8B4513;
+  border-radius: 8px;
+  color: #FFD700;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 16px rgba(139, 69, 19, 0.3);
+}
+
+body[data-page="stone-tablet"] .stone-tablet-btn:hover {
+  background: linear-gradient(135deg, #A0522D, #CD853F);
+  border-color: #A0522D;
+  color: #FFD700;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(139, 69, 19, 0.5);
+}
+
+body[data-page="stone-tablet"] .stone-tablet-btn:active {
+  transform: translateY(0);
+}
+
+/* Responsive design for stone tablet page */
+@media (max-width: 768px) {
+  body[data-page="stone-tablet"] .page-header {
+    padding: 1rem;
+  }
+  
+  body[data-page="stone-tablet"] .page-title {
+    font-size: 2rem;
+  }
+  
+  body[data-page="stone-tablet"] .header-content {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  body[data-page="stone-tablet"] .stone-tablet-btn {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* ===== FORUM STYLING ===== */
+
+/* Forum Container */
+body[data-page="stone-tablet"] .forum-container {
+  max-width: none;
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--space-6);
+  padding-top: calc(80px + var(--space-6));
+  min-height: 100vh;
+}
+
+/* Forum Header */
+body[data-page="stone-tablet"] .forum-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+  position: relative;
+}
+
+body[data-page="stone-tablet"] .forum-title {
+  font-family: var(--font-display);
+  font-size: 3.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary-gold), var(--primary-gold-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--space-3);
+  text-shadow: 0 0 40px rgba(212, 175, 55, 0.6);
+  letter-spacing: -0.025em;
+}
+
+body[data-page="stone-tablet"] .forum-subtitle {
+  color: var(--neutral-300);
+  font-size: 1.25rem;
+  font-weight: 500;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Game Selector Tabs */
+body[data-page="stone-tablet"] .game-tabs-container {
+  margin-bottom: var(--space-8);
+  display: flex;
+  justify-content: center;
+}
+
+body[data-page="stone-tablet"] .game-tabs-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+body[data-page="stone-tablet"] .game-tabs {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: center;
+  flex: 1;
+}
+
+body[data-page="stone-tablet"] .game-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.8rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow: hidden;
+  min-width: 100px;
+  justify-content: center;
+}
+
+body[data-page="stone-tablet"] .game-tab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+  transition: left 0.6s;
+}
+
+body[data-page="stone-tablet"] .game-tab:hover {
+  background: rgba(255, 215, 0, 0.08);
+  border-color: rgba(255, 215, 0, 0.2);
+  color: #ffd700;
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 3px 10px rgba(255, 215, 0, 0.2);
+}
+
+body[data-page="stone-tablet"] .game-tab:hover::before {
+  left: 100%;
+}
+
+body[data-page="stone-tablet"] .game-tab.active {
+  background: linear-gradient(45deg, rgba(255, 215, 0, 0.15), rgba(255, 237, 78, 0.15));
+  border-color: #ffd700;
+  color: #ffd700;
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 3px 10px rgba(255, 215, 0, 0.3);
+}
+
+body[data-page="stone-tablet"] .game-tab i {
+  font-size: 0.9rem;
+}
+
+body[data-page="stone-tablet"] .game-tab span {
+  font-size: 0.7rem;
+}
+
+/* Clan tab specific styling */
+body[data-page="stone-tablet"] #clan-forum-tab {
+  background: linear-gradient(135deg, #8B4513, #A0522D);
+  border-color: #8B4513;
+  color: #FFD700;
+}
+
+body[data-page="stone-tablet"] #clan-forum-tab:hover {
+  background: linear-gradient(135deg, #A0522D, #CD853F);
+  border-color: #A0522D;
+  color: #FFD700;
+}
+
+body[data-page="stone-tablet"] #clan-forum-tab.active {
+  background: linear-gradient(135deg, #FFD700, #FFA500);
+  color: #8B4513;
+  border-color: #FFD700;
+}
+
+/* Forum Stats */
+body[data-page="stone-tablet"] .forum-stats {
+  display: flex;
+  gap: var(--space-4);
+  align-items: center;
+}
+
+body[data-page="stone-tablet"] .forum-stat {
+  text-align: center;
+  padding: var(--space-3) var(--space-4);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+body[data-page="stone-tablet"] .forum-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--primary-gold);
+  margin-bottom: var(--space-1);
+}
+
+body[data-page="stone-tablet"] .forum-stat-label {
+  font-size: 0.875rem;
+  color: var(--neutral-400);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Main Forum Layout */
+body[data-page="stone-tablet"] .forum-main {
+  display: flex;
+  gap: var(--space-10);
+  align-items: flex-start;
+  max-width: 100%;
+}
+
+/* Center and widen the content area */
+body[data-page="stone-tablet"] .forum-feed {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+body[data-page="stone-tablet"] .posts-feed {
+  width: 100%;
+  max-width: 1400px;
+}
+
+/* Ensure create button stacks above posts and matches content width */
+body[data-page="stone-tablet"] .forum-feed #create-post-button {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto var(--space-4);
+}
+
+@media (max-width: 1024px) {
+  body[data-page="stone-tablet"] .forum-main {
+    flex-direction: column;
+    gap: var(--space-6);
+  }
+}
+
+/* Post Composer */
+body[data-page="stone-tablet"] .post-composer {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+  box-shadow: var(--glass-shadow);
+}
+
+body[data-page="stone-tablet"] .composer-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+body[data-page="stone-tablet"] .composer-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+body[data-page="stone-tablet"] .composer-input-area {
+  flex: 1;
+}
+
+body[data-page="stone-tablet"] .composer-textarea {
+  width: 100%;
+  min-height: 120px;
+  background: var(--bg-card);
+  border: 2px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-4);
+  color: var(--neutral-100);
+  font-family: var(--font-primary);
+  font-size: 1rem;
+  line-height: 1.6;
+  resize: vertical;
+  transition: all var(--transition-normal);
+}
+
+body[data-page="stone-tablet"] .composer-textarea:focus {
+  outline: none;
+  border-color: var(--primary-gold);
+  box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);
+  background: var(--bg-card-hover);
+}
+
+body[data-page="stone-tablet"] .composer-textarea::placeholder {
+  color: var(--neutral-500);
+  font-style: italic;
+}
+
+body[data-page="stone-tablet"] .composer-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--glass-border);
+}
+
+body[data-page="stone-tablet"] .composer-tools {
+  display: flex;
+  gap: var(--space-2);
+}
+
+body[data-page="stone-tablet"] .composer-tool {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: var(--bg-card);
+  color: var(--neutral-400);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--glass-border);
+}
+
+body[data-page="stone-tablet"] .composer-tool:hover {
+  background: var(--bg-card-hover);
+  color: var(--primary-gold);
+  border-color: var(--primary-gold);
+  transform: translateY(-1px);
+}
+
+body[data-page="stone-tablet"] .post-button {
+  background: linear-gradient(135deg, var(--primary-gold), var(--primary-gold-light));
+  color: var(--neutral-900);
+  border: none;
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-xl);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+}
+
+body[data-page="stone-tablet"] .post-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(212, 175, 55, 0.5);
+}
+
+body[data-page="stone-tablet"] .post-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===== POST CARDS ===== */
+
+/* Live Posts Feed */
+body[data-page="stone-tablet"] .posts-feed {
+  space-y: var(--space-6);
+  margin: 0 auto;
+}
+
+body[data-page="stone-tablet"] .post-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-7);
+  margin-bottom: var(--space-7);
+  box-shadow: var(--glass-shadow);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: visible;
+}
+
+/* Ensure header lays out properly across full width */
+body[data-page="stone-tablet"] .post-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+  width: 100%;
+  box-sizing: border-box;
+  overflow: visible;
+}
+
+body[data-page="stone-tablet"] .post-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 3px solid var(--primary-gold);
+  object-fit: cover;
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.3);
+}
+
+body[data-page="stone-tablet"] .post-author-info {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: visible;
+}
+
+body[data-page="stone-tablet"] .post-actions-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+  flex-shrink: 0;
+  position: static !important;
+  z-index: 1 !important;
+}
+
+body[data-page="stone-tablet"] .delete-post-btn {
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 2;
+}
+
+body[data-page="stone-tablet"] .post-category-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  margin-left: 0.5rem;
+}
+
+body[data-page="stone-tablet"] .post-category-badge.announcement {
+  background: rgba(212, 175, 55, 0.15);
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  color: #ffd700;
+}
+
+body[data-page="stone-tablet"] .post-category-badge.result {
+  background: rgba(76, 175, 80, 0.12);
+  border: 1px solid rgba(76, 175, 80, 0.35);
+  color: #9be19b;
+}
+
+body[data-page="stone-tablet"] .post-category-badge.strategy {
+  background: rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(37, 99, 235, 0.35);
+  color: #93c5fd;
+}
+
+body[data-page="stone-tablet"] .post-category-badge.content {
+  background: rgba(244, 114, 182, 0.12);
+  border: 1px solid rgba(244, 114, 182, 0.35);
+  color: #f9a8d4;
+}
+
+/* Post card hover effects */
+body[data-page="stone-tablet"] .post-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--primary-gold), transparent);
+  opacity: 0;
+  transition: var(--transition-normal);
+}
+
+body[data-page="stone-tablet"] .post-card:hover::before {
+  opacity: 1;
+}
+
+body[data-page="stone-tablet"] .post-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(212, 175, 55, 0.3);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+}
+
+/* Stone Tablet: scoped, resilient styling for the delete post button */
+body[data-page="stone-tablet"] #forum-container .post-actions-header {
+  white-space: nowrap;
+  margin-right: 0.5rem;
+}
+
+body[data-page="stone-tablet"] #forum-container .post-actions-header .delete-post-btn {
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  border-radius: 0.375rem;
+  background: transparent;
+  color: var(--danger-color, #dc3545);
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+body[data-page="stone-tablet"] #forum-container .post-actions-header .delete-post-btn i {
+  font-size: 0.95rem;
+}
+
+body[data-page="stone-tablet"] #forum-container .post-actions-header .delete-post-btn:hover {
+  background-color: rgba(220, 53, 69, 0.12);
+}
+
+body[data-page="stone-tablet"] #forum-container .post-actions-header .delete-post-btn:active {
+  transform: scale(0.96);
+}
+
+body[data-page="stone-tablet"] #forum-container .post-actions-header .delete-post-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+body[data-page="stone-tablet"] #forum-container .post-actions-header .delete-post-btn:focus-visible {
+  outline: 2px solid var(--primary-gold);
+  outline-offset: 2px;
+}
+
+body[data-page="stone-tablet"] .post-author-name {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--neutral-100);
+  margin-bottom: var(--space-1);
+}
+
+body[data-page="stone-tablet"] .post-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--neutral-400);
+  font-size: 0.875rem;
+  flex-wrap: nowrap;
+  overflow: visible;
+}
+
+body[data-page="stone-tablet"] .post-game-tag {
+  background: linear-gradient(135deg, var(--primary-gold), var(--primary-gold-light));
+  color: var(--neutral-900);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+body[data-page="stone-tablet"] .post-time {
+  position: relative;
+}
+
+body[data-page="stone-tablet"] .post-live-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: #10b981;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+body[data-page="stone-tablet"] .post-live-dot {
+  width: 6px;
+  height: 6px;
+  background: #10b981;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+body[data-page="stone-tablet"] .post-content {
+  color: var(--neutral-200);
+  line-height: 1.7;
+  font-size: 1rem;
+  margin-bottom: var(--space-5);
+}
+
+body[data-page="stone-tablet"] .post-content p {
+  margin-bottom: var(--space-3);
+}
+
+body[data-page="stone-tablet"] .post-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-lg);
+  margin: var(--space-3) 0;
+}
+
+/* ===== POLL STYLES ===== */
+
+body[data-page="stone-tablet"] .poll-container {
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.1) 0%, 
+    rgba(212, 175, 55, 0.05) 100%);
+  border: 2px solid rgba(212, 175, 55, 0.3);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  margin: var(--space-6) 0;
+  box-shadow: 0 8px 32px rgba(212, 175, 55, 0.15);
+}
+
+body[data-page="stone-tablet"] .poll-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-5);
+}
+
+body[data-page="stone-tablet"] .poll-question {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--primary-gold);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+body[data-page="stone-tablet"] .poll-question i {
+  font-size: 1.4rem;
+  opacity: 0.8;
+}
+
+body[data-page="stone-tablet"] .poll-expiration {
+  font-size: 0.9rem;
+  color: var(--neutral-400);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+body[data-page="stone-tablet"] .poll-options {
+  margin-bottom: var(--space-5);
+}
+
+body[data-page="stone-tablet"] .poll-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  margin-bottom: var(--space-3);
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+body[data-page="stone-tablet"] .poll-option:hover {
+  background: rgba(0, 0, 0, 0.4);
+  border-color: rgba(212, 175, 55, 0.3);
+}
+
+body[data-page="stone-tablet"] .poll-option.user-vote {
+  border-color: var(--primary-gold);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+body[data-page="stone-tablet"] .poll-option-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  z-index: 2;
+  position: relative;
+}
+
+body[data-page="stone-tablet"] .poll-option-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--neutral-100);
+}
+
+body[data-page="stone-tablet"] .poll-option-votes {
+  font-size: 0.9rem;
+  color: var(--neutral-300);
+  font-weight: 600;
+}
+
+body[data-page="stone-tablet"] .poll-option-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(212, 175, 55, 0.3), rgba(212, 175, 55, 0.1));
+  border-radius: var(--radius-lg);
+  z-index: 1;
+  transition: width 0.3s ease;
+}
+
+body[data-page="stone-tablet"] .poll-option-fill {
+  height: 100%;
+  background: linear-gradient(90deg, 
+    rgba(212, 175, 55, 0.3) 0%, 
+    rgba(212, 175, 55, 0.1) 100%);
+  transition: width var(--transition-normal);
+}
+
+body[data-page="stone-tablet"] .poll-vote-btn {
+  background: linear-gradient(135deg, var(--primary-gold), var(--primary-gold-light));
+  color: var(--neutral-900);
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: var(--space-3) var(--space-4);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+body[data-page="stone-tablet"] .poll-vote-btn:hover {
+  background: linear-gradient(135deg, var(--primary-gold-light), var(--primary-gold));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.4);
+}
+
+body[data-page="stone-tablet"] .poll-vote-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+body[data-page="stone-tablet"] .poll-stats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: var(--neutral-400);
+}
+
+body[data-page="stone-tablet"] .poll-total-votes {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+body[data-page="stone-tablet"] .poll-voted-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--primary-gold);
+  font-weight: 600;
+}
+
+/* Poll Indicator in Composer */
+body[data-page="stone-tablet"] .poll-indicator {
+  display: none;
+  background: linear-gradient(135deg, 
+    rgba(212, 175, 55, 0.1) 0%, 
+    rgba(212, 175, 55, 0.05) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+body[data-page="stone-tablet"] .poll-preview-container {
+  color: var(--primary-gold);
+}
+
+body[data-page="stone-tablet"] .poll-preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+}
+
+body[data-page="stone-tablet"] .poll-preview-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+body[data-page="stone-tablet"] .poll-preview-title i {
+  font-size: 1.2rem;
+  opacity: 0.8;
+}
+
+body[data-page="stone-tablet"] .poll-preview-options {
+  margin-bottom: var(--space-3);
+}
+
+body[data-page="stone-tablet"] .poll-preview-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-2);
+  font-size: 0.95rem;
+  color: var(--neutral-200);
+}
+
+body[data-page="stone-tablet"] .poll-preview-expiry {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.875rem;
+  color: var(--neutral-400);
+  margin-top: var(--space-2);
+}
+
+body[data-page="stone-tablet"] .poll-remove-btn {
+  background: rgba(220, 53, 69, 0.2);
+  color: #dc3545;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+body[data-page="stone-tablet"] .poll-remove-btn:hover {
+  background: rgba(220, 53, 69, 0.3);
+  transform: scale(1.1);
+}
+
+/* ===== POST ACTIONS ===== */
+
+body[data-page="stone-tablet"] .post-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--glass-border);
+}
+
+body[data-page="stone-tablet"] .post-reactions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+body[data-page="stone-tablet"] .reaction-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--glass-border);
+  background: transparent;
+  color: var(--neutral-400);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+body[data-page="stone-tablet"] .reaction-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--primary-gold);
+  color: var(--primary-gold);
+  transform: translateY(-1px);
+}
+
+body[data-page="stone-tablet"] .reaction-btn.active {
+  background: rgba(212, 175, 55, 0.1);
+  border-color: var(--primary-gold);
+  color: var(--primary-gold);
+}
+
+body[data-page="stone-tablet"] .reaction-btn.like.active {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: #22c55e;
+  color: #22c55e;
+}
+
+body[data-page="stone-tablet"] .reaction-btn.celebrate.active {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: #f59e0b;
+  color: #f59e0b;
+}
+
+body[data-page="stone-tablet"] .reaction-btn.angry.active {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+body[data-page="stone-tablet"] .post-share {
+  display: flex;
+  gap: var(--space-2);
+}
+
+body[data-page="stone-tablet"] .share-btn {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--glass-border);
+  background: transparent;
+  color: var(--neutral-400);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body[data-page="stone-tablet"] .share-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--primary-gold);
+  color: var(--primary-gold);
+  transform: translateY(-1px);
+}
+
+/* ===== SIDEBAR ===== */
+
+body[data-page="stone-tablet"] .forum-sidebar {
+  position: sticky;
+  top: var(--space-6);
+  width: 360px;
+  flex-shrink: 0;
+}
+
+body[data-page="stone-tablet"] .sidebar-section {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-2xl);
+  padding: var(--space-6);
+  margin-bottom: var(--space-6);
+  box-shadow: var(--glass-shadow);
+}
+
+body[data-page="stone-tablet"] .sidebar-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--primary-gold);
+  margin-bottom: var(--space-4);
+  text-align: center;
+}
+
+/* ===== TRENDING TOPICS ===== */
+
+body[data-page="stone-tablet"] .trending-topic {
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-2);
+  cursor: pointer;
+  transition: var(--transition-normal);
+}
+
+body[data-page="stone-tablet"] .trending-topic:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+body[data-page="stone-tablet"] .trending-title {
+  font-weight: 600;
+  color: var(--neutral-200);
+  margin-bottom: var(--space-1);
+}
+
+body[data-page="stone-tablet"] .trending-meta {
+  font-size: 0.75rem;
+  color: var(--neutral-500);
+}
+
+/* ===== CLAN STONE TABLET HEADER ===== */
+
+body[data-page="stone-tablet"] .clan-stone-tablet-toggle {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-4);
+  margin-bottom: var(--space-6);
+  text-align: center;
+  color: var(--primary-gold);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.1rem;
+  box-shadow: var(--glass-shadow);
+}
+
+body[data-page="stone-tablet"] .clan-stone-tablet-toggle i {
+  margin-right: var(--space-2);
+}
+
+body[data-page="stone-tablet"] .clan-name {
+  color: var(--neutral-100);
+  font-weight: 700;
+}
+
+/* ===== REDDIT FEEDS ===== */
+
+body[data-page="stone-tablet"] .reddit-feed-item {
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-2);
+  cursor: pointer;
+  transition: var(--transition-normal);
+  border-left: 3px solid transparent;
+}
+
+body[data-page="stone-tablet"] .reddit-feed-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-left-color: #ff4500;
+}
+
+body[data-page="stone-tablet"] .reddit-title {
+  font-weight: 600;
+  color: var(--neutral-200);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  margin-bottom: var(--space-1);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+body[data-page="stone-tablet"] .reddit-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.75rem;
+  color: var(--neutral-500);
+  margin-bottom: var(--space-1);
+}
+
+body[data-page="stone-tablet"] .reddit-subreddit {
+  background: #ff4500;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+body[data-page="stone-tablet"] .reddit-author {
+  color: var(--neutral-400);
+}
+
+body[data-page="stone-tablet"] .reddit-time {
+  margin-left: auto;
+}
+
+body[data-page="stone-tablet"] .reddit-preview {
+  font-size: 0.75rem;
+  color: var(--neutral-400);
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+body[data-page="stone-tablet"] .reddit-stats {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-top: var(--space-1);
+  font-size: 0.75rem;
+  color: var(--neutral-500);
+}
+
+body[data-page="stone-tablet"] .reddit-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+body[data-page="stone-tablet"] .reddit-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  color: var(--neutral-400);
+  font-size: 0.875rem;
+}
+
+body[data-page="stone-tablet"] .reddit-error {
+  padding: var(--space-3);
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-lg);
+  color: #fca5a5;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+body[data-page="stone-tablet"] .reddit-refresh {
+  background: none;
+  border: none;
+  color: var(--primary-gold);
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-normal);
+}
+
+body[data-page="stone-tablet"] .reddit-refresh:hover {
+  background: rgba(212, 175, 55, 0.1);
+  transform: scale(1.1);
+}
+
+/* ===== ONLINE USERS ===== */
+
+body[data-page="stone-tablet"] .online-users-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  gap: var(--space-2);
+}
+
+body[data-page="stone-tablet"] .online-user {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--primary-gold);
+  object-fit: cover;
+  cursor: pointer;
+  transition: var(--transition-normal);
+}
+
+body[data-page="stone-tablet"] .online-user:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 16px rgba(212, 175, 55, 0.4);
+}
+
+body[data-page="stone-tablet"] .online-indicator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 12px;
+  height: 12px;
+  background: #10b981;
+  border: 2px solid var(--bg-primary);
+  border-radius: 50%;
+}
+
+/* ===== LOADING STATES ===== */
+
+body[data-page="stone-tablet"] .loading-posts {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+  color: var(--neutral-400);
+}
+
+body[data-page="stone-tablet"] .loading-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--glass-border);
+  border-top: 3px solid var(--primary-gold);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: var(--space-3);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ===== TYPING INDICATOR ===== */
+
+body[data-page="stone-tablet"] .typing-indicator {
+  display: none;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-4);
+  color: var(--neutral-400);
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+body[data-page="stone-tablet"] .typing-dots {
+  display: flex;
+  gap: 2px;
+}
+
+body[data-page="stone-tablet"] .typing-dot {
+  width: 4px;
+  height: 4px;
+  background: var(--primary-gold);
+  border-radius: 50%;
+  animation: typing 1.4s infinite;
+}
+
+body[data-page="stone-tablet"] .typing-dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+body[data-page="stone-tablet"] .typing-dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-10px);
+  }
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+
+@media (max-width: 768px) {
+  body[data-page="stone-tablet"] .forum-container {
+    padding: var(--space-4);
+  }
+
+  body[data-page="stone-tablet"] .forum-title {
+    font-size: 2.5rem;
+  }
+
+  body[data-page="stone-tablet"] .game-tabs-wrapper {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  body[data-page="stone-tablet"] .game-tabs {
+    width: 100%;
+    justify-content: center;
+  }
+
+  body[data-page="stone-tablet"] .game-tab {
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  body[data-page="stone-tablet"] .game-tab span {
+    font-size: 0.8rem;
+  }
+
+  body[data-page="stone-tablet"] .post-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  body[data-page="stone-tablet"] .post-actions {
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: stretch;
+  }
+
+  body[data-page="stone-tablet"] .post-reactions {
+    justify-content: center;
+  }
+
+  body[data-page="stone-tablet"] .composer-actions {
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: stretch;
+  }
+
+  body[data-page="stone-tablet"] .composer-tools {
+    justify-content: center;
+  }
+}
+
+/* ===== GAME-SPECIFIC THEMING ===== */
+
+body[data-page="stone-tablet"] .forum-container.wc1-theme {
+  --game-primary: #daa520;
+  --game-secondary: #8b4513;
+}
+
+body[data-page="stone-tablet"] .forum-container.wc2-theme {
+  --game-primary: var(--primary-gold);
+  --game-secondary: var(--horde-red);
+}
+
+body[data-page="stone-tablet"] .forum-container.wc3-theme {
+  --game-primary: var(--alliance-blue);
+  --game-secondary: #8a2be2;
+}
+
+/* ===== NEW POST ANIMATION ===== */
+
+@keyframes slideInNew {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+body[data-page="stone-tablet"] .post-card.new-post {
+  animation: slideInNew 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* ===== STONE TABLET PAGE INLINE STYLES REFACTORED ===== */
+body[data-page="stone-tablet"] #clan-forum-tab {
+  visibility: hidden;
+}
+
+body[data-page="stone-tablet"] .forum-stats {
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+body[data-page="stone-tablet"] .category-filters {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0 0 var(--space-4) 0;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+body[data-page="stone-tablet"] .filters-left {
+  display: flex;
+  gap: 0.5rem;
+}
+
+body[data-page="stone-tablet"] .filters-right {
+  display: flex;
+  gap: 0.5rem;
+}
+
+body[data-page="stone-tablet"] .composer-input-area {
+  width: 100%;
+}
+
+body[data-page="stone-tablet"] .composer-field-group {
+  display: grid;
+  grid-template-columns: 1fr 220px;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+body[data-page="stone-tablet"] #image-upload {
+  display: none;
+}

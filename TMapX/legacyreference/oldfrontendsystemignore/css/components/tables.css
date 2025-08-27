@@ -1,0 +1,315 @@
+/* =============================================================================
+   TABLE COMPONENT STYLES
+   ============================================================================= */
+
+.table-container {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  overflow-x: auto;
+  box-shadow: var(--glass-shadow);
+}
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: transparent;
+}
+
+.table th {
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  color: var(--warcraft-gold);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: var(--space-4) var(--space-3);
+  border-bottom: 2px solid var(--warcraft-gold);
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.table th:first-child {
+  border-top-left-radius: var(--radius-md);
+}
+
+.table th:last-child {
+  border-top-right-radius: var(--radius-md);
+}
+
+.table td {
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--glass-border);
+  color: var(--neutral-100);
+  font-size: var(--text-sm);
+  vertical-align: middle;
+  transition: all var(--transition-fast);
+}
+
+.table tr {
+  transition: all var(--transition-fast);
+}
+
+.table tbody tr:hover {
+  background: var(--glass-border);
+  transform: scale(1.01);
+}
+
+.table tbody tr:hover td {
+  color: var(--neutral-50);
+}
+
+/* Rank styling */
+.rank-cell {
+  font-weight: 700;
+  font-family: var(--font-display);
+  text-align: center;
+  min-width: 60px;
+}
+
+.rank-1 { color: #FFD700; text-shadow: 0 0 10px #FFD700; }
+.rank-2 { color: #C0C0C0; text-shadow: 0 0 8px #C0C0C0; }
+.rank-3 { color: #CD7F32; text-shadow: 0 0 8px #CD7F32; }
+
+/* Player name styling */
+.player-name {
+  font-weight: 600;
+  color: var(--neutral-100);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+}
+
+.player-name:hover {
+  color: var(--warcraft-gold);
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+}
+
+/* Stats styling */
+.stat-wins { color: var(--success); font-weight: 600; }
+.stat-losses { color: var(--error); font-weight: 600; }
+.stat-winrate { 
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.winrate-excellent { color: #00FF00; }
+.winrate-good { color: var(--warcraft-gold); }
+.winrate-average { color: var(--neutral-300); }
+.winrate-poor { color: var(--error); }
+
+/* Action buttons in tables */
+.table-actions {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: center;
+}
+
+.table-btn {
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  color: var(--neutral-300);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: var(--text-xs);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.table-btn:hover {
+  background: var(--glass-border);
+  color: var(--warcraft-gold);
+  border-color: var(--warcraft-gold);
+}
+
+.table-btn.btn-view {
+  border-color: var(--info);
+  color: var(--info);
+}
+
+.table-btn.btn-view:hover {
+  background: rgba(59, 130, 246, 0.2);
+}
+
+.table-btn.btn-edit {
+  border-color: var(--warning);
+  color: var(--warning);
+}
+
+.table-btn.btn-edit:hover {
+  background: rgba(245, 158, 11, 0.2);
+}
+
+.table-btn.btn-delete {
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.table-btn.btn-delete:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+/* Pagination */
+.table-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--glass-border);
+}
+
+.pagination-info {
+  color: var(--neutral-400);
+  font-size: var(--text-sm);
+}
+
+.pagination-controls {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.pagination-btn {
+  padding: var(--space-2) var(--space-3);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--neutral-300);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: var(--text-sm);
+  min-width: 40px;
+  text-align: center;
+}
+
+.pagination-btn:hover:not(.disabled) {
+  background: var(--glass-border);
+  color: var(--warcraft-gold);
+  border-color: var(--warcraft-gold);
+}
+
+.pagination-btn.active {
+  background: var(--warcraft-gold);
+  color: var(--neutral-900);
+  border-color: var(--warcraft-gold);
+}
+
+.pagination-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Loading state */
+.table-loading {
+  text-align: center;
+  padding: var(--space-8);
+  color: var(--neutral-400);
+}
+
+.table-loading .spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--glass-border);
+  border-top: 3px solid var(--warcraft-gold);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto var(--space-4);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Empty state */
+.table-empty {
+  text-align: center;
+  padding: var(--space-8);
+  color: var(--neutral-400);
+}
+
+.table-empty i {
+  font-size: var(--text-4xl);
+  margin-bottom: var(--space-4);
+  opacity: 0.5;
+}
+
+/* Responsive tables */
+@media (max-width: 768px) {
+  .table-container {
+    padding: var(--space-2);
+  }
+  
+  .table th,
+  .table td {
+    padding: var(--space-2);
+    font-size: var(--text-xs);
+  }
+  
+  .table-actions {
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+  
+  .table-btn {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+  
+  .pagination-controls {
+    flex-wrap: wrap;
+    gap: var(--space-1);
+  }
+  
+  .pagination-btn {
+    padding: var(--space-1) var(--space-2);
+    font-size: var(--text-xs);
+    min-width: 32px;
+  }
+}
+
+/* Sortable headers */
+.table th.sortable {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+.table th.sortable:hover {
+  background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary));
+}
+
+.table th.sortable::after {
+  content: '';
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-bottom: 4px solid var(--neutral-400);
+  opacity: 0.5;
+}
+
+.table th.sortable.asc::after {
+  border-bottom: 4px solid var(--warcraft-gold);
+  opacity: 1;
+}
+
+.table th.sortable.desc::after {
+  border-bottom: none;
+  border-top: 4px solid var(--warcraft-gold);
+  opacity: 1;
+} 

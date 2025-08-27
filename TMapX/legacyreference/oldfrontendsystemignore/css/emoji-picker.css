@@ -1,0 +1,432 @@
+/* Emoji Picker Styles */
+.emoji-picker-container {
+  position: fixed;
+  z-index: 999999 !important;
+  animation: emojiPickerFadeIn 0.2s ease-out;
+}
+
+@keyframes emojiPickerFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.emoji-picker {
+  background: #2c2c2c;
+  border: 1px solid #444;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  width: 380px;
+  max-height: 500px;
+  overflow: hidden;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header */
+.emoji-picker-header {
+  background: #1a1a1a;
+  padding: 12px 16px;
+  border-bottom: 1px solid #444;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.emoji-picker-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.emoji-tab {
+  background: transparent;
+  border: 1px solid #555;
+  color: #ccc;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.emoji-tab:hover {
+  background: #444;
+  color: #fff;
+}
+
+.emoji-tab.active {
+  background: #007bff;
+  border-color: #007bff;
+  color: white;
+}
+
+.arena-gold-display {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #ffd700;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.arena-gold-display i {
+  color: #ffd700;
+}
+
+/* Content */
+.emoji-picker-content {
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.emoji-tab-content {
+  display: none;
+  padding: 16px;
+}
+
+.emoji-tab-content.active {
+  display: block;
+}
+
+/* Emoji Grid */
+.emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+.emoji-item {
+  background: #333;
+  border: 1px solid #555;
+  border-radius: 8px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.emoji-item:hover {
+  background: #444;
+  border-color: #666;
+  transform: translateY(-2px);
+}
+
+.emoji-item.owned:hover {
+  background: #0056b3;
+  border-color: #007bff;
+}
+
+.emoji-symbol {
+  font-size: 24px;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+/* Shop Grid */
+.shop-grid .emoji-item {
+  min-height: 100px;
+  padding: 8px 8px 30px 8px; /* Add bottom padding for button space */
+  position: relative;
+}
+
+.shop-grid .emoji-symbol {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.emoji-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 8px; /* Space before the button */
+}
+
+.emoji-name {
+  font-size: 10px;
+  color: #ccc;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.emoji-price {
+  font-size: 9px;
+  margin-top: 2px;
+}
+
+.owned-badge {
+  background: #28a745;
+  color: white;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 8px;
+  font-weight: bold;
+}
+
+.free-badge {
+  background: #6f42c1;
+  color: white;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 8px;
+  font-weight: bold;
+}
+
+.price-badge {
+  background: #ffc107;
+  color: #212529;
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 8px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.emoji-actions {
+  position: absolute;
+  bottom: 4px;
+  left: 4px;
+  right: 4px;
+  height: 20px; /* Fixed height for button */
+}
+
+.btn-buy-emoji {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 9px;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  transition: background 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-buy-emoji:hover:not(:disabled) {
+  background: #0056b3;
+}
+
+.btn-buy-emoji:disabled {
+  background: #6c757d;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.emoji-item.unaffordable {
+  opacity: 0.5;
+  background: #2a2a2a;
+}
+
+.emoji-item.unaffordable:hover {
+  transform: none;
+  background: #2a2a2a;
+}
+
+/* Empty State */
+.emoji-empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #888;
+}
+
+.emoji-empty-state i {
+  font-size: 48px;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.emoji-empty-state p {
+  margin: 8px 0;
+  font-size: 14px;
+}
+
+/* Shop Loading */
+.shop-loading {
+  text-align: center;
+  padding: 40px;
+  color: #888;
+}
+
+.shop-loading i {
+  font-size: 24px;
+  margin-right: 8px;
+}
+
+/* Shop Error */
+.shop-error {
+  text-align: center;
+  padding: 40px;
+  color: #dc3545;
+  font-size: 14px;
+}
+
+/* Emoji Tiers */
+.emoji-tier {
+  margin-bottom: 24px;
+}
+
+.tier-header {
+  padding: 12px 16px;
+  margin: -16px -16px 16px -16px;
+  background: #1a1a1a;
+}
+
+.tier-name {
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0 0 4px 0;
+}
+
+.tier-description {
+  color: #ccc;
+  font-size: 12px;
+  margin: 0;
+}
+
+/* Scrollbar Styling */
+.emoji-picker-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.emoji-picker-content::-webkit-scrollbar-track {
+  background: #2c2c2c;
+}
+
+.emoji-picker-content::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+}
+
+.emoji-picker-content::-webkit-scrollbar-thumb:hover {
+  background: #666;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .emoji-picker {
+    width: 320px;
+    max-height: 400px;
+  }
+  
+  .emoji-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  
+  .emoji-item {
+    padding: 8px;
+  }
+  
+  .emoji-symbol {
+    font-size: 20px;
+  }
+}
+
+/* Animation for successful purchase */
+@keyframes purchaseSuccess {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+    background: #28a745;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.emoji-item.purchase-success {
+  animation: purchaseSuccess 0.6s ease;
+}
+
+/* Tier color accents - matching ladder rankings */
+.emoji-tier[data-tier="free"] .tier-header {
+  border-left: 4px solid #28a745;
+}
+
+.emoji-tier[data-tier="bronze"] .tier-header {
+  border-left: 4px solid #cd7f32;
+}
+
+.emoji-tier[data-tier="gold"] .tier-header {
+  border-left: 4px solid #ffd700;
+}
+
+.emoji-tier[data-tier="amber"] .tier-header {
+  border-left: 4px solid #ffbf00;
+}
+
+.emoji-tier[data-tier="sapphire"] .tier-header {
+  border-left: 4px solid #0f52ba;
+}
+
+.emoji-tier[data-tier="champion"] .tier-header {
+  border-left: 4px solid #ff6b35;
+}
+
+/* Tier name colors */
+.emoji-tier[data-tier="free"] .tier-name {
+  color: #28a745;
+}
+
+.emoji-tier[data-tier="bronze"] .tier-name {
+  color: #cd7f32;
+}
+
+.emoji-tier[data-tier="gold"] .tier-name {
+  color: #ffd700;
+}
+
+.emoji-tier[data-tier="amber"] .tier-name {
+  color: #ffbf00;
+}
+
+.emoji-tier[data-tier="sapphire"] .tier-name {
+  color: #0f52ba;
+}
+
+.emoji-tier[data-tier="champion"] .tier-name {
+  color: #ff6b35;
+}
+
+/* Hover effects for tier items */
+.emoji-tier[data-tier="free"] .emoji-item:hover {
+  box-shadow: 0 0 8px rgba(40, 167, 69, 0.3);
+}
+
+.emoji-tier[data-tier="champion"] .emoji-item:hover {
+  box-shadow: 0 0 15px rgba(255, 107, 53, 0.3);
+}
+
+.emoji-tier[data-tier="sapphire"] .emoji-item:hover {
+  box-shadow: 0 0 12px rgba(15, 82, 186, 0.3);
+}
+
+.emoji-tier[data-tier="amber"] .emoji-item:hover {
+  box-shadow: 0 0 10px rgba(255, 191, 0, 0.3);
+}
+
+.emoji-tier[data-tier="gold"] .emoji-item:hover {
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.emoji-tier[data-tier="bronze"] .emoji-item:hover {
+  box-shadow: 0 0 8px rgba(205, 127, 50, 0.3);
+} 

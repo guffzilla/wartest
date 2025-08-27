@@ -1,0 +1,234 @@
+<!-- Modern Gaming App Navbar --><html><head></head><body><nav class="navbar-modern" id="navbar-modern" role="navigation" aria-label="Main navigation">
+  <div class="navbar-container">
+    <!-- Left Section - Logo -->
+    <div class="navbar-brand">
+      <a href="/views/index.html" class="brand-link" aria-label="Home" data-nav-link="true">
+        <i class="fas fa-hammer brand-icon"></i>
+        <div class="brand-content">
+          <span class="brand-text">BLACKSMITH</span>
+          <span class="brand-middle">WC Arena</span>
+          <span class="brand-subtitle">Supported By Heroes</span>
+        </div>
+      </a>
+    </div>
+
+    <!-- Center Section - Main Navigation (Desktop) -->
+    <div class="navbar-nav-desktop" role="menubar">
+      <div class="nav-primary">
+        <a href="/views/arena.html" class="nav-item primary" role="menuitem" data-nav-link="true">
+          <i class="fas fa-trophy"></i>
+          <span>Arena</span>
+        </a>
+        <a href="/views/content.html" class="nav-item primary" role="menuitem" data-nav-link="true">
+          <i class="fas fa-broadcast-tower"></i>
+          <span>Watch Tower</span>
+        </a>
+        <a href="/views/atlas.html" class="nav-item primary" role="menuitem" data-nav-link="true">
+          <i class="fas fa-map"></i>
+          <span>ATLAS</span>
+        </a>
+
+        <a href="/views/hero.html" class="nav-item primary" role="menuitem" data-nav-link="true">
+          <i class="fas fa-shield-alt"></i>
+          <span>BE A HERO</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Right Section - User & Controls -->
+    <div class="navbar-controls">
+      <!-- Music Control - Artistic Redesign -->
+      <div class="music-control-artistic nav-music-control">
+        <div class="music-orb-container">
+          
+
+          <div class="music-options">
+            <fieldset class="music-toggle-enhanced" aria-label="Background music controls">
+              <legend class="sr-only">Background Music Options</legend>
+              <input type="radio" id="music-mute" name="music" checked="">
+              <input type="radio" id="music-orc" name="music">
+              <input type="radio" id="music-human" name="music">
+
+              <label for="music-mute" class="music-btn mute-btn" title="Silence" aria-label="Mute music">
+                
+                <i class="fas fa-volume-mute" aria-hidden="true"></i>
+                <span class="btn-text">Silence</span>
+              </label>
+              <label for="music-orc" class="music-btn orc-btn" title="Orc Drums" aria-label="Play Orc music">
+                
+                <i class="fas fa-drum" aria-hidden="true"></i>
+                <span class="btn-text">Horde</span>
+              </label>
+              <label for="music-human" class="music-btn human-btn" title="Alliance Hymns" aria-label="Play Human music">
+                
+                <i class="fas fa-music" aria-hidden="true"></i>
+                <span class="btn-text">Alliance</span>
+              </label>
+            </fieldset>
+          </div>
+        </div>
+      </div>
+
+      <!-- Achievement Notification Bell -->
+      <div class="notifications-container">
+        <button class="notification-bell" id="notifications-indicator" aria-label="Notifications" title="View Notifications">
+          <i class="fas fa-bell" aria-hidden="true"></i>
+          <span class="notification-badge" id="notification-count-badge">0</span>
+        </button>
+        
+        <!-- Notifications Dropdown -->
+        <div class="notifications-dropdown" id="notifications-dropdown">
+          <div class="notifications-header">
+            <h4>Notifications</h4>
+            <button class="mark-all-read" id="mark-all-read-btn" title="Mark all as read">
+              <i class="fas fa-check-double"></i>
+            </button>
+          </div>
+          <div class="notifications-body">
+            
+            <div id="notifications-empty" class="notifications-empty">
+              <i class="fas fa-inbox"></i>
+              <p>No notifications yet</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Town Hall Dropdown -->
+      <div class="user-profile-modern">
+        <div class="nav-dropdown profile-dropdown">
+          <button class="profile-dropdown-toggle" data-dropdown-toggle="true" aria-expanded="false" aria-haspopup="true" aria-label="Town Hall menu">
+            <div class="profile-avatar">
+              <img id="profile-image" src="/assets/img/ranks/emblem.png" alt="Profile">
+              
+            </div>
+            <div class="profile-info" id="profile-info-desktop">
+              <span class="profile-title">TOWN HALL</span>
+              <span id="navbar-username" class="profile-username">Loading...</span>
+            </div>
+            <i class="fas fa-chevron-down profile-chevron" aria-hidden="true"></i>
+          </button>
+          
+          <div class="nav-dropdown-menu profile-menu" role="menu" aria-label="Town Hall options">
+            <a href="/views/townhall.html" class="nav-dropdown-item" role="menuitem" data-nav-link="true">
+              <i class="fas fa-university"></i>
+              Town Hall
+            </a>
+            
+            <a href="/views/wartales.html" class="nav-dropdown-item" role="menuitem" data-nav-link="true">
+                              <i class="fas fa-flag"></i>
+                War Tales
+            </a>
+            <a href="/views/stone-tablet.html" class="nav-dropdown-item" role="menuitem" data-nav-link="true">
+              <i class="fas fa-scroll"></i>
+              Stone Tablet
+            </a>
+            <a href="/views/dark-portal.html" class="nav-dropdown-item" role="menuitem" data-nav-link="true">
+              <i class="fas fa-dungeon"></i>
+              Dark Portal
+            </a>
+            <a href="/views/wizards-tower.html" class="nav-dropdown-item" role="menuitem" data-nav-link="true">
+              <i class="fas fa-tower-observation"></i>
+              Wizard's Tower
+            </a>
+            
+            <a href="#" class="nav-dropdown-item logout-item" role="menuitem">
+              <i class="fas fa-sign-out-alt"></i>
+              Logout
+            </a>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- Mobile Menu Toggle -->
+      <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-expanded="false" aria-label="Toggle mobile menu">
+
+
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Navigation Menu -->
+  <div class="mobile-nav" id="mobile-nav" role="menu" aria-label="Mobile navigation menu">
+    <div class="mobile-nav-header">
+      <div class="mobile-profile">
+        <img id="profile-image-mobile" src="/assets/img/ranks/emblem.png" alt="Profile">
+        <div class="mobile-profile-info">
+          <span class="mobile-profile-title">TOWN HALL</span>
+          <span id="navbar-username-mobile" class="mobile-profile-username">Loading...</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="mobile-nav-content">
+      <div class="mobile-nav-section">
+        <h3 class="mobile-nav-title">Main</h3>
+        <a href="/views/arena.html" class="mobile-nav-item" role="menuitem">
+          <i class="fas fa-trophy"></i>
+          <span>Arena</span>
+        </a>
+        <a href="/views/content.html" class="mobile-nav-item" role="menuitem">
+          <i class="fas fa-broadcast-tower"></i>
+          <span>Watch Tower</span>
+        </a>
+        <a href="/views/atlas.html" class="mobile-nav-item" role="menuitem">
+          <i class="fas fa-map"></i>
+          <span>ATLAS</span>
+        </a>
+
+      </div>
+
+      <div class="mobile-nav-section">
+        <h3 class="mobile-nav-title">Town Hall</h3>
+        <a href="/views/townhall.html" class="mobile-nav-item" role="menuitem">
+          <i class="fas fa-university"></i>
+          <span>Town Hall</span>
+        </a>
+        <a href="/views/wartales.html" class="mobile-nav-item" role="menuitem">
+                      <i class="fas fa-flag"></i>
+            <span>War Tales</span>
+        </a>
+        <a href="/views/stone-tablet.html" class="mobile-nav-item" role="menuitem">
+          <i class="fas fa-scroll"></i>
+          <span>Stone Tablet</span>
+        </a>
+        <a href="/views/wizards-tower.html" class="mobile-nav-item" role="menuitem">
+          <i class="fas fa-tower-observation"></i>
+          <span>Wizard's Tower</span>
+        </a>
+        <a href="/views/dark-portal.html" class="mobile-nav-item" role="menuitem">
+          <i class="fas fa-dungeon"></i>
+          <span>Dark Portal</span>
+        </a>
+        <div class="mobile-nav-section-divider"></div>
+        <a href="#" class="mobile-nav-item logout-item" role="menuitem">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Logout</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ambient navbar FX: moths and cursor glow -->
+  <div class="navbar-ambient-layer" aria-hidden="true">
+    <canvas id="nav-glow-canvas"></canvas>
+    <!-- Procedural moths are rendered on the canvas by navbar-modern.js -->
+  </div>
+</nav>
+
+<!-- Screen Reader Only Content -->
+
+<!-- Background Music (managed by music.js) -->
+<audio id="orc-music" preload="none" loop="">
+  <source src="/assets/AUDIO/ORC/orcmusic.mp3" type="audio/mpeg">
+</audio>
+<audio id="human-music" preload="none" loop="">
+  <source src="/assets/AUDIO/HUMAN/humanmusic.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Navbar JavaScript (loads after HTML is injected) -->
+<script type="module" src="/js/navbar-modern.js"></script>
+
+
+</body></html>

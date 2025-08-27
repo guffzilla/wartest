@@ -1,0 +1,1710 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Profile - Epic WC Arena</title>
+  
+  <!-- Preload critical resources -->
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/webfonts/fa-brands-400.woff2" as="font" type="font/woff2" crossorigin="">
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin="">
+  
+  <!-- CSS Dependencies -->
+  <!-- UNIFIED MODAL SYSTEM - MUST LOAD FIRST TO PREVENT CONFLICTS -->
+  <link rel="stylesheet" href="/css/unified-modal-system.css">
+
+  <!-- Base application styles -->
+  <link rel="stylesheet" href="/css/warcraft-app-modern.css">
+  <link rel="stylesheet" href="/css/unified-button-system.css">
+  <link rel="stylesheet" href="/css/unified-form-system.css">
+  <link rel="stylesheet" href="/css/unified-layout-system.css">
+  <link rel="stylesheet" href="/css/unified-color-system.css">
+  <link rel="stylesheet" href="/css/components/animations.css">
+  <link rel="stylesheet" href="/css/components/transitions.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="/css/chat-unified.css">
+  <link rel="stylesheet" href="/css/navbar-universal.css">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&amp;family=Orbitron:wght@400;700;900&amp;display=swap" rel="stylesheet">
+</head>
+
+<body>
+:root {
+  /* ===== BRAND COLORS ===== */
+  --warcraft-gold: #D4AF37;
+  --warcraft-gold-dark: #B8941F;
+  --warcraft-gold-light: #E8C547;
+  
+  --alliance-blue: #2563EB;
+  --alliance-blue-dark: #1D4ED8;
+  --alliance-blue-light: #3B82F6;
+  
+  --horde-red: #DC2626;
+  --horde-red-dark: #B91C1C;
+  --horde-red-light: #EF4444;
+  
+  /* ===== NEUTRAL PALETTE ===== */
+  --neutral-50: #F8FAFC;
+  --neutral-100: #F1F5F9;
+  --neutral-200: #E2E8F0;
+  --neutral-300: #CBD5E1;
+  --neutral-400: #94A3B8;
+  --neutral-500: #64748B;
+  --neutral-600: #475569;
+  --neutral-700: #334155;
+  --neutral-800: #1E293B;
+  --neutral-900: #0F172A;
+  
+  /* ===== SEMANTIC COLORS ===== */
+  --success: #10B981;
+  --success-dark: #059669;
+  --success-light: #34D399;
+  
+  --error: #EF4444;
+  --error-dark: #DC2626;
+  --error-light: #F87171;
+  
+  --warning: #F59E0B;
+  --warning-dark: #D97706;
+  --warning-light: #FBBF24;
+  
+  --info: #3B82F6;
+  --info-dark: #2563EB;
+  --info-light: #60A5FA;
+  
+  /* ===== BACKGROUND SYSTEM ===== */
+  --bg-primary: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%);
+  --bg-secondary: rgba(30, 41, 59, 0.8);
+  --bg-tertiary: rgba(51, 65, 85, 0.6);
+  --bg-card: rgba(15, 23, 42, 0.8);
+  --bg-card-hover: rgba(30, 41, 59, 0.9);
+  --bg-overlay: rgba(0, 0, 0, 0.8);
+  
+  /* ===== GLASS EFFECTS ===== */
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  
+  /* ===== SHADOWS ===== */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 20px rgba(212, 175, 55, 0.3);
+  
+  /* ===== TYPOGRAPHY ===== */
+  --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Cinzel', serif;
+  
+  /* ===== SPACING SCALE ===== */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  
+  /* ===== BORDER RADIUS ===== */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-3xl: 1.5rem;
+  --radius-full: 9999px;
+  
+  /* ===== TRANSITIONS ===== */
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 250ms ease-in-out;
+  --transition-slow: 350ms ease-in-out;
+  
+  /* ===== LEGACY ALIASES (for compatibility) ===== */
+  --primary-gold: var(--warcraft-gold);
+  --primary-color: var(--warcraft-gold);
+  --primary-hover: var(--warcraft-gold-light);
+  
+  --text-primary: var(--neutral-100);
+  --text-secondary: var(--neutral-400);
+  --text-muted: var(--neutral-500);
+  
+  --border-primary: var(--glass-border);
+  --border-hover: var(--warcraft-gold);
+  
+  /* Spacing aliases (tournaments.css expects these) */
+  --spacing-sm: var(--space-2);      /* 0.5rem */
+  --spacing-md: var(--space-4);      /* 1rem */
+  --spacing-lg: var(--space-6);      /* 1.5rem */
+  --spacing-xl: var(--space-8);      /* 2rem */
+  
+  /* Background aliases */
+  --bg-hover: var(--bg-card-hover);
+}
+
+/* ===== GLOBAL RESET &amp; BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-primary);
+  background: var(--bg-primary);
+  color: var(--neutral-100);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  padding-top: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ===== NAVBAR MODERN UNIVERSAL ===== */
+/* Base navbar structure */
+html body .navbar-modern {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999999 !important; /* Increased to be above other elements */
+  height: 80px;
+  background: rgba(20, 20, 20, 0.97); /* Solid fallback */
+  background: linear-gradient(135deg, rgba(20, 20, 20, 0.97), rgba(40, 40, 40, 0.95));
+  backdrop-filter: blur(10px); /* Reduced from 20px for better performance */
+  -webkit-backdrop-filter: blur(10px); /* Added for Safari support */
+  border-bottom: 1px solid var(--glass-bg);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.navbar-modern .brand-link {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: var(--warcraft-gold);
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.navbar-modern .brand-link:hover,
+.navbar-modern .brand-link:focus {
+  color: var(--warcraft-gold-light);
+  text-shadow: 0 0 10px var(--warcraft-gold);
+  transform: translateY(-1px);
+}
+
+.navbar-modern .nav-item {
+  position: relative;
+  padding: 0.75rem 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navbar-modern .nav-item:hover,
+.navbar-modern .nav-item:focus {
+  color: #D4AF37;
+  background: rgba(212, 175, 55, 0.1);
+  transform: translateY(-1px);
+  border-color: #D4AF37;
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.2);
+}
+
+/* Profile dropdown */
+.navbar-modern .profile-dropdown {
+  position: relative;
+}
+
+.navbar-modern .profile-dropdown .nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  background: rgba(15, 23, 42, 0.98);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    0 4px 16px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all var(--transition-normal);
+  overflow: hidden;
+  z-index: 1001;
+}
+
+.navbar-modern .profile-dropdown.active .nav-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.navbar-modern .profile-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border: 2px solid #D4AF37;
+  background: rgba(20, 20, 20, 0.95);
+  transition: all 0.2s ease;
+}
+
+.navbar-modern .profile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.navbar-modern .profile-dropdown-toggle:hover .profile-avatar {
+  border-color: #E5C158;
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+}
+
+.navbar-modern .profile-chevron {
+  transition: transform 0.2s ease;
+}
+
+.navbar-modern .profile-dropdown.active .profile-chevron {
+  transform: rotate(180deg);
+}
+
+/* Dropdown items */
+.navbar-modern .profile-dropdown .nav-dropdown-menu .nav-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Layout and container styles */
+.main-content {
+  margin-top: 80px;
+  padding: 2rem;
+  flex: 1;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Essential utility classes */
+.d-flex { display: flex; }
+.d-none { display: none; }
+.d-block { display: block; }
+.position-fixed { position: fixed; }
+.position-relative { position: relative; }
+.position-absolute { position: absolute; }
+.w-100 { width: 100%; }
+.h-100 { height: 100%; }
+.m-0 { margin: 0; }
+.p-0 { padding: 0; }
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+/* CSS custom properties (variables) */
+:root {
+  /* ===== BRAND COLORS ===== */
+  --warcraft-gold: #D4AF37;
+  --warcraft-gold-dark: #B8941F;
+  --warcraft-gold-light: #E8C547;
+  
+  --alliance-blue: #2563EB;
+  --alliance-blue-dark: #1D4ED8;
+  --alliance-blue-light: #3B82F6;
+  
+  --horde-red: #DC2626;
+  --horde-red-dark: #B91C1C;
+  --horde-red-light: #EF4444;
+  
+  /* ===== NEUTRAL PALETTE ===== */
+  --neutral-50: #F8FAFC;
+  --neutral-100: #F1F5F9;
+  --neutral-200: #E2E8F0;
+  --neutral-300: #CBD5E1;
+  --neutral-400: #94A3B8;
+  --neutral-500: #64748B;
+  --neutral-600: #475569;
+  --neutral-700: #334155;
+  --neutral-800: #1E293B;
+  --neutral-900: #0F172A;
+  
+  /* ===== SEMANTIC COLORS ===== */
+  --success: #10B981;
+  --success-dark: #059669;
+  --success-light: #34D399;
+  
+  --error: #EF4444;
+  --error-dark: #DC2626;
+  --error-light: #F87171;
+  
+  --warning: #F59E0B;
+  --warning-dark: #D97706;
+  --warning-light: #FBBF24;
+  
+  --info: #3B82F6;
+  --info-dark: #2563EB;
+  --info-light: #60A5FA;
+  
+  /* ===== BACKGROUND SYSTEM ===== */
+  --bg-primary: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #334155 100%);
+  --bg-secondary: rgba(30, 41, 59, 0.8);
+  --bg-tertiary: rgba(51, 65, 85, 0.6);
+  --bg-card: rgba(15, 23, 42, 0.8);
+  --bg-hover: rgba(30, 41, 59, 0.9);
+  --bg-overlay: rgba(0, 0, 0, 0.8);
+  
+  /* ===== GLASS EFFECTS ===== */
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  
+  /* ===== SHADOWS ===== */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1);
+  --shadow-glow: 0 0 20px rgba(212, 175, 55, 0.3);
+  
+  /* ===== LEGACY ALIASES (for compatibility) ===== */
+  --primary-gold: var(--warcraft-gold);
+  --primary-color: var(--warcraft-gold);
+  --primary-hover: var(--warcraft-gold-light);
+  
+  --text-primary: var(--neutral-100);
+  --text-secondary: var(--neutral-400);
+  --text-muted: var(--neutral-500);
+  
+  --border-primary: var(--glass-border);
+  --border-hover: var(--warcraft-gold);
+  
+  --spacing-sm: var(--space-2);
+  --spacing-md: var(--space-4);
+  --spacing-lg: var(--space-6);
+  --spacing-xl: var(--space-8);
+}
+  
+
+  <!-- Non-critical CSS (async load with fallback) -->
+  <link rel="preload" href="/css/non-critical.css?v=dev" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/css/non-critical.css?v=dev"></noscript>
+  
+  <!-- CSS Loading Fallback Script -->
+  <script>
+    // Verify CSS loading and provide fallback
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        const nonCriticalCSS = document.querySelector('link[href*="non-critical.css"]');
+        if (!nonCriticalCSS || !nonCriticalCSS.sheet) {
+          console.log('🔧 Non-critical CSS not loaded, applying fallback...');
+          // Create fallback link
+          const fallbackLink = document.createElement('link');
+          fallbackLink.rel = 'stylesheet';
+          fallbackLink.href = '/css/non-critical.css?v=dev&fallback=true';
+          document.head.appendChild(fallbackLink);
+          console.log('✅ Fallback CSS loaded');
+        } else {
+          console.log('✅ Non-critical CSS loaded successfully');
+        }
+      }, 1000); // Check after 1 second
+    });
+  </script>
+
+  <!-- Chart.js for Analytics (deferred to avoid render blocking) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer=""></script>
+  <script src="/js/chart-utils.js" defer=""></script>
+  
+  <!-- Service Worker Registration -->
+  <script src="/js/service-worker-register.js" defer=""></script>
+  
+  <!-- Performance Monitoring -->
+  <script src="/js/performance-monitor.js" defer=""></script>
+  
+  <!-- Achievement System -->
+  <script type="module" src="/js/modules/AchievementManager.js"></script>
+  
+  <!-- Town Hall Unified Modal System -->
+  <script type="module" src="/js/modules/TownHallModalManager.js"></script>
+  <script type="module" src="/js/modules/CartographyManager.js"></script>
+  <script type="module" src="/js/modules/ProfileDataLoader.js"></script>
+  
+  <!-- Debug script -->
+  <script src="/js/debug-navbar.js" defer=""></script>
+  
+  <!-- Simple test script -->
+  <script>
+    console.log('🔍 Simple test script loaded');
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🔍 DOMContentLoaded fired in test script');
+    });
+  </script>
+
+
+  <div id="navbar-container"></div>
+  
+  <!-- Epic Notification Container -->
+  
+
+  <main>
+    <!-- Page Title -->
+    <div class="page-header">
+      <h1 class="page-title" data-theme="townhall">🏛️ Town Hall</h1>
+      
+
+    </div>
+
+    <!-- Epic Profile Hero Section -->
+    <section class="profile-hero">
+      <div class="profile-hero-content fade-in">
+        <div class="profile-avatar-section">
+          <div class="profile-avatar-container">
+            
+            <div class="profile-level-badge" id="user-level">Level 1</div>
+            <!-- Change Avatar Button -->
+            <button class="change-avatar-btn" id="change-avatar-btn" title="Change Avatar">
+              <i class="fas fa-camera"></i>
+            </button>
+          </div>
+          
+          <!-- User info moved next to avatar -->
+          <div class="profile-user-info">
+            <div class="profile-username-row">
+              <h1 class="profile-username" id="profile-username">Loading...</h1>
+              
+              <!-- Action buttons positioned to the right -->
+              <div class="profile-action-buttons">
+                <!-- Admin Panel Button (only shown for admins) -->
+                <a href="/admin.html" id="profile-admin-link" class="admin-panel-btn" title="Admin Panel" target="_blank">
+                  <i class="fas fa-shield-alt"></i>
+                  <span>Admin Panel</span>
+                </a>
+
+                <!-- Username change button -->
+                <button class="change-username-btn" id="change-username-btn" title="Change Username">
+                  <i class="fas fa-edit"></i>
+                  <span>Change Username</span>
+                </button>
+
+                <!-- Delete Account Button -->
+                <button class="delete-account-btn" id="delete-account-btn" title="Delete Account">
+                  <i class="fas fa-trash-alt"></i>
+                  <span>Delete Account</span>
+                </button>
+              </div>
+            </div>
+            
+            <!-- Username change form (hidden by default) -->
+            <div class="username-change-container" id="username-change-container">
+              <div class="username-change-info">
+                <p><i class="fas fa-info-circle"></i> Username changes are limited:</p>
+                <ul>
+                  <li>Once within first 30 days of registration</li>
+                  <li>Then once every 30 days thereafter</li>
+                </ul>
+              </div>
+              <form id="username-change-form" class="username-change-form">
+                <input type="text" id="new-username" name="newUsername" placeholder="Enter new username" maxlength="20" required="">
+                <button type="submit" class="btn-save-username">Save</button>
+                <button type="button" class="btn-cancel-username" id="cancel-username-change">Cancel</button>
+              </form>
+              
+            </div>
+            <p class="profile-email" id="profile-email">
+              
+              <span class="email-privacy">(only shown to you)</span>
+            </p>
+            
+            <!-- Condensed stats in one row -->
+            <div class="profile-stats-condensed">
+              <div class="stat-condensed">
+                <i class="fas fa-crown stat-condensed-icon"></i>
+                <div class="stat-condensed-value" id="highest-rank-name">Loading...</div>
+                <div class="stat-condensed-label">Highest Rank</div>
+              </div>
+              <div class="stat-condensed">
+                <i class="fas fa-trophy stat-condensed-icon"></i>
+                <div class="stat-condensed-value" id="highest-mmr">0</div>
+                <div class="stat-condensed-label">MMR</div>
+              </div>
+              <div class="stat-condensed">
+                <i class="fas fa-chart-line stat-condensed-icon"></i>
+                <div class="stat-condensed-value" id="wins-losses">0/0</div>
+                <div class="stat-condensed-label">W/L</div>
+              </div>
+              <div class="stat-condensed">
+                <i class="fas fa-percentage stat-condensed-icon"></i>
+                <div class="stat-condensed-value" id="win-rate">0%</div>
+                <div class="stat-condensed-label">Win Rate</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="profile-points">
+          <div class="points-card" title="Honor Points: Earned by reporting defeats and good sportsmanship">
+            <i class="fas fa-medal"></i>
+            <span id="honor-points-small">0</span>
+            <span>Honor</span>
+          </div>
+          <div class="points-card" title="Arena Gold: Earned from wins and losses, redeemable for prizes">
+            <i class="fas fa-coins"></i>
+            <span id="arena-points-small">0</span>
+            <span>Gold</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Golden Loading Overlay -->
+    <div class="layout-loading-overlay" id="layout-loading-overlay">
+      <div class="layout-loading-content">
+        <h1 class="layout-loading-title">Loading Profile</h1>
+        <p class="layout-loading-subtitle">Preparing your personalized layout...</p>
+
+
+      </div>
+    </div>
+
+    <!-- Main Profile Content -->
+    <div class="profile-main">
+      
+      <!-- Layout Controls -->
+      <div class="layout-controls">
+        <button class="layout-control-btn" id="save-layout" title="Save Layout">
+          <i class="fas fa-save"></i>
+          <span>Save Layout</span>
+        </button>
+      </div>
+
+      <div class="profile-grid-container" id="profile-grid-container">
+        <!-- About Me Section -->
+        <section class="profile-section draggable-section fade-in section-modal-trigger" id="section-about-me" data-section="about-me" data-position="1">
+          <div class="grid-position-indicator">Position 1</div>
+          <div class="section-header">
+            <div class="section-title">
+              <i class="fas fa-user"></i>
+              <span id="about-me-title">About Me</span>
+            </div>
+            
+          </div>
+          
+          <div class="section-content">
+            <div class="bio-content" id="bio-content">
+              <!-- Inline edit form (hidden by default) - MOVED TO TOP -->
+              <div class="inline-edit-form d-none" id="bio-edit-form">
+                <div class="form-group">
+                  <label for="bio-textarea">Bio:</label>
+                  <textarea id="bio-textarea" name="bio" rows="4" placeholder="Tell us about yourself..."></textarea>
+                </div>
+                <div class="form-grid">
+                  <div class="form-group">
+                    <label for="bio-dob">Date of Birth:</label>
+                    <input type="date" id="bio-dob" name="dob" placeholder="Select your date of birth">
+                  </div>
+                  <div class="form-group">
+                    <label for="bio-country">Country:</label>
+                    <input type="text" id="bio-country" name="country" placeholder="Enter your country">
+                  </div>
+                  <div class="form-group">
+                    <label for="bio-game">Favorite Game:</label>
+                    <select id="bio-game" name="favorite_game">
+                      <option value="">Select game</option>
+                      <option value="wc1">WC: Orcs &amp; Humans</option>
+                      <option value="wc2">WC II: Tides of Darkness</option>
+                      <option value="wc3">WC III: Reign of Chaos</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="bio-race">Favorite Race:</label>
+                    <select id="bio-race" name="favorite_race">
+                      <option value="">Select race</option>
+                      <option value="human">Human</option>
+                      <option value="orc">Orc</option>
+                      <option value="night_elf">Night Elf</option>
+                      <option value="undead">Undead</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="bio-tactics">Favorite Tactics:</label>
+                    <select id="bio-tactics" name="favorite_tactics">
+                      <option value="">Select tactics</option>
+                      <option value="rush">Rush</option>
+                      <option value="boom">Boom (Economic Focus)</option>
+                      <option value="turtle">Turtle (Defensive)</option>
+                      <option value="all-in">All-in Attack</option>
+                      <option value="harassment">Harassment</option>
+                      <option value="map-control">Map Control</option>
+                      <option value="tech-rush">Tech Rush</option>
+                      <option value="mass-units">Mass Units</option>
+                      <option value="mixed-army">Mixed Army</option>
+                      <option value="tower-rush">Tower Rush</option>
+                      <option value="fast-expansion">Fast Expansion</option>
+                      <option value="stealth-ambush">Stealth/Ambush</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <small class="email-privacy">
+                    <i class="fas fa-info-circle"></i>
+                    Top Allies and Opponents are automatically populated based on your highest ranked player's match history.
+                  </small>
+                </div>
+                <div class="form-actions">
+                  <button class="epic-btn" id="bio-save-btn">Save Changes</button>
+                  <button class="edit-btn" id="bio-cancel-btn">Cancel</button>
+                </div>
+              </div>
+
+              <!-- Bio display section -->
+              <div class="bio-display" id="bio-display-content">
+                <div class="bio-text-container">
+                  <div class="bio-header">
+                    <h3><i class="fas fa-user-circle"></i> Bio</h3>
+                  </div>
+                  <p id="bio-text" class="bio-text">No bio yet. Click edit to add one!</p>
+                  <button class="edit-btn" id="bio-edit-btn" title="Edit Profile">
+                    <i class="fas fa-edit"></i>
+                    <span>Edit</span>
+                  </button>
+                </div>
+                
+                <div class="bio-stats">
+                  <div class="bio-stat">
+                    <div class="bio-stat-label">Date of Birth</div>
+                    <div class="bio-stat-value" id="profile-dob">Not specified</div>
+                  </div>
+                  <div class="bio-stat">
+                    <div class="bio-stat-label">Country</div>
+                    <div class="bio-stat-value" id="profile-country">Not specified</div>
+                  </div>
+                  <div class="bio-stat">
+                    <div class="bio-stat-label">Favorite Game</div>
+                    <div class="bio-stat-value" id="profile-game">Not specified</div>
+                  </div>
+                  <div class="bio-stat">
+                    <div class="bio-stat-label">Favorite Race</div>
+                    <div class="bio-stat-value" id="profile-race">Not specified</div>
+                  </div>
+                  <div class="bio-stat">
+                    <div class="bio-stat-label">Favorite Tactics</div>
+                    <div class="bio-stat-value" id="profile-tactics">Not specified</div>
+                  </div>
+                  <div class="bio-stat">
+                    <div class="bio-stat-label">Top Allies</div>
+                    <div class="bio-stat-value" id="profile-allies">N/A</div>
+                  </div>
+                  <div class="bio-stat">
+                    <div class="bio-stat-label">Top Opponents</div>
+                    <div class="bio-stat-value" id="profile-enemies">N/A</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Hero Tier Section -->
+        <section class="profile-section draggable-section fade-in section-modal-trigger" id="section-hero-tier" data-section="hero-tier" data-position="2">
+          <div class="grid-position-indicator">Position 2</div>
+          <div class="section-header">
+            <div class="section-title">
+              <i class="fas fa-shield-alt"></i>
+              <span>Hero Tier</span>
+            </div>
+            
+          </div>
+          
+          <div class="section-content">
+            <div class="hero-tier-container">
+              <!-- Hero Status Display -->
+              <div class="hero-status-card" id="hero-status-card">
+                
+                <div class="hero-status-info" id="hero-status-info">
+                  <h3 id="hero-tier-name">Loading...</h3>
+                  <p id="hero-tier-description">Checking your hero status...</p>
+                </div>
+                <div class="hero-status-badge" id="hero-status-badge">
+                  <span id="hero-tier-level">-</span>
+                </div>
+              </div>
+
+              <!-- Unlocked Images Display -->
+              <div class="unlocked-images-section" id="unlocked-images-section">
+                <h4><i class="fas fa-star"></i> Unlocked Profile Images</h4>
+                
+              </div>
+
+              <!-- Hero Action Button -->
+              <div class="hero-action-section" id="hero-action-section">
+                <button class="epic-btn hero-action-btn" id="hero-action-btn">
+                  <i class="fas fa-crown"></i>
+                  <span id="hero-action-text">Be a Hero</span>
+                </button>
+                <p class="hero-action-subtitle" id="hero-action-subtitle">
+                  Unlock exclusive profile images and support the arena!
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Content Creator Section -->
+        <section class="profile-section draggable-section fade-in section-modal-trigger" id="section-content-creator" data-section="content-creator" data-position="3">
+          <div class="grid-position-indicator">Position 3</div>
+          <div class="section-header">
+            <div class="section-title">
+              <i class="fas fa-video"></i>
+              <!-- Left UX Status Indicator -->
+              
+              <span>Watch Tower</span>
+              <!-- Right UX Status Indicator -->
+              
+            </div>
+            
+          </div>
+          
+          <div class="section-content">
+            <!-- Refresh Live Status Button - Now in modal content -->
+            <div class="modal-controls">
+                              <button class="epic-btn" id="refresh-streaming-btn" title="Refresh live status and profile images">
+                <i class="fas fa-sync-alt"></i>
+                <span class="btn-text">Refresh Live Status</span>
+              </button>
+            </div>
+            
+            <div class="platform-cards">
+              <!-- YouTube Card -->
+              <div class="platform-card">
+                <div class="platform-header">
+                  
+                  <div class="platform-info">
+                    <h4>YouTube Channel</h4>
+                    <!-- Inline editable status -->
+                    <div class="inline-editable-field" id="youtube-status-container">
+                      <p id="youtube-status" class="editable-text">Not connected</p>
+                      <input type="text" id="youtube-username-input" class="editable-input d-none" placeholder="YourChannelName (without @)">
+                    </div>
+                  </div>
+                  <button class="edit-btn" id="youtube-edit-btn">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                </div>
+                
+                <!-- YouTube Description (shown when connected) -->
+                <div class="platform-description d-none" id="youtube-description-display">
+                  <!-- Inline editable description -->
+                  <div class="inline-editable-field" id="youtube-description-container">
+                    
+                    <textarea id="youtube-description-input" class="editable-textarea d-none" rows="3" placeholder="Describe your YouTube channel..."></textarea>
+                  </div>
+                  
+                </div>
+                
+                <!-- Inline edit actions -->
+                <div class="inline-edit-actions d-none" id="youtube-edit-actions">
+                  <div class="form-group">
+                    <label>Content Types:</label>
+                    <div class="checkbox-group">
+                      <label class="checkbox-label">
+                        <input type="checkbox" id="youtube-wc12" name="youtube-wc12">
+                        <span>WC 1 &amp; 2</span>
+                      </label>
+                      <label class="checkbox-label">
+                        <input type="checkbox" id="youtube-wc3" name="youtube-wc3">
+                        <span>WC 3</span>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="form-actions">
+                    <button class="epic-btn" id="youtube-save-btn">Save Changes</button>
+                    <button class="edit-btn" id="youtube-cancel-btn">Cancel</button>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Twitch Card -->
+              <div class="platform-card">
+                <div class="platform-header">
+                  
+                  <div class="platform-info">
+                    <h4>Twitch Channel</h4>
+                    <!-- Inline editable status -->
+                    <div class="inline-editable-field" id="twitch-status-container">
+                      <p id="twitch-status" class="editable-text">Not connected</p>
+                      <input type="text" id="twitch-username-input" class="editable-input d-none" placeholder="YourTwitchName">
+                    </div>
+                  </div>
+                  <button class="edit-btn" id="twitch-edit-btn">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                </div>
+                
+                <!-- Twitch Description (shown when connected) -->
+                <div class="platform-description d-none" id="twitch-description-display">
+                  <!-- Inline editable description -->
+                  <div class="inline-editable-field" id="twitch-description-container">
+                    
+                    <textarea id="twitch-description-input" class="editable-textarea d-none" rows="3" placeholder="Describe your Twitch channel..."></textarea>
+                  </div>
+                  
+                </div>
+                
+                <!-- Inline edit actions -->
+                <div class="inline-edit-actions d-none" id="twitch-edit-actions">
+                  <div class="form-group">
+                    <label>Content Types:</label>
+                    <div class="checkbox-group">
+                      <label class="checkbox-label">
+                        <input type="checkbox" id="twitch-wc12" name="twitch-wc12">
+                        <span>WC 1 &amp; 2</span>
+                      </label>
+                      <label class="checkbox-label">
+                        <input type="checkbox" id="twitch-wc3" name="twitch-wc3">
+                        <span>WC 3</span>
+                      </label>
+                    </div>
+                  </div>
+                  <div class="form-actions">
+                    <button class="epic-btn" id="twitch-save-btn">Save Changes</button>
+                    <button class="edit-btn" id="twitch-cancel-btn">Cancel</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Player Names Section -->
+        <section class="profile-section draggable-section fade-in section-modal-trigger" id="section-player-names" data-section="player-names" data-position="4">
+          <div class="grid-position-indicator">Position 4</div>
+          <div class="section-header">
+            <div class="section-title">
+              <i class="fas fa-fort-awesome"></i>
+              <span>Barracks</span>
+            </div>
+            
+          </div>
+          
+          <div class="section-content">
+            <!-- Game Type Filter -->
+            <div class="barracks-filter-bar">
+              <div class="game-type-tabs">
+                <button class="game-type-tab active" data-game-type="all">
+                  <i class="fas fa-globe"></i>
+                  <span>All Games</span>
+                  <span class="player-count">(0)</span>
+                </button>
+                                  <button class="game-type-tab" data-game-type="wc1">
+                    <i class="fas fa-dragon"></i>
+                    <span>WC1</span>
+                    <span class="player-count">(0)</span>
+                  </button>
+                  <button class="game-type-tab" data-game-type="wc2">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>WC2</span>
+                    <span class="player-count">(0)</span>
+                  </button>
+                  <button class="game-type-tab" data-game-type="wc3">
+                    <i class="fas fa-crown"></i>
+                    <span>WC3</span>
+                    <span class="player-count">(0)</span>
+                  </button>
+              </div>
+            </div>
+            
+            <div id="player-names-container">
+              <div class="loading">Loading player names...</div>
+            </div>
+            
+            <!-- Add Player Button moved inside section -->
+            <div class="section-action-area">
+              <button class="epic-btn" id="add-player-btn" title="Add a new player name">
+                <i class="fas fa-plus"></i>
+                <span>Add/Link Player</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Clan Encampment Section -->
+        <section class="profile-section draggable-section fade-in section-modal-trigger" id="section-clan-management" data-section="clan-management" data-position="5">
+          <div class="grid-position-indicator">Position 5</div>
+          <div class="section-header">
+            <div class="section-title">
+              <i class="fas fa-campground"></i>
+              <span>Clan Encampment</span>
+            </div>
+            
+          </div>
+          
+          <div class="section-content">
+            <div id="clan-container">
+              <!-- Simplified Clan Actions -->
+              <div class="clan-encampment-actions">
+                <button class="encampment-btn create-clan-btn" id="create-clan-btn">
+                  Create Clan
+                </button>
+                
+                <button class="encampment-btn browse-clans-btn" id="browse-clans-btn">
+                  Browse Clans
+                </button>
+                <button class="encampment-btn stone-tablet-btn" id="stone-tablet-btn">
+                  <i class="fas fa-scroll"></i> Stone Tablet
+                </button>
+              </div>
+
+              <!-- User's Clans Container -->
+              <div id="user-clans-container">
+                <div class="loading">Loading your clan encampment...</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- War Tales Section -->
+        <section class="profile-section draggable-section fade-in section-modal-trigger" id="section-campaign" data-section="campaign" data-position="6">
+          <div class="grid-position-indicator">Position 6</div>
+          <div class="section-header">
+            <div class="section-title">
+              <i class="fas fa-book-open"></i>
+              <span>War Tales</span>
+            </div>
+            
+          </div>
+          
+          <div class="section-content">
+            <div class="campaign-section-header">
+              <a href="/views/wartales.html" class="epic-btn campaign-link-btn" title="Report to War Tales">
+                <i class="fas fa-flag"></i>
+                                  <span>Report To War Tales</span>
+              </a>
+            </div>
+
+            <div class="campaign-progress-summary">
+              <div class="stats-grid">
+                <div class="stat-card">
+                  
+                  <div class="stat-value" id="missions-completed">0</div>
+                  <div class="stat-label">Total Missions Completed</div>
+                </div>
+                <div class="stat-card">
+                  
+                  <div class="stat-value" id="campaigns-completed">0</div>
+                  <div class="stat-label">Total Campaigns Completed</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- War Tales Canvas Books Container -->
+            <div class="war-tales-canvas-container">
+              <!-- Game Selection Tabs -->
+              <div class="game-selection-tabs">
+                <button class="game-tab" data-game="wc1">
+                  <i class="fas fa-dragon"></i>
+                  <span>Warcraft I</span>
+                </button>
+                <button class="game-tab active" data-game="wc2">
+                  <i class="fas fa-shield-alt"></i>
+                  <span>Warcraft II</span>
+                </button>
+                <button class="game-tab" data-game="wc3">
+                  <i class="fas fa-chess-king"></i>
+                  <span>Warcraft III</span>
+                </button>
+              </div>
+              
+              <!-- Canvas Book Container -->
+              <div class="canvas-book-container">
+                <canvas id="war-tales-canvas" class="war-tales-canvas"></canvas>
+                
+                <!-- Book Controls -->
+                <div class="book-controls">
+                  <button class="book-control-btn" id="prev-page-btn" title="Previous Page">
+                    <i class="fas fa-chevron-left"></i>
+                  </button>
+                  <span class="page-info" id="page-info">Page 1 of 10</span>
+                  <button class="book-control-btn" id="next-page-btn" title="Next Page">
+                    <i class="fas fa-chevron-right"></i>
+                  </button>
+                </div>
+                
+                <!-- Book Loading Indicator -->
+                <div class="book-loading" id="book-loading">
+                  <i class="fas fa-spinner fa-spin"></i>
+                  <p>Loading War Tales...</p>
+                </div>
+              </div>
+              
+              <!-- Book Information Panel -->
+              <div class="book-info-panel">
+                <div class="book-title" id="book-title">Warcraft II: Tides of Darkness</div>
+                <div class="book-subtitle" id="book-subtitle">The Second War</div>
+                <div class="book-stats">
+                  <div class="stat-item">
+                    <span class="stat-label">Total Missions:</span>
+                    <span class="stat-value" id="total-missions">15</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-label">Completed:</span>
+                    <span class="stat-value" id="completed-missions">0</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-label">Progress:</span>
+                    <span class="stat-value" id="progress-percentage">0%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Achievements Section -->
+        <section class="profile-section draggable-section fade-in section-modal-trigger" id="section-achievements" data-section="achievements" data-position="7">
+          <div class="grid-position-indicator">Position 7</div>
+          <div class="section-header">
+            <div class="section-title">
+              <i class="fas fa-trophy"></i>
+              <span>Achievements</span>
+            </div>
+            
+          </div>
+          
+          <div class="section-content">
+            <div class="achievement-summary">
+              <div class="stats-grid">
+                <div class="stat-card">
+                  
+                  <div class="stat-value" id="total-achievements">0</div>
+                  <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-card">
+                  
+                  <div class="stat-value" id="completed-achievements">0</div>
+                  <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                  
+                  <div class="stat-value" id="completion-percentage">0%</div>
+                  <div class="stat-label">Complete</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Achievement Navigation -->
+            <div class="achievement-navigation">
+              <div class="achievement-main-tabs">
+                <button class="achievement-main-tab active" data-tab="arena-achievements">
+                  <i class="fas fa-swords"></i>
+                  <span>Arena</span>
+                </button>
+                <button class="achievement-main-tab" data-tab="social-achievements">
+                  <i class="fas fa-users"></i>
+                  <span>Social</span>
+                </button>
+                <button class="achievement-main-tab" data-tab="wartable-achievements">
+                  <i class="fas fa-flag"></i>
+                  <span>War Table</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Achievement Display Area -->
+            <div class="achievement-display">
+              <!-- Arena Achievements Tab -->
+              <div class="achievement-tab-content active" id="arena-achievements-tab">
+                <div class="achievement-filters">
+                  <button class="achievement-filter active" data-status="all" data-category="arena">
+                    All
+                  </button>
+                  <button class="achievement-filter" data-status="completed" data-category="arena">
+                    Completed
+                  </button>
+                  <button class="achievement-filter" data-status="incomplete" data-category="arena">
+                    In Progress
+                  </button>
+                </div>
+                <div id="arena-achievements-container" class="achievement-container">
+                  <div class="loading">Loading arena achievements...</div>
+                </div>
+              </div>
+
+              <!-- Social Achievements Tab -->
+              <div class="achievement-tab-content" id="social-achievements-tab">
+                <div class="achievement-filters">
+                  <button class="achievement-filter active" data-status="all" data-category="social">
+                    All
+                  </button>
+                  <button class="achievement-filter" data-status="completed" data-category="social">
+                    Completed
+                  </button>
+                  <button class="achievement-filter" data-status="incomplete" data-category="social">
+                    In Progress
+                  </button>
+                </div>
+                <div id="social-achievements-container" class="achievement-container">
+                  <div class="loading">Loading social achievements...</div>
+                </div>
+              </div>
+
+              <!-- War Table Achievements Tab -->
+              <div class="achievement-tab-content" id="wartable-achievements-tab">
+                <!-- War Table Game Tabs -->
+                <div class="wartable-game-tabs">
+                  <button class="wartable-game-tab active" data-game="wc1">
+                    <i class="fas fa-dragon"></i>
+                    <span>WC I</span>
+                  </button>
+                  <button class="wartable-game-tab" data-game="wc2">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>WC II</span>
+                  </button>
+                  <button class="wartable-game-tab" data-game="wc3">
+                    <i class="fas fa-chess-king"></i>
+                    <span>WC III</span>
+                  </button>
+                </div>
+
+                <!-- WC1 Achievements -->
+                <div class="wartable-game-content active" id="wc1-achievements-content">
+                  <div class="achievement-filters">
+                    <button class="achievement-filter active" data-status="all" data-category="wc1">
+                      All
+                    </button>
+                    <button class="achievement-filter" data-status="completed" data-category="wc1">
+                      Completed
+                    </button>
+                    <button class="achievement-filter" data-status="incomplete" data-category="wc1">
+                      In Progress
+                    </button>
+                  </div>
+                  <div id="wc1-achievements-container" class="achievement-container">
+                    <div class="loading">Loading WC I achievements...</div>
+                  </div>
+                </div>
+
+                <!-- WC2 Achievements -->
+                <div class="wartable-game-content" id="wc2-achievements-content">
+                  <div class="achievement-filters">
+                    <button class="achievement-filter active" data-status="all" data-category="wc2">
+                      All
+                    </button>
+                    <button class="achievement-filter" data-status="completed" data-category="wc2">
+                      Completed
+                    </button>
+                    <button class="achievement-filter" data-status="incomplete" data-category="wc2">
+                      In Progress
+                    </button>
+                  </div>
+                  <div id="wc2-achievements-container" class="achievement-container">
+                    <div class="loading">Loading WC II achievements...</div>
+                  </div>
+                </div>
+
+                <!-- WC3 Achievements -->
+                <div class="wartable-game-content" id="wc3-achievements-content">
+                  <div class="achievement-filters">
+                    <button class="achievement-filter active" data-status="all" data-category="wc3">
+                      All
+                    </button>
+                    <button class="achievement-filter" data-status="completed" data-category="wc3">
+                      Completed
+                    </button>
+                    <button class="achievement-filter" data-status="incomplete" data-category="wc3">
+                      In Progress
+                    </button>
+                  </div>
+                  <div id="wc3-achievements-container" class="achievement-container">
+                    <div class="loading">Loading WC III achievements...</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Cartography Section -->
+        <section class="profile-section draggable-section fade-in section-modal-trigger" id="section-cartography" data-section="cartography" data-position="8">
+          <div class="grid-position-indicator">Position 8</div>
+          <div class="section-header">
+            <div class="section-title">
+              <i class="fas fa-map"></i>
+              <span>Cartography</span>
+            </div>
+            
+          </div>
+          
+          <div class="section-content">
+            <!-- Atlas Link -->
+            <div class="atlas-link-container">
+              <a href="/views/atlas.html" class="atlas-link-btn">
+                
+                <div class="atlas-link-content">
+                  <div class="atlas-link-title">Explore the Atlas</div>
+                  <div class="atlas-link-subtitle">Browse all maps in the community</div>
+                </div>
+                
+              </a>
+            </div>
+
+            <!-- User's Maps -->
+            <div class="user-maps-section">
+              <div class="user-maps-header">
+                <h3>My Maps</h3>
+                <div class="user-maps-count" id="user-maps-count">Loading...</div>
+              </div>
+              
+              <div class="user-maps-container" id="user-maps-container">
+                <div class="loading">Loading your maps...</div>
+              </div>
+              
+
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <!-- Add Player Modal -->
+  <div id="add-player-modal" class="modal" data-static="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add New Player</h2>
+        <span class="close" id="close-add-player-modal">×</span>
+      </div>
+      <div class="modal-body">
+        <form id="add-player-form">
+          <div class="form-group">
+            <label for="player-name">Player Name:</label>
+            <input type="text" id="player-name" name="playerName" placeholder="Enter player name" required="">
+            <small>Enter the exact player name as it appears in-game</small>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="epic-btn">Add Player</button>
+            <button type="button" class="edit-btn" id="cancel-add-player">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clan Management Modals -->
+  
+  <!-- Create Clan Modal -->
+  <div id="create-clan-modal" class="modal" data-static="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-shield-alt"></i> Create Clan</h2>
+        <span class="close" id="close-create-clan-modal">×</span>
+      </div>
+      <div class="modal-body">
+        <form id="create-clan-form">
+          <div class="form-group">
+            <label for="clan-name">Clan Name:</label>
+            <input type="text" id="clan-name" name="clanName" placeholder="Enter clan name" required="" maxlength="30">
+            <small>Choose a unique name for your clan (3-30 characters)</small>
+          </div>
+          <div class="form-group">
+            <label for="clan-tag">Clan Tag:</label>
+                            <input type="text" id="clan-tag" name="clanTag" placeholder="TAG" required="" maxlength="6">
+            <small>Short tag to represent your clan (2-6 characters)</small>
+          </div>
+          <div class="form-group">
+            <label for="clan-description">Description:</label>
+            <textarea id="clan-description" name="clanDescription" placeholder="Describe your clan..." rows="4"></textarea>
+            <small>Tell others about your clan's goals and requirements</small>
+          </div>
+          <div class="form-group">
+            <label for="clan-game">Primary Game:</label>
+            <select id="clan-game" name="clanGame" required="">
+              <option value="">Select primary game</option>
+              <option value="wc1">WC: Orcs &amp; Humans</option>
+              <option value="wc2">WC II</option>
+              <option value="wc3">WC III</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>
+              <input type="checkbox" id="clan-private" name="clanPrivate">
+              Private Clan (invitation only)
+            </label>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="epic-btn">
+              <i class="fas fa-plus"></i>
+              Create Clan
+            </button>
+            <button type="button" class="edit-btn" id="cancel-create-clan">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Find Clans Modal -->
+  <div id="find-clans-modal" class="modal clan-modal--wide" data-static="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-search"></i> Find Clans</h2>
+        <span class="close" id="close-find-clans-modal">×</span>
+      </div>
+      <div class="modal-body">
+        <!-- Search Filters -->
+        <div class="clan-search-filters">
+          <div class="form-grid">
+            <div class="form-group">
+              <input type="text" id="clan-search-name" placeholder="Search by clan name...">
+            </div>
+            <div class="form-group">
+              <select id="clan-search-game">
+                <option value="">All Games</option>
+                <option value="wc1">WC: Orcs &amp; Humans</option>
+                <option value="wc2">WC II</option>
+                <option value="wc3">WC III</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <button type="button" class="epic-btn" id="search-clans-btn">
+                <i class="fas fa-search"></i>
+                Search
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Clans List -->
+        <div id="clans-list">
+          <div class="loading">Loading available clans...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Join Clan Modal -->
+  <div id="join-clan-modal" class="modal" data-static="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-handshake"></i> Join Clan</h2>
+        <span class="close" id="close-join-clan-modal">×</span>
+      </div>
+      <div class="modal-body">
+        
+        <div class="form-group">
+          <label for="join-message">Application Message (Optional):</label>
+          <textarea id="join-message" placeholder="Tell the clan leaders why you want to join..." rows="3"></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="epic-btn" id="confirm-join-clan">
+            <i class="fas fa-check"></i>
+            Send Request
+          </button>
+          <button type="button" class="edit-btn" id="cancel-join-clan">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Player Stats Modal will be created dynamically by ModalManager -->
+
+  <!-- Avatar Selection Modal -->
+  <div id="avatar-selection-modal" class="modal" data-static="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-user-circle"></i> Change Avatar</h2>
+        <button class="modal-close profile-section-modal-close" id="close-avatar-modal" aria-label="Close avatar selection modal">
+          ×
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="avatar-options-container">
+          
+          <!-- Default Avatar Option -->
+          <div class="avatar-option" data-type="default">
+            <div class="avatar-preview">
+              <img src="/assets/img/ranks/emblem.png" alt="Default Emblem">
+              
+            </div>
+            <div class="avatar-info">
+              <h3>Default Emblem</h3>
+              <p>Classic WC Arena emblem</p>
+            </div>
+          </div>
+
+          <!-- Highest Rank Option -->
+          <div class="avatar-option" data-type="highest_rank" id="highest-rank-option">
+            <div class="avatar-preview">
+              <img src="/assets/img/ranks/emblem.png" alt="Highest Rank" id="highest-rank-preview">
+              
+              <div class="avatar-unavailable-overlay" id="rank-unavailable">
+                <span>No players linked</span>
+              </div>
+            </div>
+            <div class="avatar-info">
+              <h3>Highest Rank</h3>
+              <p id="highest-rank-description">Use your highest rank</p>
+            </div>
+          </div>
+
+          <!-- Custom Images Section -->
+          <div class="custom-avatars-section">
+            <h3 class="custom-section-title">
+              <i class="fas fa-star"></i> Special Images
+            </h3>
+            <div class="custom-avatars-grid">
+              
+              <div class="avatar-option custom-option" data-type="custom" data-image="elf.png" data-tier="1">
+                <div class="avatar-preview">
+                  <img src="/assets/img/profiles/elf.png" alt="Elf">
+                  
+                  <div class="avatar-lock-overlay">
+                    <i class="fas fa-lock"></i>
+                    <span>Hero Tier 1+</span>
+                  </div>
+                </div>
+                <div class="avatar-info">
+                  <h4>Elf</h4>
+                  <p>Graceful forest guardian</p>
+                </div>
+              </div>
+
+              <div class="avatar-option custom-option" data-type="custom" data-image="dwarf.png" data-tier="2">
+                <div class="avatar-preview">
+                  <img src="/assets/img/profiles/dwarf.png" alt="Dwarf">
+                  
+                  <div class="avatar-lock-overlay">
+                    <i class="fas fa-lock"></i>
+                    <span>Hero Tier 2+</span>
+                  </div>
+                </div>
+                <div class="avatar-info">
+                  <h4>Dwarf</h4>
+                  <p>Stout mountain warrior</p>
+                </div>
+              </div>
+
+              <div class="avatar-option custom-option" data-type="custom" data-image="mage.png" data-tier="3">
+                <div class="avatar-preview">
+                  <img src="/assets/img/profiles/mage.png" alt="Mage">
+                  
+                  <div class="avatar-lock-overlay">
+                    <i class="fas fa-lock"></i>
+                    <span>Hero Tier 3+</span>
+                  </div>
+                </div>
+                <div class="avatar-info">
+                  <h4>Mage</h4>
+                  <p>Mystical spellcaster</p>
+                </div>
+              </div>
+
+              <div class="avatar-option custom-option" data-type="custom" data-image="dragon.png" data-tier="4">
+                <div class="avatar-preview">
+                  <img src="/assets/img/profiles/dragon.png" alt="Dragon">
+                  
+                  <div class="avatar-lock-overlay">
+                    <i class="fas fa-lock"></i>
+                    <span>Hero Tier 4</span>
+                  </div>
+                </div>
+                <div class="avatar-info">
+                  <h4>Dragon</h4>
+                  <p>Mighty dragon lord</p>
+                </div>
+              </div>
+
+              <div class="avatar-option custom-option" data-type="custom" data-image="paladin.png" data-tier="5">
+                <div class="avatar-preview">
+                  <img src="/assets/img/profiles/paladin.png" alt="Paladin">
+                  
+                  <div class="avatar-lock-overlay">
+                    <i class="fas fa-lock"></i>
+                    <span>Donation Required</span>
+                  </div>
+                </div>
+                <div class="avatar-info">
+                  <h4>Paladin</h4>
+                  <p>Righteous holy warrior</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <div class="form-actions">
+            <button type="button" class="epic-btn" id="save-avatar-selection">
+              <i class="fas fa-save"></i>
+              Save Avatar
+            </button>
+            <button type="button" class="edit-btn" id="cancel-avatar-selection">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Account Confirmation Modal -->
+  <div id="delete-account-modal" class="modal delete-account-modal">
+    <div class="modal-content delete-account-modal-content">
+      <div class="modal-header delete-account-modal-header">
+        <h2><i class="fas fa-exclamation-triangle"></i> Delete Account</h2>
+        <span class="close delete-account-modal-close" id="close-delete-account-modal">×</span>
+      </div>
+      <div class="modal-body">
+        <div class="warning-message">
+          <h3>
+            <i class="fas fa-skull-crossbones"></i>
+            PERMANENT DELETION WARNING
+          </h3>
+          <p>
+            This action is <strong>IRREVERSIBLE</strong>. Your account and all associated data will be permanently deleted.
+          </p>
+        </div>
+        
+        <div class="deletion-details">
+          <h4>What will be deleted:</h4>
+          <ul>
+            <li>Your user account and profile</li>
+            <li>All achievement progress and stats</li>
+            <li>Campaign completion records</li>
+            <li>Forum posts and comments</li>
+            <li>Chat messages and private messages</li>
+            <li>Friends and social connections</li>
+            <li>All user-specific data</li>
+          </ul>
+          
+          <h4>What will be preserved:</h4>
+          <ul>
+            <li>Uploaded maps (unlinked from your account)</li>
+            <li>All players (completely preserved, just unlinked from your account)</li>
+            <li>Tournaments you created (preserved with all match history)</li>
+            <li>All player tournament participation and results</li>
+          </ul>
+          
+          <div class="preserved-items">
+            <p>
+              <i class="fas fa-info-circle"></i>
+              If you're in a clan, leadership will transfer to another member. If you're the only member, the clan will be deleted.
+            </p>
+          </div>
+        </div>
+        
+        <div class="confirmation-input">
+          <label for="delete-confirmation">
+            Type "DELETE" to confirm:
+          </label>
+          <input type="text" id="delete-confirmation" placeholder="DELETE">
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" class="edit-btn" id="cancel-delete-account">
+            <i class="fas fa-times"></i>
+            Cancel
+          </button>
+          <button type="button" class="epic-btn" id="confirm-delete-account" disabled="">
+            <i class="fas fa-trash-alt"></i>
+            Delete My Account Forever
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="footer-container"></div>
+
+  <!-- Consolidated Scripts - Optimized loading -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js" defer=""></script>
+  <script src="/js/api-config.js" defer=""></script>
+  <script src="/js/utils.js" defer=""></script>
+  <script type="module" src="/js/notifications.js"></script>
+  <script type="module" src="/js/main.js"></script>
+  <script type="module" src="/js/playerDetails.js?v=1.0.2"></script>
+  <!-- ModalManager is loaded as module in TownHallModalManager.js -->
+  <script src="/js/profile-section-manager.js" defer=""></script>
+  
+  <!-- Ensure ModalManager is loaded before TownHallModalManager -->
+  <script type="module" src="/js/modules/ModalManager.js"></script>
+  
+  <!-- ModalManager initialization handled by TownHallModalManager -->
+  
+  <!-- New Unified Achievement System -->
+  <script type="module" src="/js/app.js"></script>
+  
+        <!-- Unified Moth System Manager -->
+      <script type="module" src="/js/utils/mothSystemManager.js"></script>
+  
+  <!-- Navbar System - MUST be loaded for dropdown functionality -->
+  <!-- Navbar JavaScript loaded via main.js -->
+  
+  <!-- Unified Membership Management -->
+  <script src="/js/modules/MembershipManager.js?v=20241221-2" defer=""></script>
+
+
+  <script type="module" src="/js/myprofile-refactored.js"></script>
+  
+  <!-- Canvas Book Engine -->
+  <script src="/js/modules/CanvasBookEngine.js" defer=""></script>
+
+
+  <!-- Fallback for browsers that don't support ES6 modules -->
+  <script nomodule="">
+    console.error('❌ ES6 modules not supported - myprofile-refactored.js will not load');
+  </script>
+
+
+  <!-- UNIFIED PLAYER STATS MODAL -->
+  <div id="player-stats-modal" class="modal" data-static="true">
+    <div class="modal-content">
+      <!-- Universal close button -->
+      <button class="universal-close-btn" aria-label="Close">×</button>
+      <!-- Content dynamically populated by JavaScript -->
+      
+    </div>
+  </div>
+
+
+ </body></html>

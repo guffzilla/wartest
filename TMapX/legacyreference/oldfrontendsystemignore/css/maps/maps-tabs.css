@@ -1,0 +1,522 @@
+/* ===== MAIN CONTAINER ===== */
+.maps-main {
+  max-width: 1400px;
+  margin: 2.5rem auto 0; /* Reduced from 5rem to 2.5rem for better spacing */
+  padding: 0 2rem 2rem;
+  position: relative;
+  z-index: 10;
+}
+
+/* ===== GAME TABS WITH STATS ===== */
+.game-tabs-container {
+  margin: 0.5rem auto 1rem;
+  max-width: 1000px;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.game-tabs-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, #ffd700, #ffed4e, #ff6b35);
+}
+
+.game-tabs-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.game-tabs {
+  display: flex;
+  gap: 0.4rem;
+  justify-content: center;
+  flex: 1;
+}
+
+.game-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4rem 0.8rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Cinzel', serif;
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  overflow: hidden;
+  min-width: 100px;
+  justify-content: center;
+}
+
+.game-tab::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+  transition: left 0.6s;
+}
+
+.game-tab:hover {
+  background: rgba(255, 215, 0, 0.08);
+  border-color: rgba(255, 215, 0, 0.2);
+  color: #ffd700;
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 3px 10px rgba(255, 215, 0, 0.2);
+}
+
+.game-tab:hover::before {
+  left: 100%;
+}
+
+.game-tab.active {
+  background: linear-gradient(45deg, rgba(255, 215, 0, 0.15), rgba(255, 237, 78, 0.15));
+  border-color: #ffd700;
+  color: #ffd700;
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 3px 10px rgba(255, 215, 0, 0.3);
+}
+
+.game-tab i {
+  font-size: 0.9rem;
+}
+
+.game-tab span {
+  font-size: 0.7rem;
+}
+
+/* Hero stats next to tabs */
+.hero-stats {
+  display: flex;
+  gap: 0.8rem;
+  flex-shrink: 0;
+}
+
+.hero-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.4rem 0.6rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  min-width: 70px;
+  transition: all 0.3s ease;
+}
+
+.hero-stat:hover {
+  background: rgba(255, 215, 0, 0.1);
+  border-color: rgba(255, 215, 0, 0.3);
+  transform: translateY(-1px);
+}
+
+.hero-stat-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffd700;
+}
+
+.hero-stat-label {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+/* ===== GAME-SPECIFIC STYLES MOVED TO game-specific.css ===== */
+
+.game-tab[data-game="wc3"] {
+  border-color: rgba(138, 43, 226, 0.5);
+}
+
+.game-tab[data-game="wc3"]:hover,
+.game-tab[data-game="wc3"].active {
+  border-color: #8a2be2;
+  color: #da70d6;
+  background: linear-gradient(45deg, rgba(138, 43, 226, 0.2), rgba(218, 112, 214, 0.2));
+}
+
+/* ===== MINIMAL SECTIONS ===== */
+.minimal-section {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin: 2rem auto;
+  max-width: 600px;
+}
+
+.game-title {
+  font-family: 'Cinzel', serif;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #ffd700;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: goldShimmer 3s ease-in-out infinite;
+}
+
+@keyframes goldShimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Responsive design for tabs */
+@media (max-width: 768px) {
+  .game-tabs-wrapper {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .game-tabs {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .hero-stats {
+    justify-content: center;
+  }
+  
+  .game-tab {
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+  }
+  
+  .game-tab span {
+    font-size: 0.8rem;
+  }
+}
+
+/* ===== GAME CONTENT SECTIONS ===== */
+.game-content {
+  display: none;
+  animation: fadeIn 0.6s ease;
+}
+
+.game-content.active {
+  display: block;
+}
+
+/* WC II Section (existing) */
+.wc2-section {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 215, 0, 0.1);
+  padding: 2rem;
+  margin: 1.5rem auto;
+  max-width: 1400px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===== GAME-SPECIFIC STYLES MOVED TO game-specific.css ===== */
+
+/* WC III Section */
+.wc3-section {
+  background: rgba(0, 100, 0, 0.08);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 255, 0, 0.2);
+  padding: 2rem;
+  margin: 1.5rem auto;
+  max-width: 1400px;
+  box-shadow: 0 8px 32px rgba(0, 100, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.wc3-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #006400, #00ff00, #32cd32);
+}
+  width: 100%;
+  height: 65px !important; /* Reduced from 100px by 35% - FORCED OVERRIDE */
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 12px 12px 0 0;
+  cursor: pointer;
+}
+
+/* ===== WC1 STYLES MOVED TO game-specific.css ===== */
+
+/* ===== WC1 STYLES MOVED TO game-specific.css ===== */
+
+/* ===== WC1 MODAL STYLES MOVED TO game-specific.css ===== */
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wc1-modal-overlay .modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #1a1a1a;
+  cursor: pointer;
+  padding: 0;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s ease;
+}
+
+.wc1-modal-overlay .modal-close:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.wc1-modal-overlay .modal-body {
+  padding: 0;
+}
+
+/* Rating Form Styles */
+.rating-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rating-stars-input {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rating-label {
+  font-weight: 600;
+  color: #daa520;
+}
+
+.stars-input {
+  display: flex;
+  gap: 0.3rem;
+}
+
+.rating-star {
+  font-size: 1.5rem;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rating-star:hover,
+.rating-star.hover {
+  color: #daa520;
+  transform: scale(1.1);
+}
+
+.rating-star.fas {
+  color: #daa520;
+}
+
+.rating-comment {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.rating-comment label {
+  font-weight: 600;
+  color: #daa520;
+}
+
+.rating-comment textarea {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(218, 165, 32, 0.3);
+  border-radius: 6px;
+  padding: 0.75rem;
+  color: white;
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+.rating-comment textarea:focus {
+  outline: none;
+  border-color: #daa520;
+  box-shadow: 0 0 0 2px rgba(218, 165, 32, 0.2);
+}
+
+.rating-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.btn-cancel,
+.btn-submit {
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.btn-submit {
+  background: #daa520;
+  color: #1a1a1a;
+  border: 1px solid #daa520;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background: #b8860b;
+  transform: translateY(-1px);
+}
+
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Reviews Modal Styles */
+.reviews-summary {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(218, 165, 32, 0.2);
+}
+
+.average-rating {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.average-rating .rating-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #daa520;
+}
+
+.average-rating .rating-stars {
+  display: flex;
+  gap: 0.2rem;
+}
+
+.average-rating .rating-stars i {
+  font-size: 1.2rem;
+  color: #daa520;
+}
+
+.average-rating .review-count {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+}
+
+.reviews-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.review-item {
+  background: rgba(218, 165, 32, 0.05);
+  border: 1px solid rgba(218, 165, 32, 0.1);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.reviewer-name {
+  font-weight: 600;
+  color: #daa520;
+}
+
+.review-rating {
+  display: flex;
+  gap: 0.1rem;
+}
+
+.review-rating i {
+  font-size: 0.8rem;
+  color: #daa520;
+}
+
+.review-date {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  margin-left: auto;
+}
+
+.review-comment {
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.5;
+  font-style: italic;
+}
+
+.no-reviews {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  padding: 2rem;
+  font-style: italic;
+}
+
+/* Category specific colors */
+/* ===== WC1 CATEGORY STYLES MOVED TO game-specific.css ===== */
+
+/* ===== WC1 LOADING/EMPTY STATES MOVED TO game-specific.css ===== */
+
+/* ===== WC1 RESPONSIVE DESIGN MOVED TO game-specific.css ===== */ 
+
+/* ===== WC1 HEIGHT OVERRIDES MOVED TO game-specific.css ===== */ 
+
+ 

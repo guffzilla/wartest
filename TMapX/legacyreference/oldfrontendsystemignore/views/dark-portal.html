@@ -1,0 +1,85 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dark Portal - Community Hub</title>
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/css/warcraft-app-modern.css">
+  <link rel="stylesheet" href="/css/unified-layout-system.css">
+  <link rel="stylesheet" href="/css/black-theme.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/navbar-universal.css">
+</head>
+<body data-page="dark-portal">
+  <!-- Navbar will be loaded here -->
+  <div id="navbar-container"></div>
+
+  <div class="dark-portal-container">
+    <!-- Hero Section -->
+    <div class="portal-hero">
+      <h1 class="portal-title">🌀 Dark Portal</h1>
+      <p class="portal-subtitle">Your gateway to the Warcraft community</p>
+    </div>
+
+    <!-- Game Type Tabs -->
+    <div class="game-tabs">
+      <button class="game-tab active" data-game="wc12">
+        <i class="fas fa-shield-alt"></i>
+        WC I/II
+      </button>
+      <button class="game-tab" data-game="wc3">
+        <i class="fas fa-crown"></i>
+        WC III
+      </button>
+    </div>
+
+    <!-- Community Sections -->
+    <div id="community-sections" class="community-sections">
+      <!-- Content will be loaded dynamically by JavaScript -->
+    </div>
+
+    <!-- Submit Link Section -->
+    <div class="submit-section">
+      <h2 class="submit-title">Know a Great Community Resource?</h2>
+      <p class="submit-description">
+        Help grow our community by submitting links to Reddit communities, Discord servers, 
+        Battle.net groups, map/mod sites, and other Warcraft resources. All submissions are reviewed by our team.
+      </p>
+      <button class="submit-btn">
+        <i class="fas fa-plus"></i>
+        Submit a Link
+      </button>
+    </div>
+  </div>
+
+  <!-- Footer will be loaded here -->
+  <div id="footer-container"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+  <script type="module" src="/js/app.js"></script>
+  <script type="module" src="/js/main.js"></script>
+  <script type="module" src="/js/dark-portal.js"></script>
+  
+  <!-- Debug Script -->
+  <script>
+    console.log('🔍 Dark Portal Debug: Page loaded');
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('🔍 Dark Portal Debug: DOM loaded');
+      console.log('🔍 Dark Portal Debug: Community sections container:', document.getElementById('community-sections'));
+      
+      // Test API call
+      fetch('/api/dark-portal/all-links?gameType=wc12')
+        .then(response => response.json())
+        .then(data => {
+          console.log('🔍 Dark Portal Debug: API response:', data);
+        })
+        .catch(error => {
+          console.error('🔍 Dark Portal Debug: API error:', error);
+        });
+    });
+  </script>
+
+
+</body></html>

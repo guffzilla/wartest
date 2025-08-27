@@ -1,0 +1,99 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Watch Tower - War Arena</title>
+  
+  <!-- External CSS Files -->
+  <link rel="stylesheet" href="/css/warcraft-app-modern.css">
+  <link rel="stylesheet" href="/css/content.css">
+      <link rel="stylesheet" href="/css/quick-report.css">
+    <link rel="stylesheet" href="/css/unified-button-system.css">
+    <link rel="stylesheet" href="/css/unified-form-system.css">
+    <link rel="stylesheet" href="/css/unified-layout-system.css">
+    <link rel="stylesheet" href="/css/unified-color-system.css">
+    <link rel="stylesheet" href="/css/components/animations.css">
+    <link rel="stylesheet" href="/css/components/transitions.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- Universal Navbar Consistency - MUST be loaded last for proper override -->
+  <link rel="stylesheet" href="/css/navbar-universal.css">
+</head>
+<body>
+  <!-- Navigation will be loaded here -->
+  <div id="navbar-container"></div>
+  
+  <main class="content-main">
+    <div class="content-container">
+              <h1 class="content-title">🗼 WATCH TOWER</h1>
+        
+      
+      <!-- Ultra Compact Filters -->
+      <div class="filters-container">
+        <div class="filter-group">
+          <button class="filter-btn active" data-game="wc12">
+            <i class="fas fa-shield-alt"></i>
+            <span>WC I/II</span>
+          </button>
+          <button class="filter-btn" data-game="wc3">
+            <i class="fas fa-crown"></i>
+            <span>WC III</span>
+          </button>
+        </div>
+        
+        <div class="filter-group">
+          <button class="filter-btn active" data-platform="all">
+            <i class="fas fa-globe"></i>
+            <span>All</span>
+          </button>
+          <button class="filter-btn" data-platform="youtube">
+            <i class="fab fa-youtube"></i>
+            <span>YouTube</span>
+          </button>
+          <button class="filter-btn" data-platform="twitch">
+            <i class="fab fa-twitch"></i>
+            <span>Twitch</span>
+          </button>
+        </div>
+        
+        <div class="filter-group">
+          <button class="filter-btn active" data-sort="default">
+            <i class="fas fa-list"></i>
+            <span>Default</span>
+          </button>
+          <button class="filter-btn" data-sort="highest-rated">
+            <i class="fas fa-star"></i>
+            <span>Highest Rated</span>
+          </button>
+          <button class="filter-btn" data-sort="live">
+            <i class="fas fa-circle"></i>
+            <span>Live First</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Content Count -->
+      <div class="content-count">
+        <span id="content-count-text">Loading creators...</span>
+      </div>
+
+      <!-- Content Grid -->
+      <div id="content-grid" class="content-list">
+        <div class="loading">
+          
+          <p>Loading epic content creators...</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer will be loaded here -->
+  <div id="footer-container"></div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+  <script src="/js/api-config.js"></script>
+  <script type="module" src="/js/app.js"></script>
+  <script type="module" src="/js/main.js"></script>
+  <script type="module" src="/js/content-listing.js"></script>
+
+
+</body></html>

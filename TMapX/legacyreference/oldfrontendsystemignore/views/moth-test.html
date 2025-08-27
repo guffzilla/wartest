@@ -1,0 +1,186 @@
+<!DOCTYPE html><html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moth System Test - WC Arena</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      color: white;
+      margin: 0;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    .test-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 30px;
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+    }
+    .test-button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      margin: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+    .test-button:hover {
+      background: #45a049;
+    }
+    .status {
+      margin: 20px 0;
+      padding: 15px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.3);
+    }
+    .status.success { background: rgba(76, 175, 80, 0.3); }
+    .status.error { background: rgba(244, 67, 54, 0.3); }
+    .status.info { background: rgba(33, 150, 243, 0.3); }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>🦋 Moth System Test Page</h1>
+    <p>This page tests the global moth system integration across all pages.</p>
+    
+    <div class="status info">
+      <h3>Test Instructions:</h3>
+      <ol>
+        <li>You should see moths flying around the page automatically</li>
+        <li>Move your mouse to see the flashlight effect</li>
+        <li>Click on moths to make them flee</li>
+        <li>Use the buttons below to test controls</li>
+      </ol>
+    </div>
+    
+    <div class="status info">
+      <h3>Expected Behavior:</h3>
+      <ul>
+        <li>✅ Moths should appear automatically after page load</li>
+        <li>✅ Moths should have wiggling antennas</li>
+        <li>✅ Moths should dance around the flashlight</li>
+        <li>✅ Moths should flee when clicked</li>
+        <li>✅ Flap speed should correlate with movement speed</li>
+      </ul>
+    </div>
+    
+    <div class="status info">
+      <h3>Test Controls:</h3>
+      <button class="test-button" onclick="testMothToggle()">Toggle Moths</button>
+      <button class="test-button" onclick="testFlashlightToggle()">Toggle Flashlight</button>
+      <button class="test-button" onclick="testAddMoths()">Add More Moths</button>
+      <button class="test-button" onclick="testRemoveMoths()">Remove Some Moths</button>
+      <button class="test-button" onclick="testMothStatus()">Check Status</button>
+    </div>
+    
+    <div id="status-display" class="status">
+      <h3>Status:</h3>
+      <div id="status-content">Waiting for moth system to initialize...</div>
+    </div>
+    
+    <div class="status info">
+      <h3>Debug Info:</h3>
+      <div id="debug-info">Loading...</div>
+    </div>
+  </div>
+
+  <!-- Load the global moth system -->
+  <script type="module" src="/js/utils/globalMothSystem.js"></script>
+  
+  <script>
+    // Test functions
+    function testMothToggle() {
+      if (window.toggleMoths) {
+        const isActive = window.toggleMoths();
+        updateStatus(`Moths toggled: ${isActive ? 'ON' : 'OFF'}`);
+      } else {
+        updateStatus('❌ Moth toggle function not available', 'error');
+      }
+    }
+    
+    function testFlashlightToggle() {
+      if (window.toggleFlashlight) {
+        const isActive = window.toggleFlashlight();
+        updateStatus(`Flashlight toggled: ${isActive ? 'ON' : 'OFF'}`);
+      } else {
+        updateStatus('❌ Flashlight toggle function not available', 'error');
+      }
+    }
+    
+    function testAddMoths() {
+      if (window.addMoths) {
+        window.addMoths(3);
+        updateStatus('✅ Added 3 more moths');
+      } else {
+        updateStatus('❌ Add moths function not available', 'error');
+      }
+    }
+    
+    function testRemoveMoths() {
+      if (window.removeMothCount) {
+        window.removeMothCount(2);
+        updateStatus('✅ Removed 2 moths');
+      } else {
+        updateStatus('❌ Remove moths function not available', 'error');
+      }
+    }
+    
+    function testMothStatus() {
+      const mothStatus = window.areMothsActive ? 'Active' : 'Inactive';
+      const flashlightStatus = window.isFlashlightActive ? 'Active' : 'Inactive';
+      updateStatus(`Moths: ${mothStatus}, Flashlight: ${flashlightStatus}`);
+    }
+    
+    function updateStatus(message, type = 'info') {
+      const statusContent = document.getElementById('status-content');
+      const statusDisplay = document.getElementById('status-display');
+      
+      statusContent.innerHTML = message;
+      statusDisplay.className = `status ${type}`;
+    }
+    
+    function updateDebugInfo() {
+      const debugInfo = document.getElementById('debug-info');
+      const mothSystem = window.getMothSystem ? window.getMothSystem() : null;
+      
+      if (mothSystem) {
+        debugInfo.innerHTML = `
+          <strong>Moth System Status:</strong> ✅ Loaded<br>
+          <strong>Moths Active:</strong> ${mothSystem.mothsActive ? 'Yes' : 'No'}<br>
+          <strong>Flashlight Active:</strong> ${mothSystem.flashlightActive ? 'Yes' : 'No'}<br>
+          <strong>Moth Count:</strong> ${mothSystem.moths ? mothSystem.moths.length : 'Unknown'}<br>
+          <strong>Canvas:</strong> ${mothSystem.canvas ? 'Created' : 'Not created'}<br>
+          <strong>Initialized:</strong> ${mothSystem.isInitialized ? 'Yes' : 'No'}
+        `;
+        updateStatus('✅ Moth system is working!', 'success');
+      } else {
+        debugInfo.innerHTML = `
+          <strong>Moth System Status:</strong> ❌ Not loaded<br>
+          <strong>Global Functions:</strong> ${window.initMoths ? 'Available' : 'Not available'}<br>
+          <strong>Window Objects:</strong> ${Object.keys(window).filter(key => key.includes('moth') || key.includes('Moth')).join(', ') || 'None found'}
+        `;
+        updateStatus('❌ Moth system not loaded', 'error');
+      }
+    }
+    
+    // Check status every 2 seconds
+    setInterval(updateDebugInfo, 2000);
+    
+    // Initial check
+    setTimeout(updateDebugInfo, 1000);
+    
+    // Listen for moth system ready event
+    document.addEventListener('mothSystemReady', (event) => {
+      updateStatus('🎉 Moth system ready event received!', 'success');
+      updateDebugInfo();
+    });
+  </script>
+
+
+</body></html>
