@@ -18,6 +18,7 @@ pub struct PudMapInfo {
     pub map_name: String,
     pub map_description: String,
     pub terrain_analysis: TerrainAnalysis,
+    pub terrain: Vec<u16>,  // Store actual terrain tile data
     pub units: Vec<PudUnit>,
     pub resources: Vec<PudResource>,
     pub tileset: u16,
@@ -160,6 +161,7 @@ impl PudParser {
                 total_tiles: 0,
                 terrain_breakdown: Vec::new(),
             },
+            terrain: Vec::new(),  // Initialize terrain data storage
             units: Vec::new(),
             resources: Vec::new(),
             tileset: 0,
@@ -393,6 +395,9 @@ impl PudParser {
                 chunk_data[i * 2],
                 chunk_data[i * 2 + 1]
             ]);
+            
+            // Store the actual terrain data
+            map_info.terrain.push(tile_type);
             
             *terrain_counts.entry(tile_type).or_insert(0) += 1;
             

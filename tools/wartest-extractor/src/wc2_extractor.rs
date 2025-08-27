@@ -4,6 +4,7 @@ use bson::{doc, Document};
 use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
+use chrono;
 
 /// WC2 Unit data structure for MongoDB
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -78,11 +79,17 @@ impl WC2Extractor {
         // Extract spells and abilities
         self.extract_spells_and_abilities()?;
         
+        // Extract terrain tiles and tilesets
+        self.extract_terrain_tiles()?;
+        
         // Extract images
         self.extract_all_images()?;
         
         // Generate MongoDB documents
         self.generate_mongodb_documents()?;
+        
+        // Generate terrain tile mapping for TMapX
+        self.generate_terrain_mapping()?;
         
         println!("WC2 asset extraction complete!");
         println!("Extracted {} units/buildings", self.units.len());
@@ -256,6 +263,147 @@ impl WC2Extractor {
         }
 
         Ok(())
+    }
+
+    fn extract_terrain_tiles(&mut self) -> Result<()> {
+        println!("Extracting terrain tiles and tilesets...");
+        
+        // Try multiple possible terrain asset locations
+        let terrain_paths = [
+            self.game_path.join("data").join("terrain"),
+            self.game_path.join("data").join("tileset"),
+            self.game_path.join("data").join("art").join("terrain"),
+            self.game_path.join("data").join("art").join("tileset"),
+        ];
+
+        let mut terrain_found = false;
+        let grp_parser = GrpParser;
+
+        for terrain_path in &terrain_paths {
+            if terrain_path.exists() {
+                println!("Found terrain assets at: {}", terrain_path.display());
+                terrain_found = true;
+                
+                // Extract terrain tiles
+                self.extract_terrain_from_path(terrain_path, &grp_parser)?;
+                
+                // Also check for tileset-specific directories
+                let tileset_dirs = ["forest", "winter", "wasteland", "swamp"];
+                for tileset in &tileset_dirs {
+                    let tileset_path = terrain_path.join(tileset);
+                    if tileset_path.exists() {
+                        println!("Found {} tileset at: {}", tileset, tileset_path.display());
+                        self.extract_terrain_from_path(&tileset_path, &grp_parser)?;
+                    }
+                }
+            }
+        }
+
+        if !terrain_found {
+            println!("Warning: No terrain directories found. Trying to extract from art directory...");
+            
+            // Fallback: try to extract terrain from art directory
+            let art_path = self.game_path.join("data").join("art");
+            if art_path.exists() {
+                self.extract_terrain_from_path(&art_path, &grp_parser)?;
+            }
+        }
+
+        Ok(())
+    }
+
+    fn extract_terrain_from_path(&mut self, path: &Path, grp_parser: &GrpParser) -> Result<()> {
+        for entry in WalkDir::new(path)
+            .into_iter()
+            .filter_map(|e| e.ok())
+            .filter(|e| e.file_type().is_file()) {
+            
+            let file_path = entry.path();
+            
+            // Handle different terrain file formats
+            if grp_parser.can_parse(file_path) {
+                // GRP format (sprites)
+                self.extract_grp_terrain(file_path, grp_parser)?;
+            } else if file_path.extension().map_or(false, |ext| ext == "bin") {
+                // BIN format (raw terrain data)
+                self.extract_bin_terrain(file_path)?;
+            } else if file_path.extension().map_or(false, |ext| ext == "idx") {
+                // IDX format (terrain index files)
+                self.extract_idx_terrain(file_path)?;
+            }
+        }
+        
+        Ok(())
+    }
+
+    fn extract_grp_terrain(&mut self, file_path: &Path, grp_parser: &GrpParser) -> Result<()> {
+        match grp_parser.parse(file_path) {
+            Ok(sprite) => {
+                let filename = file_path.file_stem().unwrap().to_string_lossy();
+                
+                // Determine if this is a terrain tile or tileset
+                let (category, output_subdir) = self.categorize_terrain_file(&filename, &sprite);
+                let output_path = self.output_path.join("images").join("terrain").join(output_subdir).join(format!("{}.png", filename));
+                
+                // Ensure output directory exists
+                if let Some(parent) = output_path.parent() {
+                    std::fs::create_dir_all(parent)?;
+                }
+                
+                if let Err(e) = grp_parser.to_png(&sprite, &output_path) {
+                    println!("Failed to extract terrain tile {}: {}", file_path.display(), e);
+                } else {
+                    self.images_extracted.push(output_path.to_string_lossy().to_string());
+                    println!("Extracted terrain tile: {} -> {}", filename, output_path.display());
+                }
+            }
+            Err(e) => {
+                println!("Failed to parse terrain tile {}: {}", file_path.display(), e);
+            }
+        }
+        Ok(())
+    }
+
+    fn extract_bin_terrain(&mut self, file_path: &Path) -> Result<()> {
+        // TODO: Implement BIN terrain extraction
+        // This would convert raw terrain data to images
+        println!("BIN terrain extraction not yet implemented for: {}", file_path.display());
+        Ok(())
+    }
+
+    fn extract_idx_terrain(&mut self, file_path: &Path) -> Result<()> {
+        // TODO: Implement IDX terrain extraction
+        // This would handle terrain index files
+        println!("IDX terrain extraction not yet implemented for: {}", file_path.display());
+        Ok(())
+    }
+
+    fn categorize_terrain_file(&self, filename: &str, sprite: &crate::file_parsers::grp_parser::GrpSprite) -> (&'static str, &'static str) {
+        let filename_lower = filename.to_lowercase();
+        
+        // Check for specific terrain types
+        if filename_lower.contains("water") || filename_lower.contains("sea") {
+            return ("water", "water");
+        } else if filename_lower.contains("grass") || filename_lower.contains("meadow") {
+            return ("grass", "grass");
+        } else if filename_lower.contains("forest") || filename_lower.contains("tree") {
+            return ("forest", "forest");
+        } else if filename_lower.contains("rock") || filename_lower.contains("mountain") {
+            return ("rock", "rock");
+        } else if filename_lower.contains("dirt") || filename_lower.contains("mud") {
+            return ("dirt", "dirt");
+        } else if filename_lower.contains("snow") || filename_lower.contains("ice") {
+            return ("snow", "snow");
+        } else if filename_lower.contains("sand") || filename_lower.contains("desert") {
+            return ("sand", "sand");
+        } else if filename_lower.contains("swamp") || filename_lower.contains("marsh") {
+            return ("swamp", "swamp");
+        } else if filename_lower.contains("coast") || filename_lower.contains("shore") {
+            return ("coast", "coast");
+        }
+        
+        // Default to generic terrain
+        ("terrain", "generic")
     }
 
     fn extract_all_images(&mut self) -> Result<()> {
@@ -644,5 +792,100 @@ impl WC2Extractor {
         }
 
         Ok(doc)
+    }
+
+    fn generate_terrain_mapping(&self) -> Result<()> {
+        println!("Generating terrain tile mapping for TMapX...");
+        
+        // Create terrain mapping structure
+        let terrain_mapping = serde_json::json!({
+            "version": "1.0",
+            "game": "Warcraft II",
+            "extraction_date": chrono::Utc::now().to_rfc3339(),
+            "tilesets": {
+                "forest": {
+                    "description": "Forest tileset - lush green terrain",
+                    "tiles": {}
+                },
+                "winter": {
+                    "description": "Winter tileset - snow and ice terrain",
+                    "tiles": {}
+                },
+                "wasteland": {
+                    "description": "Wasteland tileset - desert and arid terrain",
+                    "tiles": {}
+                },
+                "swamp": {
+                    "description": "Swamp tileset - marshy and wet terrain",
+                    "tiles": {}
+                }
+            },
+            "terrain_types": {
+                "water": "Deep water tiles",
+                "grass": "Grass and meadow tiles",
+                "forest": "Forest and tree tiles",
+                "rock": "Rock and mountain tiles",
+                "dirt": "Dirt and mud tiles",
+                "snow": "Snow and ice tiles",
+                "sand": "Sand and desert tiles",
+                "swamp": "Swamp and marsh tiles",
+                "coast": "Coastal and shore tiles"
+            }
+        });
+        
+        // Write terrain mapping to file
+        let mapping_path = self.output_path.join("terrain_mapping.json");
+        let mapping_file = std::fs::File::create(&mapping_path)?;
+        serde_json::to_writer_pretty(mapping_file, &terrain_mapping)?;
+        
+        println!("Terrain mapping saved to: {}", mapping_path.display());
+        
+        // Also create a TMapX-specific mapping file
+        let timapx_mapping = serde_json::json!({
+            "tile_mapping": {
+                "0x00": "grass",
+                "0x10": "water",
+                "0x20": "water-deep",
+                "0x30": "coast",
+                "0x40": "coast",
+                "0x50": "forest",  // Forest tileset
+                "0x60": "forest",  // Forest tileset
+                "0x70": "rock",
+                "0x80": "dirt",
+                "0x90": "forest",  // Forest tileset
+                "0xA0": "rock-dark",
+                "0xB0": "dirt"
+            },
+            "tileset_overrides": {
+                "0": {  // Forest tileset
+                    "0x50": "forest",
+                    "0x60": "forest",
+                    "0x90": "forest"
+                },
+                "1": {  // Winter tileset
+                    "0x50": "snow",
+                    "0x60": "snow",
+                    "0x90": "snow"
+                },
+                "2": {  // Wasteland tileset
+                    "0x50": "sand",
+                    "0x60": "sand",
+                    "0x90": "sand"
+                },
+                "3": {  // Swamp tileset
+                    "0x50": "swamp",
+                    "0x60": "swamp",
+                    "0x90": "swamp"
+                }
+            }
+        });
+        
+        let timapx_path = self.output_path.join("timapx_terrain_mapping.json");
+        let timapx_file = std::fs::File::create(&timapx_path)?;
+        serde_json::to_writer_pretty(timapx_file, &timapx_mapping)?;
+        
+        println!("TMapX terrain mapping saved to: {}", timapx_path.display());
+        
+        Ok(())
     }
 }

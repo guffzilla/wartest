@@ -9,6 +9,9 @@ members = [
     # Main Tauri application
     "WCArenaGameScanner/wc-arena-scanner-backend",
                     "TMapX/map-extraction-backend",
+    
+    # Asset extraction tools
+    "tools/wartest-extractor",
 ]
 
 [workspace.package]

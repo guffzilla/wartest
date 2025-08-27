@@ -1,0 +1,34 @@
+{
+  "version": "1.0",
+  "game": "Warcraft II",
+  "extraction_date": "2025-08-27T05:44:53.986520900+00:00",
+  "tilesets": {
+    "forest": {
+      "description": "Forest tileset - lush green terrain",
+      "tiles": {}
+    },
+    "winter": {
+      "description": "Winter tileset - snow and ice terrain",
+      "tiles": {}
+    },
+    "wasteland": {
+      "description": "Wasteland tileset - desert and arid terrain",
+      "tiles": {}
+    },
+    "swamp": {
+      "description": "Swamp tileset - marshy and wet terrain",
+      "tiles": {}
+    }
+  },
+  "terrain_types": {
+    "water": "Deep water tiles",
+    "grass": "Grass and meadow tiles",
+    "forest": "Forest and tree tiles",
+    "rock": "Rock and mountain tiles",
+    "dirt": "Dirt and mud tiles",
+    "snow": "Snow and ice tiles",
+    "sand": "Sand and desert tiles",
+    "swamp": "Swamp and marsh tiles",
+    "coast": "Coastal and shore tiles"
+  }
+}

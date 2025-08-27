@@ -1,0 +1,38 @@
+{
+  "tile_mapping": {
+    "0x00": "grass",
+    "0x10": "water",
+    "0x20": "water-deep",
+    "0x30": "coast",
+    "0x40": "coast",
+    "0x50": "forest",
+    "0x60": "forest",
+    "0x70": "rock",
+    "0x80": "dirt",
+    "0x90": "forest",
+    "0xA0": "rock-dark",
+    "0xB0": "dirt"
+  },
+  "tileset_overrides": {
+    "0": {
+      "0x50": "forest",
+      "0x60": "forest",
+      "0x90": "forest"
+    },
+    "1": {
+      "0x50": "snow",
+      "0x60": "snow",
+      "0x90": "snow"
+    },
+    "2": {
+      "0x50": "sand",
+      "0x60": "sand",
+      "0x90": "sand"
+    },
+    "3": {
+      "0x50": "swamp",
+      "0x60": "swamp",
+      "0x90": "swamp"
+    }
+  }
+}
