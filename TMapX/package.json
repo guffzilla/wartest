@@ -1,24 +1,15 @@
 {
   "name": "timapx",
-  "private": true,
-  "version": "0.1.0",
-  "description": "TMapX - Warcraft II Map Analysis Tool",
   "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "tauri": "tauri"
-  },
-  "dependencies": {
-    "@tauri-apps/api": "^2",
-    "@tauri-apps/plugin-dialog": "^2"
-  },
-  "devDependencies": {
-    "@tauri-apps/cli": "^2",
-    "vite": "^5.0.0",
-    "typescript": "~5.6.2",
-    "svelte": "^5.0.0",
-    "@sveltejs/vite-plugin-svelte": "^3.0.0"
-  }
+  "version": "0.1.0",
+  "files": [
+    "timapx_bg.wasm",
+    "timapx.js",
+    "timapx.d.ts"
+  ],
+  "main": "timapx.js",
+  "types": "timapx.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
 }

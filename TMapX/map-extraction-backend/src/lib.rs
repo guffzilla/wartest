@@ -1,5 +1,6 @@
-use pud_parser::PudParser;
+use wasm_bindgen::prelude::*;
 use std::path::PathBuf;
+use pud_parser::{PudParser, PudMapInfo};
 use serde::{Serialize, Deserialize};
 
 mod pud_parser;
@@ -52,301 +53,298 @@ pub struct BuildingData {
     pub is_completed: bool,
 }
 
-#[tauri::command]
-async fn select_map_file() -> Result<Option<String>, String> {
-    // For now, return the test file path - we'll implement proper file dialog later
-    // In Tauri v2, we need to use a different approach for file dialogs
-    let current_dir = std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."));
-    let test_path = current_dir.join("MapTests").join("Garden of War.pud");
-    
-    if test_path.exists() {
-        println!("Using test file: {}", test_path.display());
-        return Ok(Some(test_path.to_string_lossy().to_string()));
-    }
-    
-    Err("Test file not found".to_string())
-}
-
-#[tauri::command]
-async fn select_pud_file() -> Result<Option<String>, String> {
-    // This function is no longer needed - using frontend dialog instead
-    Err("Use frontend dialog instead".to_string())
-}
-
-#[tauri::command]
-async fn parse_map_file(file_path: String) -> Result<MapData, String> {
-    let path = PathBuf::from(file_path);
-    
-    if !path.exists() {
-        return Err("File does not exist".to_string());
-    }
-
-    // Parse the PUD file
-    let mut parser = PudParser::new(&path)?;
+// WASM-compatible function for parsing PUD files
+#[wasm_bindgen]
+pub fn parse_pud_file(file_data: &[u8]) -> Result<String, JsValue> {
+    // Create a temporary parser from the file data
+    let mut parser = PudParser::from_data(file_data)?;
     let pud_info = parser.parse()?;
-
-    // Convert PUD data to our MapData format
-    let map_data = MapData {
-        name: path.file_name()
-            .and_then(|n| n.to_str())
-            .unwrap_or("Unknown Map")
-            .replace(".pud", "")
-            .to_string(),
-        width: pud_info.width as u32,
-        height: pud_info.height as u32,
-        player_count: pud_info.max_players as u8,
-        resources: detect_goldmines(&pud_info),
-        terrain: TerrainData {
-            tiles: vec![0; (pud_info.width * pud_info.height) as usize],
-            elevation: vec![0; (pud_info.width * pud_info.height) as usize],
-            water_level: 0,
-        },
-        terrain_analysis: pud_info.terrain_analysis,
-        units: pud_info.units.iter().map(|unit| UnitData {
-            unit_type: pud_parser::get_unit_name(unit.unit_type).to_string(),
-            x: unit.x as u32,
-            y: unit.y as u32,
-            owner: unit.owner,
-            health: unit.health as u32,
-        }).collect(),
-        buildings: vec![
-            // Add starting buildings for each player
-            BuildingData {
-                building_type: "Town Hall".to_string(),
-                x: (pud_info.width / 8) as u32,
-                y: (pud_info.height / 8) as u32,
-                owner: 1,
-                health: 1000,
-                is_completed: true,
-            },
-            BuildingData {
-                building_type: "Town Hall".to_string(),
-                x: (pud_info.width * 7 / 8) as u32,
-                y: (pud_info.height * 7 / 8) as u32,
-                owner: 2,
-                health: 1000,
-                is_completed: true,
-            },
-        ],
-    };
-
-    Ok(map_data)
+    
+    // Generate the analysis result
+    let result = generate_analysis_result(&pud_info);
+    Ok(result)
 }
 
-#[tauri::command]
-async fn generate_map_image(map_data: MapData) -> Result<String, String> {
-    // Generate a simple SVG map representation
-    let svg_content = format!(
-        "<svg width=\"{}\" height=\"{}\" xmlns=\"http://www.w3.org/2000/svg\">\n  <defs>\n    <pattern id=\"grid\" width=\"10\" height=\"10\" patternUnits=\"userSpaceOnUse\">\n      <path d=\"M 10 0 L 0 0 0 10\" fill=\"none\" stroke=\"#ddd\" stroke-width=\"1\"/>\n    </pattern>\n  </defs>\n  \n  <!-- Background -->\n  <rect width=\"100%\" height=\"100%\" fill=\"#8B4513\"/>\n  <rect width=\"100%\" height=\"100%\" fill=\"url(#grid)\"/>\n  \n  <!-- Goldmines -->\n  {}\n  \n  <!-- Player Starting Positions -->\n  {}\n  \n  <!-- Units -->\n  {}\n  \n  <!-- Buildings -->\n  {}\n  \n  <!-- Legend -->\n  <g transform=\"translate(10, 10)\">\n    <rect width=\"15\" height=\"15\" fill=\"#FFD700\" stroke=\"black\"/>\n    <text x=\"20\" y=\"12\" font-size=\"12\" fill=\"white\">Goldmine</text>\n    <rect width=\"15\" height=\"15\" fill=\"#FF0000\" stroke=\"black\" y=\"20\"/>\n    <text x=\"20\" y=\"32\" font-size=\"12\" fill=\"white\">Player 1</text>\n    <rect width=\"15\" height=\"15\" fill=\"#0000FF\" stroke=\"black\" y=\"40\"/>\n    <text x=\"20\" y=\"52\" font-size=\"12\" fill=\"white\">Player 2</text>\n  </g>\n</svg>",
-        map_data.width * 2,
-        map_data.height * 2,
-        // Goldmines
-        map_data.resources.iter()
-            .filter(|r| r.is_goldmine)
-            .map(|r| format!(
-                "<circle cx=\"{}\" cy=\"{}\" r=\"8\" fill=\"#FFD700\" stroke=\"black\" stroke-width=\"2\"/>\n                <text x=\"{}\" y=\"{}\" text-anchor=\"middle\" font-size=\"10\" fill=\"black\">G</text>",
-                r.x * 2, r.y * 2, r.x * 2, r.y * 2 + 3
-            ))
-            .collect::<Vec<_>>()
-            .join("\n  "),
-        // Player starting positions
-        map_data.buildings.iter()
-            .filter(|b| b.building_type == "Town Hall")
-            .map(|b| format!(
-                "<rect x=\"{}\" y=\"{}\" width=\"16\" height=\"16\" fill=\"{}\" stroke=\"black\" stroke-width=\"2\"/>\n                <text x=\"{}\" y=\"{}\" text-anchor=\"middle\" font-size=\"10\" fill=\"white\">TH</text>",
-                b.x * 2 - 8, b.y * 2 - 8,
-                if b.owner == 1 { "#FF0000" } else { "#0000FF" },
-                b.x * 2, b.y * 2 + 3
-            ))
-            .collect::<Vec<_>>()
-            .join("\n  "),
-        // Units
-        map_data.units.iter()
-            .map(|u| format!(
-                "<circle cx=\"{}\" cy=\"{}\" r=\"4\" fill=\"{}\" stroke=\"black\" stroke-width=\"1\"/>\n                <text x=\"{}\" y=\"{}\" text-anchor=\"middle\" font-size=\"8\" fill=\"white\">P</text>",
-                u.x * 2, u.y * 2,
-                if u.owner == 1 { "#FF0000" } else { "#0000FF" },
-                u.x * 2, u.y * 2 + 2
-            ))
-            .collect::<Vec<_>>()
-            .join("\n  "),
-        // Buildings
-        map_data.buildings.iter()
-            .filter(|b| b.building_type != "Town Hall")
-            .map(|b| format!(
-                "<rect x=\"{}\" y=\"{}\" width=\"12\" height=\"12\" fill=\"{}\" stroke=\"black\" stroke-width=\"1\"/>\n                <text x=\"{}\" y=\"{}\" text-anchor=\"middle\" font-size=\"8\" fill=\"white\">B</text>",
-                b.x * 2 - 6, b.y * 2 - 6,
-                if b.owner == 1 { "#FF0000" } else { "#0000FF" },
-                b.x * 2, b.y * 2 + 2
-            ))
-            .collect::<Vec<_>>()
-            .join("\n  ")
+// WASM-compatible function for generating map visualization
+#[wasm_bindgen]
+pub fn generate_map_visualization_wasm(file_data: &[u8]) -> Result<String, JsValue> {
+    // Create a temporary parser from the file data
+    let mut parser = PudParser::from_data(file_data)?;
+    let pud_info = parser.parse()?;
+    
+    // Generate the HTML visualization
+    let html_content = generate_comprehensive_map_html(&pud_info)?;
+    Ok(html_content)
+}
+
+// Helper function to generate analysis result for WASM
+fn generate_analysis_result(pud_info: &PudMapInfo) -> String {
+    let mut info = format!(
+        "Map: {}\nDimensions: {}x{}\nMax Players: {}\nFile Size: {} bytes\n",
+        pud_info.map_name, pud_info.width, pud_info.height, pud_info.max_players, 
+        "N/A" // File size not available in this context
     );
     
-    // Save the SVG to a file
-    let output_path = "map_preview.svg";
-    std::fs::write(output_path, svg_content)
-        .map_err(|e| format!("Failed to write SVG: {}", e))?;
-    
-    Ok(output_path.to_string())
-}
-
-#[tauri::command]
-async fn test_pud_parser(file_path: String) -> Result<String, String> {
-    let path = PathBuf::from(file_path);
-    
-    if !path.exists() {
-        return Err("File does not exist".to_string());
-    }
-
-    // Parse the PUD file
-    let mut parser = PudParser::new(&path)?;
-    let pud_info = parser.parse()?;
-
-    // Return detailed information including terrain analysis
-    let mut info = format!(
-        "Map: {}\nDimensions: {}x{}\nMax Players: {}\nFile Size: {} bytes\n\nTerrain Analysis:\nWater: {:.1}%\nShore: {:.1}%\nForest: {:.1}%\nGrass: {:.1}%\nRock: {:.1}%\nDirt: {:.1}%\nTotal Tiles: {}\n\nUnits Found: {}\nResources Found: {}",
-        path.file_name().unwrap().to_string_lossy(),
-        pud_info.width,
-        pud_info.height,
-        pud_info.max_players,
-        std::fs::metadata(&path).unwrap().len(),
+    // Add terrain analysis
+    info.push_str(&format!("Terrain Analysis: Water: {:.1}% Shore: {:.1}% Forest: {:.1}% Grass: {:.1}% Rock: {:.1}% Dirt: {:.1}% Total Tiles: {}\n",
         pud_info.terrain_analysis.water_percentage,
         pud_info.terrain_analysis.shore_percentage,
         pud_info.terrain_analysis.tree_percentage,
         pud_info.terrain_analysis.grass_percentage,
         pud_info.terrain_analysis.mountain_percentage,
         pud_info.terrain_analysis.dirt_percentage,
-        pud_info.terrain_analysis.total_tiles,
-        pud_info.units.len(),
-        pud_info.resources.len()
-    );
+        pud_info.terrain_analysis.total_tiles
+    ));
     
-    // Add resource details
+    info.push_str(&format!("Units Found: {}\nResources Found: {}\n", 
+        pud_info.units.len(), pud_info.resources.len()));
+    
+    // Add resources
     if !pud_info.resources.is_empty() {
-        info.push_str("\n\nResources:");
-        let mut goldmine_count = 0;
-        let mut total_gold = 0;
-        
+        info.push_str("\nResources:\n");
         for resource in &pud_info.resources {
-            let resource_name = match resource.resource_type {
-                0 => {
-                    goldmine_count += 1;
-                    total_gold += resource.amount;
-                    "Gold Mine"
-                },
-                1 => "Tree",
-                2 => "Oil Patch", 
-                3 => "Crystal Mine",
-                4 => "Forest",
-                _ => "Unknown",
-            };
-            
-            if resource.resource_type == 0 {
-                info.push_str(&format!("\n- {} at ({}, {}) - Gold: {}", 
-                    resource_name, resource.x, resource.y, resource.amount));
+            if resource.resource_type == 0x01 { // Gold mine
+                info.push_str(&format!("- Gold Mine at ({}, {}) - Gold: {}\n", 
+                    resource.x, resource.y, resource.amount));
             } else {
-                info.push_str(&format!("\n- {} at ({}, {}) - Amount: {}", 
-                    resource_name, resource.x, resource.y, resource.amount));
+                info.push_str(&format!("- Resource {} at ({}, {}) - Amount: {}\n", 
+                    resource.resource_type, resource.x, resource.y, resource.amount));
             }
         }
         
-        if goldmine_count > 0 {
-            info.push_str(&format!("\n\nGoldmine Summary: {} goldmines with {} total gold", 
-                goldmine_count, total_gold));
+        // Goldmine summary
+        let goldmines: Vec<&pud_parser::PudResource> = pud_info.resources.iter()
+            .filter(|r| r.resource_type == 0x01)
+            .collect();
+        let total_gold: u32 = goldmines.iter().map(|r| r.amount).sum();
+        info.push_str(&format!("\nGoldmine Summary: {} goldmines with {} total gold", 
+            goldmines.len(), total_gold));
+    }
+    
+    // Group units by player and filter out neutral units
+    let mut player_units: std::collections::HashMap<u8, Vec<&pud_parser::PudUnit>> = std::collections::HashMap::new();
+    for unit in &pud_info.units {
+        // Skip neutral units (owner 15) and focus on actual player units
+        if unit.owner < 8 {
+            player_units.entry(unit.owner).or_insert_with(Vec::new).push(unit);
         }
     }
     
-    // Add unit details (focusing on starting positions)
-    if !pud_info.units.is_empty() {
+    if !player_units.is_empty() {
         info.push_str("\n\nUnits (Starting Positions):");
-        
-        // Group units by player to identify starting positions
-        let mut player_units: std::collections::HashMap<u8, Vec<&pud_parser::PudUnit>> = std::collections::HashMap::new();
-        for unit in &pud_info.units {
-            player_units.entry(unit.owner).or_insert_with(Vec::new).push(unit);
-        }
-        
-        for (player_id, units) in player_units {
+        for (player_id, units) in player_units.iter() {
             info.push_str(&format!("\n\nPlayer {}:", player_id));
             
-            // Find starting position (usually a Town Hall or first unit)
-            let mut starting_pos = None;
+            // Find starting position unit
+            if let Some(starting_unit) = units.iter().find(|u| u.unit_type == 94 || u.unit_type == 95) {
+                let x = starting_unit.x;
+                let y = starting_unit.y;
+                info.push_str(&format!("\n  Starting Position: ({}, {})", x, y));
+            }
+            
+            // List all units for this player
             for unit in units {
-                let unit_name = match unit.unit_type {
-                    0 => "Peasant",
-                    1 => "Footman", 
-                    2 => "Knight",
-                    3 => "Archer",
-                    4 => "Ranger",
-                    5 => "Mage",
-                    6 => "Paladin",
-                    7 => "Ogre",
-                    8 => "Dwarves",
-                    9 => "Goblin Sappers",
-                    _ => "Unknown",
-                };
-                
+                let unit_name = pud_parser::get_unit_name(unit.unit_type);
                 info.push_str(&format!("\n- {} at ({}, {}) - Health: {}", 
                     unit_name, unit.x, unit.y, unit.health));
-                
-                // Consider first unit as starting position
-                if starting_pos.is_none() {
-                    starting_pos = Some((unit.x, unit.y));
+            }
+        }
+    }
+    
+    info
+}
+
+fn generate_comprehensive_map_html(map_info: &pud_parser::PudMapInfo) -> Result<String, String> {
+    let map_width = map_info.width as usize;
+    let map_height = map_info.height as usize;
+    let mut html_content = String::new();
+    
+    // HTML header with enhanced styling
+    html_content.push_str("<!DOCTYPE html>\n<html>\n<head>\n");
+    html_content.push_str("<title>Warcraft II Map Visualization</title>\n");
+    html_content.push_str("<meta charset=\"utf-8\">\n");
+    html_content.push_str("<style>\n");
+    html_content.push_str("body { font-family: 'Times New Roman', serif; margin: 20px; background: #2F4F4F; color: white; }\n");
+    html_content.push_str(".map-container { display: inline-block; margin: 20px; }\n");
+    html_content.push_str(".map-title { font-size: 24px; margin-bottom: 10px; color: #FFD700; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }\n");
+    html_content.push_str(".map-info { margin-bottom: 20px; color: #87CEEB; }\n");
+    html_content.push_str(".terrain-grid { display: inline-block; background: #333; padding: 10px; border-radius: 5px; border: 3px solid #8B4513; }\n");
+    html_content.push_str(".terrain-row { display: block; height: 6px; }\n");
+    html_content.push_str(".terrain-tile { display: inline-block; width: 6px; height: 6px; border: 1px solid #555; transition: all 0.2s ease; }\n");
+    html_content.push_str(".terrain-tile:hover { transform: scale(1.5); z-index: 10; box-shadow: 0 0 8px rgba(255,255,255,0.8); }\n");
+    
+    // Authentic Warcraft II terrain colors based on tile data
+    html_content.push_str(".water { background: #4169E1; }\n");
+    html_content.push_str(".water-deep { background: #000080; }\n");
+    html_content.push_str(".coast { background: #87CEEB; }\n");
+    html_content.push_str(".grass { background: #228B22; }\n");
+    html_content.push_str(".grass-light { background: #90EE90; }\n");
+    html_content.push_str(".rock { background: #696969; }\n");
+    html_content.push_str(".rock-dark { background: #2F4F4F; }\n");
+    html_content.push_str(".dirt { background: #8B4513; }\n");
+    html_content.push_str(".sand { background: #F4A460; }\n");
+    html_content.push_str(".snow { background: #F0F8FF; }\n");
+    html_content.push_str(".forest { background: #006400; }\n");
+    html_content.push_str(".swamp { background: #556B2F; }\n");
+    
+    // Special features with enhanced styling
+    html_content.push_str(".goldmine { background: #FFD700; border: 2px solid #B8860B; box-shadow: 0 0 8px rgba(255,215,0,0.6); }\n");
+    html_content.push_str(".starting-pos { background: #FF0000; border: 2px solid #8B0000; box-shadow: 0 0 8px rgba(255,0,0,0.6); }\n");
+    html_content.push_str(".oil-platform { background: #000000; border: 2px solid #696969; }\n");
+    
+    // Enhanced legend styling
+    html_content.push_str(".legend { margin-top: 20px; background: rgba(0,0,0,0.7); padding: 15px; border-radius: 8px; border: 1px solid #8B4513; }\n");
+    html_content.push_str(".legend h4 { color: #FFD700; margin-top: 0; margin-bottom: 15px; }\n");
+    html_content.push_str(".legend-item { display: inline-block; margin: 5px 15px; }\n");
+    html_content.push_str(".legend-color { display: inline-block; width: 20px; height: 20px; margin-right: 5px; border: 1px solid #333; }\n");
+    html_content.push_str("</style>\n</head>\n<body>\n");
+    
+    // Map header
+    let tileset_name = get_tileset_name(map_info.tileset);
+    html_content.push_str(&format!("<div class=\"map-container\">\n"));
+    html_content.push_str(&format!("<div class=\"map-title\">{} - {}x{} Map</div>\n", 
+        map_info.map_name, map_width, map_height));
+    html_content.push_str(&format!("<div class=\"map-info\">Tileset: {} | Players: {} | Goldmines: {}</div>\n", 
+        tileset_name, map_info.max_players, map_info.resources.len()));
+    
+    // Generate terrain grid using actual tile data
+    html_content.push_str("<div class=\"terrain-grid\">\n");
+    
+    for y in 0..map_height {
+        html_content.push_str("<div class=\"terrain-row\">\n");
+        for x in 0..map_width {
+            let tile_id = map_info.terrain_analysis.terrain_breakdown.iter()
+                .find(|t| t.tile_type as usize == y * map_width + x)
+                .map(|t| t.tile_type as usize)
+                .unwrap_or(0);
+            let mut tile_class: String = get_terrain_class(tile_id, map_info.tileset as u8);
+            
+            // Check for special features
+            let mut has_goldmine = false;
+            for resource in &map_info.resources {
+                if resource.x as usize == x && resource.y as usize == y {
+                    has_goldmine = true;
+                    break;
                 }
             }
             
-            if let Some((x, y)) = starting_pos {
-                info.push_str(&format!("\n  Starting Position: ({}, {})", x, y));
+            let mut has_starting_pos = false;
+            for unit in &map_info.units {
+                if unit.owner < 8 && (unit.unit_type == 94 || unit.unit_type == 95) {
+                    if unit.x as usize == x && unit.y as usize == y {
+                        has_starting_pos = true;
+                        break;
+                    }
+                }
             }
+            
+            // Override tile class for special features
+            if has_goldmine {
+                tile_class = "terrain-tile goldmine".to_string();
+            } else if has_starting_pos {
+                tile_class = "terrain-tile starting-pos".to_string();
+            } else {
+                tile_class = format!("terrain-tile {}", tile_class);
+            }
+            
+            html_content.push_str(&format!("<div class=\"{}\" title=\"({}, {}) - Tile ID: {}\"></div>\n", 
+                tile_class, x, y, tile_id));
+        }
+        html_content.push_str("</div>\n");
+    }
+    
+    html_content.push_str("</div>\n");
+    
+    // Enhanced legend
+    html_content.push_str("<div class=\"legend\">\n");
+    html_content.push_str("<h4>🗺️ Terrain Legend:</h4>\n");
+    html_content.push_str("<div class=\"legend-item\"><span class=\"legend-color water\"></span>Water</div>\n");
+    html_content.push_str("<div class=\"legend-item\"><span class=\"legend-color water-deep\"></span>Deep Water</div>\n");
+    html_content.push_str("<div class=\"legend-item\"><span class=\"legend-color coast\"></span>Coast</div>\n");
+    html_content.push_str("<div class=\"legend-item\"><span class=\"legend-color grass\"></span>Grass</div>\n");
+    html_content.push_str("<div class=\"legend-item\"><span class=\"legend-color rock\"></span>Rock</div>\n");
+    html_content.push_str("<div class=\"legend-item\"><span class=\"legend-color forest\"></span>Forest</div>\n");
+    html_content.push_str("<div class=\"legend-item\"><span class=\"legend-color snow\"></span>Snow</div>\n");
+    html_content.push_str("<div class=\"legend-item\"><span class=\"legend-color sand\"></span>Sand</div>\n");
+    html_content.push_str("<div class=\"legend-item\"><span class=\"legend-color swamp\"></span>Swamp</div>\n");
+    html_content.push_str("<div class=\"legend-item\"><span class=\"legend-color goldmine\"></span>Goldmine</div>\n");
+    html_content.push_str("<div class=\"legend-item\"><span class=\"legend-color starting-pos\"></span>Starting Position</div>\n");
+    html_content.push_str("</div>\n");
+    
+    // Goldmine details
+    if !map_info.resources.is_empty() {
+        html_content.push_str("<div class=\"legend\">\n");
+        html_content.push_str("<h4>💰 Goldmine Details:</h4>\n");
+        for resource in &map_info.resources {
+                    html_content.push_str(&format!("<div>Gold Mine at ({}, {}) - Gold: {}</div>\n", 
+            resource.x, resource.y, resource.amount));
+        }
+        html_content.push_str("</div>\n");
+    }
+    
+    // Starting positions
+    let mut player_units: std::collections::HashMap<u8, Vec<&pud_parser::PudUnit>> = std::collections::HashMap::new();
+    for unit in &map_info.units {
+        if unit.owner < 8 {
+            player_units.entry(unit.owner).or_insert_with(Vec::new).push(unit);
         }
     }
-
-    Ok(info)
+    
+    if !player_units.is_empty() {
+        html_content.push_str("<div class=\"legend\">\n");
+        html_content.push_str("<h4>🏰 Starting Positions:</h4>\n");
+        for (player_id, units) in player_units.iter() {
+            if let Some(starting_unit) = units.iter().find(|u| u.unit_type == 94 || u.unit_type == 95) {
+                html_content.push_str(&format!("<div>Player {}: ({}, {})</div>\n", 
+                    player_id, starting_unit.x, starting_unit.y));
+            }
+        }
+        html_content.push_str("</div>\n");
+    }
+    
+    html_content.push_str("</div>\n</body>\n</html>");
+    
+    Ok(html_content)
 }
 
-#[tauri::command]
-async fn export_map_report(map_data: MapData) -> Result<String, String> {
-    // Generate a comprehensive map report
-    let report_content = format!(
-        "# Warcraft II Map Analysis Report\n\n## Map Information\n- **Name:** {}\n- **Dimensions:** {}x{}\n- **Players:** {}\n\n## Resources\n",
-        map_data.name, map_data.width, map_data.height, map_data.player_count
-    );
-    
-    let resources_section = map_data.resources.iter()
-        .map(|r| format!("- **{}** at ({}, {}) - Amount: {} {}", 
-            r.resource_type, r.x, r.y, r.amount, 
-            if r.is_goldmine { "(Goldmine)" } else { "" }))
-        .collect::<Vec<_>>()
-        .join("\n");
-    
-    let units_section = map_data.units.iter()
-        .map(|u| format!("- **{}** at ({}, {}) - Player {} - Health: {}", 
-            u.unit_type, u.x, u.y, u.owner, u.health))
-        .collect::<Vec<_>>()
-        .join("\n");
-    
-    let buildings_section = map_data.buildings.iter()
-        .map(|b| format!("- **{}** at ({}, {}) - Player {} - Health: {} {}", 
-            b.building_type, b.x, b.y, b.owner, b.health,
-            if b.is_completed { "(Completed)" } else { "(Under Construction)" }))
-        .collect::<Vec<_>>()
-        .join("\n");
-    
-    let full_report = format!(
-        "{}{}\n\n## Units\n{}\n\n## Buildings\n{}\n\n## Strategic Analysis\n- **Goldmine Count:** {}\n- **Starting Positions:** {}\n- **Map Type:** {}\n",
-        report_content, resources_section, units_section, buildings_section,
-        map_data.resources.iter().filter(|r| r.is_goldmine).count(),
-        map_data.buildings.iter().filter(|b| b.building_type == "Town Hall").count(),
-        if map_data.width == map_data.height { "Square" } else { "Rectangular" }
-    );
-    
-    // Save the report to a file
-    let output_path = format!("map_report_{}.md", map_data.name.replace(" ", "_"));
-    std::fs::write(&output_path, full_report)
-        .map_err(|e| format!("Failed to write report: {}", e))?;
-    
-    Ok(output_path)
+fn get_terrain_class(tile_id: usize, tileset: u8) -> String {
+    // Authentic Warcraft II terrain classification based on tile ID ranges
+    match tile_id {
+        0x00..=0x0F => "grass".to_string(),
+        0x10..=0x1F => "water".to_string(),
+        0x20..=0x2F => "water-deep".to_string(),
+        0x30..=0x3F => "coast".to_string(),
+        0x40..=0x4F => "coast".to_string(),
+        0x50..=0x6F => match tileset {
+            0 => "forest".to_string(),    // Forest tileset
+            1 => "snow".to_string(),      // Winter tileset
+            2 => "sand".to_string(),      // Wasteland tileset
+            3 => "swamp".to_string(),     // Swamp tileset
+            _ => "grass".to_string(),
+        },
+        0x70..=0x8F => "rock".to_string(),
+        0x90..=0xAF => "dirt".to_string(),
+        0xB0..=0xCF => match tileset {
+            0 => "forest".to_string(),
+            1 => "snow".to_string(),
+            2 => "sand".to_string(),
+            3 => "swamp".to_string(),
+            _ => "grass".to_string(),
+        },
+        0xD0..=0xEF => "rock-dark".to_string(),
+        0xF0..=0xFF => "dirt".to_string(),
+        _ => "grass".to_string(),
+    }
+}
+
+fn get_tileset_name(tileset_id: u16) -> &'static str {
+    match tileset_id {
+        0 => "Forest",
+        1 => "Winter", 
+        2 => "Wasteland",
+        3 => "Swamp",
+        _ => "Unknown"
+    }
 }
 
 fn detect_goldmines(pud_info: &pud_parser::PudMapInfo) -> Vec<ResourceData> {
@@ -395,20 +393,4 @@ fn get_default_warcraft_directory() -> Option<PathBuf> {
     }
 
     None
-}
-
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
-pub fn run() {
-    tauri::Builder::default()
-        .plugin(tauri_plugin_dialog::init())
-        .invoke_handler(tauri::generate_handler![
-            select_map_file,
-            select_pud_file,
-            parse_map_file,
-            generate_map_image,
-            test_pud_parser,
-            export_map_report
-        ])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
 }

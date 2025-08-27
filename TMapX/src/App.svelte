@@ -4,12 +4,16 @@
   import { open } from '@tauri-apps/plugin-dialog';
 
   let selectedFilePath: string | null = null;
-  let isUploading = false;
-  let uploadProgress = 0;
-  let errorMessage = '';
-  let mapData: any = null;
-  let analysisComplete = false;
   let testResult: string = '';
+  let errorMessage: string = '';
+  let isUploading: boolean = false;
+  let uploadProgress: number = 0;
+  let analysisComplete: boolean = false;
+  let mapData: any = null;
+  let notificationMessage: string = '';
+  let showNotification: boolean = false;
+  let mapVisualizationHtml: string = '';
+  let showMapVisualization: boolean = false;
 
   async function loadTestFile() {
     try {
@@ -86,12 +90,50 @@
       const result = await invoke('test_pud_parser', { filePath: selectedFilePath });
       testResult = result as string;
       
-      console.log('PUD test result:', testResult);
+      console.log('PUD test result:', result);
 
     } catch (error) {
       console.error('PUD test error:', error);
       errorMessage = `Failed to test PUD parser: ${error}`;
       testResult = '';
+    }
+  }
+
+  async function generateMapVisualization() {
+    if (!selectedFilePath) {
+      errorMessage = 'Please select a map file first using the Upload Map button';
+      return;
+    }
+
+    try {
+      errorMessage = '';
+      isUploading = true;
+      
+      const result = await invoke('generate_map_visualization', { filePath: selectedFilePath });
+      console.log('Map visualization generated:', result);
+      
+      // Store the HTML content and show the visualization
+      mapVisualizationHtml = result as string;
+      showMapVisualization = true;
+      
+      // Show success notification
+      notificationMessage = `🎨 Map Visualization Generated Successfully!
+
+The interactive map is now displayed below.
+You can also find the saved file as "map_visualization.html" in your TMapX folder.`;
+
+      showNotification = true;
+      
+      // Auto-hide notification after 5 seconds
+      setTimeout(() => {
+        showNotification = false;
+      }, 5000);
+      
+      isUploading = false;
+    } catch (error) {
+      console.error('Map visualization error:', error);
+      errorMessage = `Failed to generate map visualization: ${error}`;
+      isUploading = false;
     }
   }
 
@@ -187,6 +229,14 @@
       >
         🔍 Test PUD Parser
       </button>
+      
+      <button 
+        class="action-btn visualize-btn" 
+        on:click={generateMapVisualization}
+        disabled={!selectedFilePath || isUploading}
+      >
+        🎨 Generate Map Visualization
+      </button>
     </div>
     
     {#if selectedFilePath}
@@ -208,10 +258,48 @@
       </div>
     {/if}
     
+    {#if showNotification}
+      <div class="notification success">
+        <div class="notification-header">
+          <span class="notification-icon">🎉</span>
+          <span class="notification-title">Success!</span>
+          <button class="notification-close" on:click={() => showNotification = false}>×</button>
+        </div>
+        <div class="notification-content">
+          <pre>{notificationMessage}</pre>
+        </div>
+      </div>
+    {/if}
+    
     {#if testResult}
       <div class="test-result">
         <h3>PUD Parser Test Result:</h3>
         <pre>{testResult}</pre>
+      </div>
+    {/if}
+    
+    {#if showMapVisualization && mapVisualizationHtml}
+      <div class="map-visualization-section">
+        <div class="section-header">
+          <h3>🗺️ Interactive Map Visualization</h3>
+          <button class="close-btn" on:click={() => showMapVisualization = false}>×</button>
+        </div>
+        <div class="map-container">
+          <iframe 
+            srcdoc={mapVisualizationHtml}
+            title="Warcraft II Map Visualization"
+            class="map-iframe"
+            sandbox="allow-scripts allow-same-origin"
+          ></iframe>
+        </div>
+        <div class="map-controls">
+          <button class="action-btn" on:click={() => showMapVisualization = false}>
+            Close Map View
+          </button>
+          <button class="action-btn" on:click={() => window.open('map_visualization.html', '_blank')}>
+            Open in New Tab
+          </button>
+        </div>
       </div>
     {/if}
     
@@ -456,11 +544,123 @@
   }
 
   .analyze-btn {
-    background: #dc3545;
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+  }
+
+  .visualize-btn {
+    background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(162, 155, 254, 0.3);
   }
 
   .analyze-btn:hover {
-    background: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+  }
+
+  .visualize-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(162, 155, 254, 0.4);
+  }
+
+  .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 500px;
+    max-width: 90vw;
+    background: #2c3e50;
+    border: 2px solid #27ae60;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    animation: slideIn 0.3s ease-out;
+  }
+
+  .notification.success {
+    border-color: #27ae60;
+  }
+
+  .notification-header {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    background: #27ae60;
+    color: white;
+    border-radius: 8px 8px 0 0;
+    font-weight: bold;
+  }
+
+  .notification-icon {
+    font-size: 20px;
+    margin-right: 10px;
+  }
+
+  .notification-title {
+    flex: 1;
+    font-size: 16px;
+  }
+
+  .notification-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+  }
+
+  .notification-close:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .notification-content {
+    padding: 20px;
+    color: white;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+
+  .notification-content pre {
+    margin: 0;
+    white-space: pre-wrap;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
   }
 
   .file-info {
@@ -810,5 +1010,99 @@
     border-radius: 4px;
     font-size: 0.875rem;
     font-weight: bold;
+  }
+
+  .map-visualization-section {
+    margin: 2rem 0;
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    border: 1px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    color: #6c757d;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+  }
+
+  .close-btn:hover {
+    background: #f8f9fa;
+  }
+
+  .map-container {
+    width: 100%;
+    height: 400px;
+    border: 2px solid #495057;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #8B4513;
+    position: relative;
+  }
+
+  .map-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: white;
+  }
+
+  .map-controls {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .map-controls .action-btn {
+    background: linear-gradient(135deg, #6c757d, #495057);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+
+  .map-controls .action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .map-container {
+      height: 300px;
+    }
+    
+    .map-visualization-section {
+      padding: 1rem;
+      margin: 1rem 0;
+    }
+    
+    .section-header h3 {
+      font-size: 1.2rem;
+    }
   }
 </style>

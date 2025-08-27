@@ -90,6 +90,14 @@ impl PudParser {
         })
     }
 
+    // New method for WASM compatibility - create parser from file data
+    pub fn from_data(data: &[u8]) -> Result<Self, String> {
+        Ok(PudParser {
+            data: data.to_vec(),
+            position: 0,
+        })
+    }
+
     pub fn parse(&mut self) -> Result<PudMapInfo, String> {
         println!("🔍 STARTING PUD PARSING - CORRECTED VERSION 🔍");
         println!("File size: {} bytes", self.data.len());
