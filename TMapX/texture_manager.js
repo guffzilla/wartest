@@ -268,78 +268,266 @@ class TextureManager {
         return colors[terrainType] || '#808080';
     }
 
-        /**
-     * Get fallback color for a known terrain type
-     * Based on war2tools project specifications and authentic Warcraft II colors
+    /**
+     * Get tileset name for display
      */
-    getFallbackColorForTerrainType(terrainType) {
-        const colors = {
-            // Water tiles - Authentic Warcraft II blue tones
-            'water': '#4169E1',      // Royal blue (consistent with war2tools)
-            'water-deep': '#000080',  // Navy blue for deep water
-            
-            // Coast/Shore tiles - Light blue variations
-            'coast': '#87CEEB',       // Sky blue for coast/shore
-            
-            // Ground tiles - Tileset-specific colors
-            'grass': '#228B22',       // Forest green (authentic Warcraft II)
-            'dirt': '#8B4513',        // Saddle brown for wasteland
-            
-            // Terrain features - Distinct colors
-            'forest': '#006400',      // Dark green for trees
-            'rock': '#696969',        // Dim gray for mountains/rock
-            'rock-dark': '#2F4F4F',   // Dark slate gray
-            
-            // Tileset-specific variations
-            'sand': '#F4A460',        // Sandy brown for wasteland
-            'snow': '#F0F8FF',        // Alice blue for winter
-            'swamp': '#556B2F'        // Dark olive green for swamp
+    getTilesetName(tileset) {
+        const tilesetNames = {
+            0: 'Forest',
+            1: 'Winter', 
+            2: 'Wasteland',
+            3: 'Swamp'
         };
-
-        return colors[terrainType] || '#666666';
+        return tilesetNames[tileset] || 'Unknown';
     }
 
     /**
-     * Fallback rendering using colors with known terrain type
+     * Get terrain type for a tile with proper tileset support
+     * Based on authentic Warcraft II terrain classification
      */
-    renderFallbackTileWithTerrainType(ctx, terrainType, x, y, size) {
-        const color = this.getFallbackColorForTerrainType(terrainType);
-        // Only log occasionally to avoid spam
-        if (Math.random() < 0.001) { // Log 0.1% of tiles
-            console.log(`Rendering ${terrainType} tile at (${x}, ${y}) with color ${color}`);
+    getTerrainType(tileId, tileset) {
+        // Water tiles (same across all tilesets)
+        if (tileId >= 0x10 && tileId <= 0x4F) return 'water';
+        
+        // Coast/Shore tiles (same across all tilesets)
+        if (tileId >= 0x50 && tileId <= 0x6F) return 'coast';
+        
+        // Ground tiles - Tileset-specific classification
+        if (tileId >= 0x70 && tileId <= 0x8F) {
+            switch (tileset) {
+                case 0: // Forest
+                    if (tileId >= 0x70 && tileId <= 0x7F) return 'rock';
+                    if (tileId >= 0x80 && tileId <= 0x8F) return 'forest';
+                    break;
+                case 1: // Winter
+                    if (tileId >= 0x70 && tileId <= 0x7F) return 'rock';
+                    if (tileId >= 0x80 && tileId <= 0x8F) return 'snow';
+                    break;
+                case 2: // Wasteland
+                    if (tileId >= 0x70 && tileId <= 0x7F) return 'rock';
+                    if (tileId >= 0x80 && tileId <= 0x8F) return 'sand';
+                    break;
+                case 3: // Swamp
+                    if (tileId >= 0x70 && tileId <= 0x7F) return 'rock';
+                    if (tileId >= 0x80 && tileId <= 0x8F) return 'swamp';
+                    break;
+            }
         }
+        
+        // Extended terrain tiles
+        if (tileId >= 0x90 && tileId <= 0xAF) {
+            switch (tileset) {
+                case 0: // Forest
+                    return 'grass';
+                case 1: // Winter
+                    return 'snow';
+                case 2: // Wasteland
+                    return 'dirt';
+                case 3: // Swamp
+                    return 'swamp';
+            }
+        }
+        
+        // Rock and mountain tiles
+        if (tileId >= 0xB0 && tileId <= 0xCF) return 'rock';
+        if (tileId >= 0xD0 && tileId <= 0xEF) return 'rock-dark';
+        
+        // Final terrain classification
+        if (tileId >= 0xF0 && tileId <= 0xFF) {
+            switch (tileset) {
+                case 0: return 'forest';  // Forest
+                case 1: return 'snow';    // Winter
+                case 2: return 'dirt';    // Wasteland
+                case 3: return 'swamp';   // Swamp
+                default: return 'grass';
+            }
+        }
+        
+        // Default fallback based on tileset
+        switch (tileset) {
+            case 0: return 'forest';  // Forest
+            case 1: return 'snow';    // Winter
+            case 2: return 'dirt';    // Wasteland
+            case 3: return 'swamp';   // Swamp
+            default: return 'grass';
+        }
+    }
+
+    /**
+     * Get tileset name for display
+     */
+    getTilesetName(tileset) {
+        const tilesetNames = {
+            0: 'Forest',
+            1: 'Winter', 
+            2: 'Wasteland',
+            3: 'Swamp'
+        };
+        return tilesetNames[tileset] || 'Unknown';
+    }
+
+    /**
+     * Get enhanced fallback colors with tileset-specific variations
+     */
+    getFallbackColorForTerrainType(terrainType, tileset = 0) {
+        const baseColors = {
+            // Water tiles - Same across all tilesets
+            'water': '#4169E1',      // Royal blue
+            'water-deep': '#000080',  // Navy blue
+            'coast': '#87CEEB',       // Sky blue
+            
+            // Rock tiles - Same across all tilesets
+            'rock': '#696969',        // Dim gray
+            'rock-dark': '#2F4F4F',   // Dark slate gray
+        };
+
+        // Tileset-specific colors
+        const tilesetColors = {
+            0: { // Forest
+                'grass': '#228B22',       // Forest green
+                'forest': '#006400',      // Dark green
+                'dirt': '#8B4513',       // Saddle brown
+            },
+            1: { // Winter
+                'grass': '#F0F8FF',      // Alice blue (snow)
+                'forest': '#E6E6FA',     // Lavender (frozen trees)
+                'dirt': '#F5F5DC',       // Beige (frozen ground)
+                'snow': '#FFFFFF',       // Pure white
+            },
+            2: { // Wasteland
+                'grass': '#F4A460',      // Sandy brown
+                'forest': '#DEB887',     // Burlywood
+                'dirt': '#CD853F',       // Peru (desert)
+                'sand': '#F4A460',       // Sandy brown
+            },
+            3: { // Swamp
+                'grass': '#556B2F',      // Dark olive green
+                'forest': '#6B8E23',     // Olive drab
+                'dirt': '#8FBC8F',      // Dark sea green
+                'swamp': '#556B2F',      // Dark olive green
+            }
+        };
+
+        // Return base color if it exists
+        if (baseColors[terrainType]) {
+            return baseColors[terrainType];
+        }
+
+        // Return tileset-specific color
+        const tilesetColor = tilesetColors[tileset]?.[terrainType];
+        if (tilesetColor) {
+            return tilesetColor;
+        }
+
+        // Fallback colors for unknown terrain types
+        const fallbackColors = {
+            'grass': '#228B22',
+            'forest': '#006400',
+            'dirt': '#8B4513',
+            'snow': '#FFFFFF',
+            'sand': '#F4A460',
+            'swamp': '#556B2F'
+        };
+
+        return fallbackColors[terrainType] || '#666666';
+    }
+
+    /**
+     * Enhanced fallback rendering with tileset support
+     */
+    renderFallbackTileWithTerrainType(ctx, terrainType, x, y, size, tileset = 0) {
+        const color = this.getFallbackColorForTerrainType(terrainType, tileset);
+        
+        // Only log occasionally to avoid spam
+        if (Math.random() < 0.001) {
+            const tilesetName = this.getTilesetName(tileset);
+            console.log(`🎨 Rendering ${terrainType} tile at (${x}, ${y}) with ${tilesetName} tileset color: ${color}`);
+        }
+        
         ctx.fillStyle = color;
         ctx.fillRect(x, y, size, size);
         
-        // Add subtle border
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-        ctx.lineWidth = 0.5;
+        // Add subtle border based on tileset
+        let borderColor = 'rgba(255, 255, 255, 0.1)';
+        let borderWidth = 0.5;
+        
+        // Enhanced borders for different tilesets
+        switch (tileset) {
+            case 0: // Forest - subtle green tint
+                borderColor = 'rgba(34, 139, 34, 0.2)';
+                break;
+            case 1: // Winter - subtle blue tint
+                borderColor = 'rgba(240, 248, 255, 0.3)';
+                break;
+            case 2: // Wasteland - subtle brown tint
+                borderColor = 'rgba(244, 164, 96, 0.2)';
+                break;
+            case 3: // Swamp - subtle olive tint
+                borderColor = 'rgba(85, 107, 47, 0.3)';
+                break;
+        }
+        
+        ctx.strokeStyle = borderColor;
+        ctx.lineWidth = borderWidth;
         ctx.strokeRect(x, y, size, size);
+        
+        // Add tileset-specific texture hints
+        this.addTilesetTextureHints(ctx, terrainType, tileset, x, y, size);
     }
 
     /**
-     * Get terrain type for a tile (our existing classification system)
+     * Add subtle texture hints based on tileset
      */
-    getTerrainType(tileId, tileset) {
-        // Simplified version of our Rust terrain classification
-        if (tileId >= 0x10 && tileId <= 0x4F) return 'water';
-        if (tileId >= 0x50 && tileId <= 0x6F) {
-            if (tileset === 0) return 'forest';
-            if (tileset === 1) return 'snow';
-            if (tileset === 2) return 'sand';
-            if (tileset === 3) return 'swamp';
-            return 'grass';
+    addTilesetTextureHints(ctx, terrainType, tileset, x, y, size) {
+        if (size < 8) return; // Too small for texture hints
+        
+        ctx.save();
+        ctx.globalAlpha = 0.1;
+        
+        switch (tileset) {
+            case 0: // Forest
+                if (terrainType === 'forest') {
+                    // Add subtle tree-like dots
+                    this.drawTextureDots(ctx, x, y, size, '#006400', 3);
+                }
+                break;
+            case 1: // Winter
+                if (terrainType === 'snow') {
+                    // Add subtle snowflake-like patterns
+                    this.drawTextureDots(ctx, x, y, size, '#FFFFFF', 2);
+                }
+                break;
+            case 2: // Wasteland
+                if (terrainType === 'sand' || terrainType === 'dirt') {
+                    // Add subtle sand-like texture
+                    this.drawTextureDots(ctx, x, y, size, '#CD853F', 4);
+                }
+                break;
+            case 3: // Swamp
+                if (terrainType === 'swamp') {
+                    // Add subtle swamp-like texture
+                    this.drawTextureDots(ctx, x, y, size, '#556B2F', 3);
+                }
+                break;
         }
-        if (tileId >= 0x70 && tileId <= 0x7F) return 'rock';
-        if (tileId >= 0xD0 && tileId <= 0xEF) return 'rock-dark';
-        if (tileId >= 0x80 && tileId <= 0xFF) {
-            // Intelligent dirt classification
-            if (tileId % 4 === 0 || tileId % 8 === 0 || tileId % 16 === 0) {
-                return 'dirt';
-            }
-            return 'grass';
+        
+        ctx.restore();
+    }
+
+    /**
+     * Draw subtle texture dots
+     */
+    drawTextureDots(ctx, x, y, size, color, count) {
+        ctx.fillStyle = color;
+        for (let i = 0; i < count; i++) {
+            const dotX = x + Math.random() * size;
+            const dotY = y + Math.random() * size;
+            const dotSize = Math.random() * 2 + 1;
+            
+            ctx.beginPath();
+            ctx.arc(dotX, dotY, dotSize, 0, Math.PI * 2);
+            ctx.fill();
         }
-        return 'grass';
     }
 
     /**

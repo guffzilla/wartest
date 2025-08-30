@@ -295,6 +295,17 @@
                 <button id="extractTextures" class="btn">🔍 Extract Textures</button>
                 <button id="clearCache" class="btn">🗑️ Clear Cache</button>
             </div>
+
+            <div class="control-group">
+                <h3>🎨 Tileset Preview</h3>
+                <select id="tilesetSelector" class="btn" style="background: #4169E1;">
+                    <option value="0">🌲 Forest</option>
+                    <option value="1">❄️ Winter</option>
+                    <option value="2">🏜️ Wasteland</option>
+                    <option value="3">🌿 Swamp</option>
+                </select>
+                <button id="previewTileset" class="btn">👁️ Preview</button>
+            </div>
         </div>
 
         <div class="map-container">
@@ -326,6 +337,28 @@
                         <div class="stat-item">
                             <div class="stat-value" id="totalSize">0 KB</div>
                             <div class="stat-label">Size</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="texture-info">
+                    <h4>🗺️ Map Information</h4>
+                    <div class="texture-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="mapTileset">-</div>
+                            <div class="stat-label">Tileset</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="mapDimensions">-</div>
+                            <div class="stat-label">Dimensions</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="mapMarkers">-</div>
+                            <div class="stat-label">Markers</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="mapTerrain">-</div>
+                            <div class="stat-label">Terrain</div>
                         </div>
                     </div>
                 </div>
@@ -502,15 +535,14 @@
                         const renderX = x * displaySize;
                         const renderY = y * displaySize;
                         
-                        // Use texture manager to render tile with pre-determined terrain type
-                        this.textureManager.renderTileWithTerrainType(
+                        // Use texture manager to render tile with tileset support
+                        this.textureManager.renderFallbackTileWithTerrainType(
                             this.ctx,
-                            tile.tile_id,
                             tile.terrain_type,
-                            currentMapData.tileset,
                             renderX,
                             renderY,
-                            displaySize
+                            displaySize,
+                            currentMapData.tileset
                         );
                     }
                 }
@@ -891,6 +923,9 @@
             document.getElementById('showPlayers').addEventListener('change', (e) => {
                 if (mapRenderer) mapRenderer.setOverlays({ players: e.target.checked });
             });
+            
+            // Tileset preview
+            document.getElementById('previewTileset').addEventListener('click', previewSelectedTileset);
         }
 
         // File handling
@@ -933,7 +968,16 @@
                 // Render the map
                 await mapRenderer.renderMap(mapData);
                 
-                showStatus('Map loaded successfully!', 'success');
+                // Update map information display
+                updateMapInfo(mapData);
+                
+                // Show tileset information
+                const tilesetName = textureManager.getTilesetName(mapData.tileset);
+                showStatus(`Map loaded successfully! Tileset: ${tilesetName}`, 'success');
+                
+                // Log tileset details
+                console.log(`🎨 Map tileset: ${mapData.tileset} (${tilesetName})`);
+                console.log(`🎨 Terrain classification will use ${tilesetName} color scheme`);
                 
             } catch (error) {
                 console.error('❌ Failed to load map:', error);
@@ -988,6 +1032,44 @@
                 document.getElementById('totalTextures').textContent = stats.totalTextures;
                 document.getElementById('totalSize').textContent = Math.round(stats.totalSize / 1024) + ' KB';
             }
+        }
+
+        function updateMapInfo(mapData) {
+            if (mapData) {
+                const tilesetName = textureManager.getTilesetName(mapData.tileset);
+                document.getElementById('mapTileset').textContent = tilesetName;
+                document.getElementById('mapDimensions').textContent = `${mapData.width}×${mapData.height}`;
+                document.getElementById('mapMarkers').textContent = mapData.markers?.length || 0;
+                document.getElementById('mapTerrain').textContent = mapData.terrain_runs?.length || 0;
+                
+                // Update tileset selector to show current tileset
+                document.getElementById('tilesetSelector').value = mapData.tileset;
+            }
+        }
+
+        function previewSelectedTileset() {
+            if (!currentMapData) {
+                showStatus('No map loaded! Load a map first.', 'error');
+                return;
+            }
+            
+            const selectedTileset = parseInt(document.getElementById('tilesetSelector').value);
+            const tilesetName = textureManager.getTilesetName(selectedTileset);
+            
+            // Create a copy of the map data with the selected tileset
+            const previewMapData = {
+                ...currentMapData,
+                tileset: selectedTileset
+            };
+            
+            // Re-render the map with the new tileset
+            mapRenderer.renderMap(previewMapData);
+            
+            // Update the display
+            updateMapInfo(previewMapData);
+            
+            showStatus(`Previewing ${tilesetName} tileset!`, 'success');
+            console.log(`🎨 Previewing ${tilesetName} tileset (${selectedTileset})`);
         }
 
         function formatBytes(bytes) {
