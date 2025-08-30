@@ -237,17 +237,28 @@
             border: 2px solid #4169E1;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
             min-width: 220px;
-            max-width: 280px;
+            max-width: 320px;
+            backdrop-filter: blur(5px);
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+        
+        .tooltip.show {
+            opacity: 1;
+            transform: scale(1);
         }
 
         .tooltip-header {
             color: #FFD700;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            font-size: 14px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
         }
 
         .tooltip-content {
-            line-height: 1.4;
+            line-height: 1.5;
         }
         
         .tooltip-marker {
@@ -256,6 +267,102 @@
             background: rgba(255, 215, 0, 0.1);
             border-left: 3px solid #FFD700;
             border-radius: 4px;
+        }
+
+        .tooltip-player {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(78, 205, 196, 0.1));
+            border-left: 3px solid #FFD700;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 5px;
+        }
+
+        .tooltip-goldmine {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 193, 7, 0.1));
+            border-left: 3px solid #FFD700;
+            border-radius: 6px;
+            padding: 10px;
+            margin-top: 5px;
+        }
+        
+        /* Enhanced marker hover effects */
+        .marker-hover {
+            animation: pulse 1.5s ease-in-out infinite alternate;
+        }
+        
+        @keyframes pulse {
+            from {
+                transform: scale(1);
+                opacity: 1;
+            }
+            to {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+        
+        /* Goldmine sparkle animation */
+        .goldmine-sparkle {
+            animation: sparkle 2s ease-in-out infinite;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        /* Oil bubble animation */
+        .oil-bubble {
+            animation: bubble 3s ease-in-out infinite;
+        }
+        
+        @keyframes bubble {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-2px) scale(1.1); }
+        }
+        
+        /* Chess piece crown animation */
+        .crown-jewel {
+            animation: jewel-shine 4s ease-in-out infinite;
+        }
+        
+        @keyframes jewel-shine {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            25% { opacity: 1; transform: scale(1.1); }
+            50% { opacity: 0.9; transform: scale(1.05); }
+            75% { opacity: 1; transform: scale(1.15); }
+        }
+        
+        /* Goldmine texture animation */
+        .goldmine-texture {
+            animation: texture-rotate 8s linear infinite;
+        }
+        
+        @keyframes texture-rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Oil ripple animation */
+        .oil-ripple {
+            animation: ripple-expand 6s ease-out infinite;
+        }
+        
+        @keyframes ripple-expand {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            100% { transform: scale(1.2); opacity: 0; }
+        }
+        
+        /* Status banner pulse animation */
+        @keyframes statusPulse {
+            0%, 100% { 
+                transform: scale(1); 
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            }
+            50% { 
+                transform: scale(1.02); 
+                box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+            }
         }
 
         @media (max-width: 1200px) {
@@ -274,6 +381,10 @@
         <div class="header">
             <h1>🎨 Enhanced Warcraft II Map Renderer</h1>
             <p>Texture-Based Rendering with Authentic Warcraft II Visuals</p>
+            <div id="graphicsStatus" style="background: linear-gradient(45deg, #FF6B6B, #4ECDC4, #45B7D1, #96CEB4, #FFEAA7); padding: 10px; border-radius: 8px; margin-top: 10px; text-align: center; color: white; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); animation: statusPulse 3s ease-in-out infinite;">
+                ✨ SUPER ENHANCED GRAPHICS LOADED ✨<br>
+                🎯 Chess Piece Players | 💎 Multi-Layer Goldmines | 🛢️ Bubbling Oil Patches
+            </div>
         </div>
 
         <div class="controls">
@@ -546,6 +657,86 @@
                         );
                     }
                 }
+                
+                // Add big blue "G" in the center of the map to show advanced graphics are working
+                this.drawCenterIndicator(displaySize);
+            }
+            
+            drawCenterIndicator(displaySize) {
+                const centerX = (currentMapData.width / 2) * displaySize;
+                const centerY = (currentMapData.height / 2) * displaySize;
+                
+                // Draw a large blue "G" in the center with continuous animation
+                this.ctx.save();
+                
+                // Add animated glow effect
+                const time = Date.now() * 0.001;
+                const glowIntensity = 15 + Math.sin(time * 3) * 10;
+                this.ctx.shadowColor = '#0066FF';
+                this.ctx.shadowBlur = glowIntensity;
+                
+                // Draw background circle - DOUBLE SIZE with animation
+                this.ctx.beginPath();
+                this.ctx.arc(centerX, centerY, displaySize * 4, 0, Math.PI * 2);
+                this.ctx.fillStyle = 'rgba(0, 102, 255, 0.1)';
+                this.ctx.fill();
+                
+                // Draw the big blue "G" - DOUBLE SIZE with rotation animation
+                this.ctx.save();
+                this.ctx.translate(centerX, centerY);
+                this.ctx.rotate(Math.sin(time * 2) * 0.1); // Gentle rotation
+                this.ctx.fillStyle = '#0066FF';
+                this.ctx.font = `bold ${displaySize * 6}px Arial`;
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillText('G', 0, 0);
+                this.ctx.restore();
+                
+                // Add border - DOUBLE SIZE with pulsing
+                const borderWidth = 8 + Math.sin(time * 4) * 2;
+                this.ctx.strokeStyle = '#0033CC';
+                this.ctx.lineWidth = borderWidth;
+                this.ctx.stroke();
+                
+                // Add animated sparkles around it - DOUBLE SIZE
+                this.ctx.fillStyle = '#FFFFFF';
+                this.ctx.globalAlpha = 0.8;
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i * Math.PI * 2) / 6 + time * 2; // Rotating sparkles
+                    const radius = displaySize * 5 + Math.sin(time * 3 + i) * 10; // Pulsing radius
+                    const sparkleX = centerX + Math.cos(angle) * radius;
+                    const sparkleY = centerY + Math.sin(angle) * radius;
+                    
+                    // Animated sparkle size
+                    const sparkleSize = 6 + Math.sin(time * 5 + i) * 3;
+                    
+                    this.ctx.beginPath();
+                    this.ctx.arc(sparkleX, sparkleY, sparkleSize, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+                this.ctx.globalAlpha = 1.0;
+                
+                // Add floating particles around the G
+                this.ctx.fillStyle = '#87CEEB';
+                this.ctx.globalAlpha = 0.6;
+                for (let i = 0; i < 8; i++) {
+                    const particleAngle = time * 1.5 + i * Math.PI / 4;
+                    const particleRadius = displaySize * 3 + Math.sin(time * 2 + i) * 20;
+                    const particleX = centerX + Math.cos(particleAngle) * particleRadius;
+                    const particleY = centerY + Math.sin(particleAngle) * particleRadius;
+                    
+                    this.ctx.beginPath();
+                    this.ctx.arc(particleX, particleY, 2, 0, Math.PI * 2);
+                    this.ctx.fill();
+                }
+                this.ctx.globalAlpha = 1.0;
+                
+                this.ctx.restore();
+                
+                // Continue animation loop
+                requestAnimationFrame(() => this.drawCenterIndicator(displaySize));
+                
+                console.log('🎯 Center indicator "G" drawn at:', centerX, centerY, 'with animations');
             }
 
             renderResources(displaySize) {
@@ -562,61 +753,216 @@
                         const x = marker.x * displaySize;
                         const y = marker.y * displaySize;
                         
-                        // Goldmine marker - larger, more visible
-                        const radius = Math.max(displaySize * 0.4, 4);
+                        // Enhanced goldmine marker - DOUBLE SIZE golden shining mine
+                        const radius = Math.max(displaySize * 0.8, 8); // Doubled from 0.4 to 0.8
+                        const centerX = x + displaySize/2;
+                        const centerY = y + displaySize/2;
                         
-                        // Outer glow effect
+                        this.ctx.save();
+                        
+                        // Check if this marker is being hovered over
+                        const isHovered = this.hoveredMarker && 
+                            this.hoveredMarker.x === marker.x && 
+                            this.hoveredMarker.y === marker.y && 
+                            this.hoveredMarker.marker_type === 'goldmine';
+                        
+                        // Multiple layered glow effects for golden shine
                         this.ctx.shadowColor = '#FFD700';
-                        this.ctx.shadowBlur = 8;
+                        this.ctx.shadowBlur = isHovered ? 25 : 15;
                         
-                        // Main goldmine circle
+                        // Outer golden ring with texture
+                        this.ctx.beginPath();
+                        this.ctx.arc(centerX, centerY, radius + 2, 0, Math.PI * 2);
                         this.ctx.fillStyle = '#FFD700';
-                        this.ctx.beginPath();
-                        this.ctx.arc(x + displaySize/2, y + displaySize/2, radius, 0, Math.PI * 2);
                         this.ctx.fill();
                         
-                        // Border
+                        // Add outer ring texture (small dots)
+                        this.ctx.fillStyle = '#B8860B';
+                        for (let i = 0; i < 8; i++) {
+                            const angle = (i * Math.PI * 2) / 8;
+                            const dotX = centerX + Math.cos(angle) * (radius + 1);
+                            const dotY = centerY + Math.sin(angle) * (radius + 1);
+                            this.ctx.beginPath();
+                            this.ctx.arc(dotX, dotY, 1, 0, Math.PI * 2);
+                            this.ctx.fill();
+                        }
+                        
+                        // Middle ring with darker gold and inner texture
+                        this.ctx.shadowBlur = 8;
+                        this.ctx.beginPath();
+                        this.ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                        this.ctx.fillStyle = '#B8860B';
+                        this.ctx.fill();
+                        
+                        // Inner texture pattern
+                        this.ctx.fillStyle = '#8B6914';
+                        for (let i = 0; i < 6; i++) {
+                            const angle = (i * Math.PI * 2) / 6;
+                            const dotX = centerX + Math.cos(angle) * (radius * 0.8);
+                            const dotY = centerY + Math.sin(angle) * (radius * 0.8);
+                            this.ctx.beginPath();
+                            this.ctx.arc(dotX, dotY, 1.5, 0, Math.PI * 2);
+                            this.ctx.fill();
+                        }
+                        
+                        // Inner core with bright gold and gem-like center
                         this.ctx.shadowBlur = 0;
-                        this.ctx.strokeStyle = '#B8860B';
-                        this.ctx.lineWidth = 2;
-                        this.ctx.stroke();
-                        
-                        // Inner highlight
-                        this.ctx.fillStyle = '#FFF8DC';
                         this.ctx.beginPath();
-                        this.ctx.arc(x + displaySize/2, y + displaySize/2, radius * 0.6, 0, Math.PI * 2);
+                        this.ctx.arc(centerX, centerY, radius * 0.7, 0, Math.PI * 2);
+                        this.ctx.fillStyle = '#FFF8DC';
                         this.ctx.fill();
                         
-                        // Gold amount text
+                        // Gem-like center with facets
+                        this.ctx.beginPath();
+                        this.ctx.arc(centerX, centerY, radius * 0.4, 0, Math.PI * 2);
+                        this.ctx.fillStyle = '#FFFFFF';
+                        this.ctx.fill();
+                        
+                        // Center highlight
+                        this.ctx.beginPath();
+                        this.ctx.arc(centerX - radius * 0.1, centerY - radius * 0.1, radius * 0.15, 0, Math.PI * 2);
+                        this.ctx.fillStyle = '#FFFFE0';
+                        this.ctx.fill();
+                        
+                        // Add detailed sparkle effect with particles
+                        const sparkleCount = isHovered ? 8 : 5; // More sparkles when hovered
+                        for (let i = 0; i < sparkleCount; i++) {
+                            const sparkleAngle = (i * Math.PI * 2) / sparkleCount;
+                            const sparkleRadius = radius * (isHovered ? 0.6 : 0.4); // Larger sparkle radius when hovered
+                            const sparkleX = centerX + Math.cos(sparkleAngle) * sparkleRadius;
+                            const sparkleY = centerY + Math.sin(sparkleAngle) * sparkleRadius;
+                            
+                            // Main sparkle
+                            this.ctx.beginPath();
+                            this.ctx.arc(sparkleX, sparkleY, isHovered ? 3 : 2, 0, Math.PI * 2);
+                            this.ctx.fillStyle = '#FFFFFF';
+                            this.ctx.fill();
+                            
+                            // Sparkle highlight
+                            this.ctx.beginPath();
+                            this.ctx.arc(sparkleX - 0.5, sparkleY - 0.5, isHovered ? 1.5 : 1, 0, Math.PI * 2);
+                            this.ctx.fillStyle = '#FFFFE0';
+                            this.ctx.fill();
+                            
+                            // Sparkle border
+                            this.ctx.strokeStyle = '#FFD700';
+                            this.ctx.lineWidth = 0.5;
+                            this.ctx.stroke();
+                        }
+                        
+                        // Add floating gold particles around the mine
+                        if (isHovered) {
+                            this.ctx.fillStyle = '#FFD700';
+                            this.ctx.globalAlpha = 0.6;
+                            for (let i = 0; i < 6; i++) {
+                                const particleAngle = (i * Math.PI * 2) / 6 + Date.now() * 0.001;
+                                const particleRadius = radius * 0.8;
+                                const particleX = centerX + Math.cos(particleAngle) * particleRadius;
+                                const particleY = centerY + Math.sin(particleAngle) * particleRadius;
+                                
+                                this.ctx.beginPath();
+                                this.ctx.arc(particleX, particleY, 1, 0, Math.PI * 2);
+                                this.ctx.fill();
+                            }
+                            this.ctx.globalAlpha = 1.0;
+                        }
+                        
+                        // Gold amount text with shadow
                         if (displaySize >= 8) {
+                            this.ctx.shadowColor = '#000000';
+                            this.ctx.shadowBlur = 2;
                             this.ctx.fillStyle = '#000';
                             this.ctx.font = `bold ${Math.max(8, displaySize * 0.3)}px Arial`;
                             this.ctx.textAlign = 'center';
                             this.ctx.textBaseline = 'middle';
                             const amount = marker.amount ? marker.amount.toString() : '?';
-                            this.ctx.fillText(amount, x + displaySize/2, y + displaySize/2);
+                            this.ctx.fillText(amount, centerX, centerY);
                         }
+                        
+                        this.ctx.restore();
                         
                     } else if (marker.marker_type === 'oil') {
                         const x = marker.x * displaySize;
                         const y = marker.y * displaySize;
                         
-                        // Oil platform marker
-                        const size = Math.max(displaySize * 0.6, 6);
+                        // Enhanced oil platform marker - DOUBLE SIZE bubbling oil patch
+                        const size = Math.max(displaySize * 1.2, 12); // Doubled from 0.6 to 1.2
+                        const centerX = x + displaySize/2;
+                        const centerY = y + displaySize/2;
                         
-                        // Outer glow
+                        this.ctx.save();
+                        
+                        // Check if this marker is being hovered over
+                        const isHovered = this.hoveredMarker && 
+                            this.hoveredMarker.x === marker.x && 
+                            this.hoveredMarker.y === marker.y && 
+                            this.hoveredMarker.marker_type === 'oil';
+                        
+                        // Dark oil base with glow and texture
                         this.ctx.shadowColor = '#000080';
-                        this.ctx.shadowBlur = 6;
-                        
-                        // Main oil platform (dark blue square)
+                        this.ctx.shadowBlur = isHovered ? 15 : 8;
                         this.ctx.fillStyle = '#000080';
-                        this.ctx.fillRect(x + displaySize/2 - size/2, y + displaySize/2 - size/2, size, size);
+                        this.ctx.fillRect(centerX - size/2, centerY - size/2, size, size);
                         
-                        // Border
+                        // Oil surface texture (ripples)
+                        this.ctx.fillStyle = '#1E3A8A';
+                        for (let i = 0; i < 3; i++) {
+                            const rippleSize = size * (0.3 + i * 0.2);
+                            this.ctx.beginPath();
+                            this.ctx.arc(centerX, centerY, rippleSize, 0, Math.PI * 2);
+                            this.ctx.strokeStyle = '#1E3A8A';
+                            this.ctx.lineWidth = 1;
+                            this.ctx.stroke();
+                        }
+                        
+                        // Oil border with depth
                         this.ctx.shadowBlur = 0;
                         this.ctx.strokeStyle = '#4169E1';
                         this.ctx.lineWidth = 2;
-                        this.ctx.strokeRect(x + displaySize/2 - size/2, y + displaySize/2 - size/2, size, size);
+                        this.ctx.strokeRect(centerX - size/2, centerY - size/2, size, size);
+                        
+                        // Inner border for depth
+                        this.ctx.strokeStyle = '#1E40AF';
+                        this.ctx.lineWidth = 1;
+                        this.ctx.strokeRect(centerX - size/2 + 1, centerY - size/2 + 1, size - 2, size - 2);
+                        
+                        // Add detailed bubbling oil effect
+                        const bubbleCount = isHovered ? 8 : 6; // More bubbles when hovered
+                        for (let i = 0; i < bubbleCount; i++) {
+                            const bubbleAngle = (i * Math.PI * 2) / bubbleCount;
+                            const bubbleRadius = size * (isHovered ? 0.3 : 0.25); // Larger bubbles when hovered
+                            const bubbleX = centerX + Math.cos(bubbleAngle) * bubbleRadius;
+                            const bubbleY = centerY + Math.sin(bubbleAngle) * bubbleRadius;
+                            
+                            // Main bubble
+                            this.ctx.beginPath();
+                            this.ctx.arc(bubbleX, bubbleY, isHovered ? 2.5 : 2, 0, Math.PI * 2);
+                            this.ctx.fillStyle = '#1E90FF';
+                            this.ctx.fill();
+                            
+                            // Bubble highlight
+                            this.ctx.beginPath();
+                            this.ctx.arc(bubbleX - 0.5, bubbleY - 0.5, isHovered ? 1 : 0.8, 0, Math.PI * 2);
+                            this.ctx.fillStyle = '#87CEEB';
+                            this.ctx.fill();
+                            
+                            // Bubble border
+                            this.ctx.strokeStyle = '#000080';
+                            this.ctx.lineWidth = 0.5;
+                            this.ctx.stroke();
+                        }
+                        
+                        // Add oil surface reflections
+                        this.ctx.fillStyle = '#1E90FF';
+                        this.ctx.globalAlpha = 0.3;
+                        for (let i = 0; i < 4; i++) {
+                            const reflectionX = centerX + (Math.random() - 0.5) * size * 0.6;
+                            const reflectionY = centerY + (Math.random() - 0.5) * size * 0.6;
+                            this.ctx.beginPath();
+                            this.ctx.arc(reflectionX, reflectionY, 1, 0, Math.PI * 2);
+                            this.ctx.fill();
+                        }
+                        this.ctx.globalAlpha = 1.0;
                         
                         // Oil amount text
                         if (displaySize >= 8) {
@@ -625,8 +971,10 @@
                             this.ctx.textAlign = 'center';
                             this.ctx.textBaseline = 'middle';
                             const amount = marker.amount ? marker.amount.toString() : '?';
-                            this.ctx.fillText(amount, x + displaySize/2, y + displaySize/2);
+                            this.ctx.fillText(amount, centerX, centerY);
                         }
+                        
+                        this.ctx.restore();
                     }
                 }
             }
@@ -642,27 +990,6 @@
                     return;
                 }
                 
-                // Force draw a test pattern to verify canvas is working
-                console.log('🧪 TEST: Drawing test pattern in renderPlayers');
-                this.ctx.fillStyle = '#FF0000';
-                this.ctx.fillRect(10, 10, 100, 100);
-                console.log('✅ TEST: Red test square drawn at (10,10)');
-                
-                // Test canvas context
-                console.log('🧪 TEST: Canvas context info:', {
-                    canvas: this.canvas,
-                    ctx: this.ctx,
-                    canvasWidth: this.canvas.width,
-                    canvasHeight: this.canvas.height,
-                    displaySize: displaySize
-                });
-                
-                // Test basic drawing
-                console.log('🧪 TEST: Drawing test pattern');
-                this.ctx.fillStyle = '#00FF00';
-                this.ctx.fillRect(0, 0, 50, 50);
-                console.log('✅ TEST: Green square drawn at (0,0)');
-                
                 console.log(`🎨 Found ${currentMapData.markers.length} markers to render`);
                 for (const marker of currentMapData.markers) {
                     console.log('🎨 Processing marker:', marker);
@@ -671,8 +998,8 @@
                         const y = marker.y * displaySize;
                         console.log(`🎨 Rendering player marker at pixel position (${x}, ${y}) from tile position (${marker.x}, ${marker.y}) with displaySize ${displaySize}`);
                         
-                        // Player starting position marker - make it much larger
-                        const size = Math.max(displaySize * 2.5, 30);
+                        // Player starting position marker - DOUBLE SIZE and much more detailed
+                        const size = Math.max(displaySize * 5, 60); // Doubled from 2.5 to 5
                         
                         // Player color (different colors for different players)
                         const playerColors = [
@@ -688,88 +1015,123 @@
                         
                         const playerColor = playerColors[marker.player % playerColors.length];
                         
-                        // Outer glow
-                        this.ctx.shadowColor = playerColor;
-                        this.ctx.shadowBlur = 10;
-                        
-                        // Calculate center position first
+                        // Calculate center position
                         const centerX = x + displaySize/2;
                         const centerY = y + displaySize/2;
-                        const outerRadius = size/2;
-                        const innerRadius = size/4;
                         
-                        // Test: Draw a simple red square to see if canvas drawing works at all
-                        console.log(`🧪 TEST: Drawing simple red square at (${x}, ${y})`);
-                        this.ctx.fillStyle = '#FF0000';
-                        this.ctx.fillRect(x, y, size, size);
-                        console.log(`✅ TEST: Red square drawn`);
+                        // Draw chess piece style marker
+                        this.ctx.save();
                         
-                        // Draw HUGE letter P for Player - impossible to miss!
-                        console.log(`🎯 DRAWING HUGE LETTER P at (${x}, ${y})`);
-                        this.ctx.fillStyle = '#FF00FF'; // Bright magenta
-                        this.ctx.font = `bold ${displaySize * 3}px Arial`; // 3x tile size = 72px
-                        this.ctx.textAlign = 'center';
-                        this.ctx.textBaseline = 'middle';
-                        this.ctx.fillText('P', centerX, centerY);
-                        console.log(`✅ HUGE LETTER P DRAWN`);
+                        // Check if this marker is being hovered over
+                        const isHovered = this.hoveredMarker && 
+                            this.hoveredMarker.x === marker.x && 
+                            this.hoveredMarker.y === marker.y && 
+                            this.hoveredMarker.marker_type === 'player';
                         
-                        // Main player marker (star shape)
-                        // Add bright background for visibility
-                        console.log(`🎨 Drawing white background circle at (${centerX}, ${centerY}) with radius ${size/2 + 2}`);
-                        this.ctx.fillStyle = '#FFFFFF';
-                        this.ctx.beginPath();
-                        this.ctx.arc(centerX, centerY, size/2 + 2, 0, Math.PI * 2);
-                        this.ctx.fill();
-                        console.log(`✅ White background circle drawn`);
+                        // Add subtle glow effect
+                        this.ctx.shadowColor = playerColor;
+                        this.ctx.shadowBlur = isHovered ? 20 : 8;
                         
-                        this.ctx.fillStyle = playerColor;
-                        this.ctx.beginPath();
-                        
-                        // Draw star shape
-                        console.log(`🎨 Drawing star shape with color ${playerColor}`);
-                        for (let i = 0; i < 10; i++) {
-                            const angle = (i * Math.PI) / 5;
-                            const radius = i % 2 === 0 ? outerRadius : innerRadius;
-                            const starX = centerX + Math.cos(angle) * radius;
-                            const starY = centerY + Math.sin(angle) * radius;
-                            
-                            if (i === 0) {
-                                this.ctx.moveTo(starX, starY);
-                            } else {
-                                this.ctx.lineTo(starX, starY);
-                            }
+                        // Apply animation scaling if this marker is animating
+                        if (marker.isAnimating && marker.animationScale) {
+                            this.ctx.save();
+                            this.ctx.translate(centerX, centerY);
+                            this.ctx.scale(marker.animationScale, marker.animationScale);
+                            this.ctx.translate(-centerX, -centerY);
                         }
-                        this.ctx.closePath();
-                        this.ctx.fill();
-                        console.log(`✅ Star shape filled`);
                         
-                        // Border
-                        console.log(`🎨 Drawing white border`);
-                        this.ctx.shadowBlur = 0;
-                        this.ctx.strokeStyle = '#FFF';
+                        // Draw detailed 3D chess piece base (pedestal) with enhanced detail
+                        this.ctx.beginPath();
+                        // Main base rectangle with rounded corners effect
+                        this.ctx.rect(centerX - size/3, centerY + size/3, size * 2/3, size/6);
+                        this.ctx.fillStyle = '#8B4513'; // Brown base
+                        this.ctx.fill();
+                        
+                        // Base shadow/highlight for 3D effect
+                        this.ctx.beginPath();
+                        this.ctx.rect(centerX - size/3 + 2, centerY + size/3 + 1, size * 2/3 - 4, size/6 - 2);
+                        this.ctx.fillStyle = '#A0522D'; // Lighter brown highlight
+                        this.ctx.fill();
+                        
+                        // Base border with depth
+                        this.ctx.strokeStyle = '#654321';
                         this.ctx.lineWidth = 2;
                         this.ctx.stroke();
-                        console.log(`✅ White border drawn`);
                         
-                        // Player number and race
-                        if (displaySize >= 10) {
-                            this.ctx.fillStyle = '#FFF';
-                            this.ctx.font = `bold ${Math.max(10, displaySize * 0.4)}px Arial`;
-                            this.ctx.textAlign = 'center';
-                            this.ctx.textBaseline = 'middle';
-                            
-                            // Player number
-                            const playerNum = (marker.player + 1).toString();
-                            this.ctx.fillText(playerNum, centerX, centerY);
-                            
-                            // Race indicator (small text below)
-                            if (displaySize >= 16 && marker.race) {
-                                this.ctx.font = `${Math.max(6, displaySize * 0.2)}px Arial`;
-                                this.ctx.fillStyle = '#FFF';
-                                const raceText = marker.race === 'Human' ? 'H' : 'O';
-                                this.ctx.fillText(raceText, centerX, centerY + size/2 + 8);
-                            }
+                        // Add base texture (wood grain effect)
+                        this.ctx.strokeStyle = '#654321';
+                        this.ctx.lineWidth = 1;
+                        for (let i = 0; i < 3; i++) {
+                            const lineY = centerY + size/3 + 2 + i * 2;
+                            this.ctx.beginPath();
+                            this.ctx.moveTo(centerX - size/3 + 4, lineY);
+                            this.ctx.lineTo(centerX + size/3 - 4, lineY);
+                            this.ctx.stroke();
                         }
+                        
+                        // Draw detailed chess piece body (tiered design)
+                        // Bottom tier (wider)
+                        this.ctx.beginPath();
+                        this.ctx.ellipse(centerX, centerY + size/6, size/2.2, size/3, 0, 0, Math.PI * 2);
+                        this.ctx.fillStyle = playerColor;
+                        this.ctx.fill();
+                        
+                        // Middle tier
+                        this.ctx.beginPath();
+                        this.ctx.ellipse(centerX, centerY - size/8, size/1.8, size/2.5, 0, 0, Math.PI * 2);
+                        this.ctx.fillStyle = this.lightenColor(playerColor, 0.2);
+                        this.ctx.fill();
+                        
+                        // Top tier (narrower)
+                        this.ctx.beginPath();
+                        this.ctx.ellipse(centerX, centerY - size/3, size/1.4, size/2, 0, 0, Math.PI * 2);
+                        this.ctx.fillStyle = this.lightenColor(playerColor, 0.4);
+                        this.ctx.fill();
+                        
+                        // Body borders with depth
+                        this.ctx.strokeStyle = '#000000';
+                        this.ctx.lineWidth = 2;
+                        this.ctx.stroke();
+                        
+                        // Draw detailed crown with jewels and enhanced detail
+                        this.ctx.beginPath();
+                        this.ctx.arc(centerX, centerY - size/3, size/4, 0, 2 * Math.PI);
+                        this.ctx.fillStyle = isHovered ? '#FFFF00' : '#FFD700'; // Brighter crown when hovered
+                        this.ctx.fill();
+                        this.ctx.strokeStyle = '#B8860B';
+                        this.ctx.lineWidth = isHovered ? 2 : 1; // Thicker border when hovered
+                        this.ctx.stroke();
+                        
+                        // Add extra glow effect when hovered
+                        if (isHovered) {
+                            this.ctx.beginPath();
+                            this.ctx.arc(centerX, centerY - size/3, size/4 + 2, 0, 2 * Math.PI);
+                            this.ctx.strokeStyle = '#FFD700';
+                            this.ctx.lineWidth = 1;
+                            this.ctx.stroke();
+                        }
+                        
+                        // Reset shadow for text
+                        this.ctx.shadowBlur = 0;
+                        
+                        // Draw player number on the body
+                        this.ctx.fillStyle = 'white';
+                        this.ctx.font = `bold ${Math.max(size * 0.3, 14)}px Arial`;
+                        this.ctx.textAlign = 'center';
+                        this.ctx.textBaseline = 'middle';
+                        this.ctx.fillText((marker.player + 1).toString(), centerX, centerY);
+                        
+                        // Add race indicator (small icon)
+                        const raceIcon = marker.race === 'Human' ? '⚔️' : '🛡️';
+                        this.ctx.font = `${Math.max(size * 0.2, 10)}px Arial`;
+                        this.ctx.fillText(raceIcon, centerX, centerY + size/3);
+                        
+                        // Restore animation transformations
+                        if (marker.isAnimating && marker.animationScale) {
+                            this.ctx.restore();
+                        }
+                        
+                        this.ctx.restore();
                     }
                 }
             }
@@ -783,54 +1145,118 @@
                 const tileX = Math.floor(x / displaySize);
                 const tileY = Math.floor(y / displaySize);
                 
-                this.showTileTooltip(tileX, tileY, event.clientX, event.clientY);
+                // Scale coordinates to internal canvas resolution for marker detection
+                const scaleX = this.canvas.width / rect.width;
+                const scaleY = this.canvas.height / rect.height;
+                const canvasX = x * scaleX;
+                const canvasY = y * scaleY;
+                
+                // Pass scaled canvas coordinates for marker detection, client coordinates for tooltip positioning
+                this.showTileTooltip(tileX, tileY, canvasX, canvasY, event.clientX, event.clientY);
             }
 
-            showTileTooltip(tileX, tileY, clientX, clientY) {
+            showTileTooltip(tileX, tileY, canvasX, canvasY, clientX, clientY) {
                 if (!currentMapData) return;
                 
                 const tooltip = document.getElementById('tooltip');
                 
-                // Get the actual tile ID from the terrain data
-                const tileIndex = tileY * currentMapData.width + tileX;
-                const tileId = currentMapData.terrain ? currentMapData.terrain[tileIndex] : 'N/A';
-                const terrainType = this.textureManager.getTerrainType(tileId, currentMapData.tileset);
+                // Check for markers at this position with better detection
+                // First try exact match, then check if we're within the marker's rendered area
+                let marker = currentMapData.markers ? currentMapData.markers.find(m => 
+                    m.x === tileX && m.y === tileY
+                ) : null;
                 
-                                 // Check for markers at this position (more precise matching)
-                 const marker = currentMapData.markers ? currentMapData.markers.find(m => 
-                     m.x === tileX && m.y === tileY
-                 ) : null;
+                // If no exact match, check if we're hovering over a marker's rendered area
+                if (!marker && currentMapData.markers) {
+                    const displaySize = this.tileSize * this.zoomLevel;
+                    console.log(`🔍 Tooltip: Checking pixel-based marker detection. Canvas: (${canvasX}, ${canvasY}), DisplaySize: ${displaySize}`);
+                    
+                    marker = currentMapData.markers.find(m => {
+                        // Calculate the actual rendered bounds for this marker type
+                        const markerBounds = this.getMarkerRenderBounds(m, displaySize);
+                        
+                        const isWithinBounds = (canvasX >= markerBounds.x && canvasX <= markerBounds.x + markerBounds.width &&
+                                              canvasY >= markerBounds.y && canvasY <= markerBounds.y + markerBounds.height);
+                        
+                        // Debug: Show what we're checking
+                        console.log(`🔍 Checking marker ${m.marker_type} at tile (${m.x}, ${m.y}) → bounds: x=${markerBounds.x}, y=${markerBounds.y}, w=${markerBounds.width}, h=${markerBounds.height}`);
+                        console.log(`🔍 Mouse at canvas (${canvasX}, ${canvasY}) - Within bounds: ${isWithinBounds}`);
+                        
+                        if (isWithinBounds) {
+                            console.log(`🎯 Tooltip: Found marker via pixel detection:`, m);
+                        }
+                        
+                        // Check if mouse is within the marker's rendered bounds
+                        return isWithinBounds;
+                    });
+                }
                 
-                let markerInfo = '';
+                // If we have a marker, prioritize showing marker information
                 if (marker) {
-                    markerInfo = `
-                        <div class="tooltip-marker">
-                            <strong>🎯 ${marker.marker_type.toUpperCase()}:</strong><br>
+                    console.log(`🎯 Tooltip: Found marker at (${tileX}, ${tileY}):`, marker);
+                    
+                    let markerIcon = '';
+                    let markerColor = '';
+                    
+                    // Set appropriate icon and color based on marker type
+                    if (marker.marker_type === 'player') {
+                        markerIcon = '👤';
+                        markerColor = marker.race === 'Human' ? '#FF6B6B' : '#4ECDC4';
+                    } else if (marker.marker_type === 'goldmine') {
+                        markerIcon = '💰';
+                        markerColor = '#FFD700';
+                    } else if (marker.marker_type === 'oil') {
+                        markerIcon = '🛢️';
+                        markerColor = '#000080';
+                    }
+                    
+                    tooltip.innerHTML = `
+                        <div class="tooltip-header" style="color: ${markerColor}">${markerIcon} ${marker.marker_type.toUpperCase()}</div>
+                        <div class="tooltip-content">
+                            <strong>Position:</strong> (${tileX}, ${tileY})<br>
                             <strong>Label:</strong> ${marker.label}<br>
                             ${marker.description ? `<strong>Description:</strong> ${marker.description}<br>` : ''}
-                            ${marker.amount ? `<strong>Amount:</strong> ${marker.amount.toLocaleString()}<br>` : ''}
-                            ${marker.race ? `<strong>Race:</strong> ${marker.race}<br>` : ''}
-                            ${marker.player !== undefined ? `<strong>Player:</strong> ${marker.player + 1}<br>` : ''}
+                            ${marker.amount ? `<strong>Gold Amount:</strong> <span style="color: #FFD700; font-weight: bold;">${marker.amount.toLocaleString()}</span><br>` : ''}
+                            ${marker.race ? `<strong>Race:</strong> <span style="color: ${marker.race === 'Human' ? '#FF6B6B' : '#4ECDC4'}; font-weight: bold;">${marker.race}</span><br>` : ''}
+                            ${marker.player !== undefined ? `<strong>Player Number:</strong> <span style="color: #FFD700; font-weight: bold;">${marker.player + 1}</span><br>` : ''}
+                            ${marker.marker_type === 'player' ? `<strong>Starting Resources:</strong> 1000 Gold, 500 Lumber, 200 Oil<br>` : ''}
+                            ${marker.marker_type === 'goldmine' ? `<strong>Mine Type:</strong> Neutral Goldmine<br>` : ''}
+                            <br>
+                            <div style="font-size: 0.9em; opacity: 0.8; border-top: 1px solid #444; padding-top: 8px;">
+                                <strong>Tile Info:</strong><br>
+                                <strong>Terrain:</strong> ${this.textureManager.getTerrainType(currentMapData.terrain ? currentMapData.terrain[tileY * currentMapData.width + tileX] : 0, currentMapData.tileset)}<br>
+                                <strong>Tileset:</strong> ${this.getTilesetName(currentMapData.tileset)}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // No marker, show regular tile information
+                    console.log(`🔍 Tooltip: No marker found at (${tileX}, ${tileY}), showing tile info`);
+                    const tileIndex = tileY * currentMapData.width + tileX;
+                    const tileId = currentMapData.terrain ? currentMapData.terrain[tileIndex] : 'N/A';
+                    const terrainType = this.textureManager.getTerrainType(tileId, currentMapData.tileset);
+                    
+                    tooltip.innerHTML = `
+                        <div class="tooltip-header">🔍 Tile Information</div>
+                        <div class="tooltip-content">
+                            <strong>Position:</strong> (${tileX}, ${tileY})<br>
+                            <strong>Tile ID:</strong> ${tileId} (${tileId !== 'N/A' ? '0x' + parseInt(tileId).toString(16).toUpperCase() : 'N/A'})<br>
+                            <strong>Tileset:</strong> ${currentMapData.tileset} (${this.getTilesetName(currentMapData.tileset)})<br>
+                            <strong>Terrain:</strong> ${terrainType}<br>
+                            <strong>Color:</strong> <span style="color: ${this.textureManager.getFallbackColorForTerrainType(terrainType)}">${this.textureManager.getFallbackColorForTerrainType(terrainType)}</span><br>
+                            <strong>Range:</strong> ${this.getTileRange(tileId)}
                         </div>
                     `;
                 }
                 
-                tooltip.innerHTML = `
-                    <div class="tooltip-header">🔍 Tile Debug Info</div>
-                    <div class="tooltip-content">
-                        <strong>Position:</strong> (${tileX}, ${tileY})<br>
-                        <strong>Tile ID:</strong> ${tileId} (${tileId !== 'N/A' ? '0x' + parseInt(tileId).toString(16).toUpperCase() : 'N/A'})<br>
-                        <strong>Tileset:</strong> ${currentMapData.tileset} (${this.getTilesetName(currentMapData.tileset)})<br>
-                        <strong>Terrain:</strong> ${terrainType}<br>
-                        <strong>Color:</strong> <span style="color: ${this.textureManager.getFallbackColorForTerrainType(terrainType)}">${this.textureManager.getFallbackColorForTerrainType(terrainType)}</span><br>
-                        <strong>Range:</strong> ${this.getTileRange(tileId)}<br>
-                        ${markerInfo}
-                    </div>
-                `;
-                
                 // Position tooltip closer to cursor and ensure it stays within viewport
-                const tooltipWidth = 250;
-                const tooltipHeight = 140;
+                const tooltipWidth = 320;
+                const tooltipHeight = marker ? 280 : 140; // Larger for markers
+                
+                // Add hover effect to the marker if we found one
+                if (marker) {
+                    this.addMarkerHoverEffect(marker);
+                }
                 const padding = 10;
                 
                 let left = clientX + 15;
@@ -853,10 +1279,141 @@
                 tooltip.style.left = left + 'px';
                 tooltip.style.top = top + 'px';
                 tooltip.style.display = 'block';
+                
+                // Add animation class after a brief delay
+                setTimeout(() => {
+                    tooltip.classList.add('show');
+                }, 10);
             }
 
             hideTooltip() {
-                document.getElementById('tooltip').style.display = 'none';
+                const tooltip = document.getElementById('tooltip');
+                tooltip.classList.remove('show');
+                tooltip.style.display = 'none';
+                
+                // Remove hover effects from all markers
+                this.removeMarkerHoverEffects();
+            }
+            
+            addMarkerHoverEffect(marker) {
+                // Store the hovered marker for rendering enhancement
+                this.hoveredMarker = marker;
+                
+                // Add animation properties
+                marker.animationStartTime = Date.now();
+                marker.isAnimating = true;
+                
+                // Start animation loop for this marker
+                this.startMarkerAnimation(marker);
+                
+                // Trigger a redraw to show enhanced effects
+                this.redraw();
+            }
+            
+            startMarkerAnimation(marker) {
+                if (!marker.isAnimating) return;
+                
+                const elapsed = Date.now() - marker.animationStartTime;
+                const animationDuration = 2000; // 2 seconds
+                const progress = (elapsed % animationDuration) / animationDuration;
+                
+                // Update animation properties
+                marker.animationProgress = progress;
+                marker.animationAngle = progress * Math.PI * 2;
+                marker.animationScale = 1 + Math.sin(progress * Math.PI * 4) * 0.1;
+                
+                // Continue animation
+                requestAnimationFrame(() => this.startMarkerAnimation(marker));
+                
+                // Trigger redraw for smooth animation
+                this.redraw();
+            }
+            
+            removeMarkerHoverEffects() {
+                // Stop all marker animations
+                if (currentMapData && currentMapData.markers) {
+                    currentMapData.markers.forEach(marker => {
+                        marker.isAnimating = false;
+                        marker.animationProgress = 0;
+                        marker.animationScale = 1;
+                    });
+                }
+                
+                // Clear the hovered marker
+                this.hoveredMarker = null;
+                
+                // Trigger a redraw to remove enhanced effects
+                this.redraw();
+            }
+            
+            // Helper function to lighten colors for 3D effects
+            lightenColor(color, factor) {
+                // Convert hex to RGB
+                const hex = color.replace('#', '');
+                const r = parseInt(hex.substr(0, 2), 16);
+                const g = parseInt(hex.substr(2, 2), 16);
+                const b = parseInt(hex.substr(4, 2), 16);
+                
+                // Lighten by factor
+                const newR = Math.min(255, Math.round(r + (255 - r) * factor));
+                const newG = Math.min(255, Math.round(g + (255 - g) * factor));
+                const newB = Math.min(255, Math.round(b + (255 - b) * factor));
+                
+                // Convert back to hex
+                return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
+            }
+
+            /**
+             * Calculate the actual rendered bounds for a marker based on its type and display size
+             */
+            getMarkerRenderBounds(marker, displaySize) {
+                const baseX = marker.x * displaySize;
+                const baseY = marker.y * displaySize;
+                
+                if (marker.marker_type === 'player') {
+                    // Player markers are rendered with size = displaySize * 2.5
+                    const size = Math.max(displaySize * 2.5, 30);
+                    // The white background circle has radius = size/2 + 2
+                    const backgroundRadius = size/2 + 2;
+                    // The actual rendered area includes the background circle
+                    const actualSize = backgroundRadius * 2;
+                    
+                    return {
+                        x: baseX + displaySize/2 - backgroundRadius,
+                        y: baseY + displaySize/2 - backgroundRadius,
+                        width: actualSize,
+                        height: actualSize
+                    };
+                } else if (marker.marker_type === 'goldmine') {
+                    // Goldmine markers have radius = displaySize * 0.4
+                    const radius = Math.max(displaySize * 0.4, 4);
+                    const actualSize = radius * 2;
+                    
+                    return {
+                        x: baseX + displaySize/2 - radius,
+                        y: baseY + displaySize/2 - radius,
+                        width: actualSize,
+                        height: actualSize
+                    };
+                } else if (marker.marker_type === 'oil') {
+                    // Oil markers have size = displaySize * 0.6
+                    const size = Math.max(displaySize * 0.6, 6);
+                    
+                    return {
+                        x: baseX + displaySize/2 - size/2,
+                        y: baseY + displaySize/2 - size/2,
+                        width: size,
+                        height: size
+                    };
+                } else {
+                    // Default fallback - use tile size
+                    return {
+                        x: baseX,
+                        y: baseY,
+                        width: displaySize,
+                        height: displaySize
+                    };
+                }
             }
 
             /**
