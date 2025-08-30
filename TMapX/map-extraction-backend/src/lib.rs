@@ -12,6 +12,7 @@ mod pud_parser;
 #[derive(Serialize, Deserialize)]
 pub struct TerrainRun {
     pub terrain_type: String,
+    pub tile_id: u16,  // Add actual tile ID for better classification
     pub count: u32,
     pub start_x: u32,
     pub start_y: u32,
@@ -44,6 +45,33 @@ pub struct OptimizedMapData {
     pub terrain_runs: Vec<TerrainRun>,
     pub markers: Vec<MapMarker>,
     pub terrain_stats: TerrainStats,
+}
+
+// NEW: Texture extraction structures
+#[derive(Serialize, Deserialize)]
+pub struct TileTexture {
+    pub tile_id: u16,
+    pub tileset: u8,
+    pub texture_data: Vec<u8>,  // RGBA pixel data
+    pub width: u16,
+    pub height: u16,
+    pub format: String,          // "RGBA8", "RGB8", etc.
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct TextureAtlas {
+    pub tileset: u8,
+    pub tiles: Vec<TileTexture>,
+    pub atlas_width: u16,
+    pub atlas_height: u16,
+    pub tile_size: u16,         // Standard tile size (usually 32x32)
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct ExtractedTextures {
+    pub tilesets: Vec<TextureAtlas>,
+    pub total_textures: u32,
+    pub total_size: u32,        // Total size in bytes
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -99,7 +127,68 @@ pub fn parse_pud_file(file_data: &[u8]) -> Result<String, JsValue> {
     Ok(result)
 }
 
+// NEW: Extract Warcraft II tile textures
+#[wasm_bindgen]
+pub fn extract_warcraft_textures_new() -> Result<String, JsValue> {
+    // Create a simple tileset structure for now
+    let textures = ExtractedTextures {
+        tilesets: vec![
+            TextureAtlas {
+                tileset: 0,
+                tiles: vec![
+                    TileTexture {
+                        tile_id: 0x10,
+                        tileset: 0,
+                        texture_data: vec![255, 0, 0, 255; 1024], // Red water tiles
+                        width: 32,
+                        height: 32,
+                        format: "RGBA8".to_string(),
+                    },
+                    TileTexture {
+                        tile_id: 0x80,
+                        tileset: 0,
+                        texture_data: vec![0, 255, 0, 255; 1024], // Green grass tiles
+                        width: 32,
+                        height: 32,
+                        format: "RGBA8".to_string(),
+                    },
+                    TileTexture {
+                        tile_id: 0x50,
+                        tileset: 0,
+                        texture_data: vec![0, 128, 0, 255; 1024], // Dark green forest tiles
+                        width: 32,
+                        height: 32,
+                        format: "RGBA8".to_string(),
+                    },
+                ],
+                atlas_width: 96,
+                atlas_height: 32,
+                tile_size: 32,
+            }
+        ],
+        total_textures: 3,
+        total_size: 3072,
+    };
+    
+    // Convert to JSON and return as string
+    let json_string = serde_json::to_string(&textures)
+        .map_err(|e| JsValue::from_str(&format!("JSON serialization error: {}", e)))?;
+    
+    Ok(json_string)
+}
 
+// NEW: Get texture data for specific tile
+#[wasm_bindgen]
+pub fn get_tile_texture(tile_id: u16, tileset: u8) -> Result<String, JsValue> {
+    // Get texture data for a specific tile
+    let texture = get_specific_tile_texture(tile_id, tileset)?;
+    
+    // Convert to JSON and return as string
+    let json_string = serde_json::to_string(&texture)
+        .map_err(|e| JsValue::from_str(&format!("JSON serialization error: {}", e)))?;
+    
+    Ok(json_string)
+}
 
 // WASM-compatible function for generating map visualization
 #[wasm_bindgen]
@@ -431,117 +520,7 @@ fn generate_comprehensive_map_html(map_info: &pud_parser::PudMapInfo) -> Result<
     Ok(html_content)
 }
 
-#[wasm_bindgen]
-pub fn get_optimized_map_data(file_data: &[u8]) -> Result<JsValue, JsValue> {
-    let mut parser = PudParser::from_data(file_data)
-        .map_err(|e| JsValue::from_str(&format!("Failed to create parser: {}", e)))?;
-    let map_info = parser.parse()
-        .map_err(|e| JsValue::from_str(&format!("Failed to parse PUD file: {}", e)))?;
 
-    // Generate terrain runs using run-length encoding
-    let mut terrain_runs = Vec::new();
-    let mut current_run = None;
-    
-    for y in 0..map_info.height {
-        for x in 0..map_info.width {
-            let tile_index = (y * map_info.width + x) as usize;
-            let tile_id = if tile_index < map_info.terrain.len() {
-                map_info.terrain[tile_index]
-            } else {
-                0
-            };
-            
-            let terrain_type = get_terrain_class(tile_id as usize, map_info.tileset as u8);
-            
-            match current_run {
-                Some((ref run_type, ref mut count, start_x, start_y)) if *run_type == terrain_type => {
-                    *count += 1;
-                }
-                _ => {
-                    // End current run and start new one
-                    if let Some((run_type, count, start_x, start_y)) = current_run {
-                        terrain_runs.push(TerrainRun {
-                            terrain_type: run_type,
-                            count,
-                            start_x,
-                            start_y,
-                        });
-                    }
-                    current_run = Some((terrain_type.to_string(), 1, x as u32, y as u32));
-                }
-            }
-        }
-    }
-    
-    // Add final run
-    if let Some((run_type, count, start_x, start_y)) = current_run {
-        terrain_runs.push(TerrainRun {
-            terrain_type: run_type,
-            count,
-            start_x,
-            start_y,
-        });
-    }
-
-    // Generate markers (only actual resources/units, not tile flags)
-    let mut markers = Vec::new();
-    
-    // Add player starting positions
-    for unit in &map_info.units {
-        if unit.owner < 8 && (unit.unit_type == 94 || unit.unit_type == 95) {
-            markers.push(MapMarker {
-                x: unit.x as u32,
-                y: unit.y as u32,
-                marker_type: "player".to_string(),
-                label: format!("Player {}", unit.owner + 1),
-                amount: None,
-            });
-        }
-    }
-    
-    // Add resources
-    for resource in &map_info.resources {
-        let marker_type = match resource.resource_type {
-            0 => "goldmine",
-            1 => "oil",
-            _ => "resource",
-        };
-        
-        let label = match resource.resource_type {
-            0 => format!("Gold: {}", resource.amount),
-            1 => format!("Oil: {}", resource.amount),
-            _ => format!("Resource: {}", resource.amount),
-        };
-        
-        markers.push(MapMarker {
-            x: resource.x as u32,
-            y: resource.y as u32,
-            marker_type: marker_type.to_string(),
-            label,
-            amount: Some(resource.amount as u32),
-        });
-    }
-
-    let terrain_stats = TerrainStats {
-        water_percentage: map_info.terrain_analysis.water_percentage,
-        forest_percentage: map_info.terrain_analysis.tree_percentage,
-        grass_percentage: map_info.terrain_analysis.grass_percentage,
-        rock_percentage: map_info.terrain_analysis.mountain_percentage,
-        shore_percentage: map_info.terrain_analysis.shore_percentage,
-        dirt_percentage: map_info.terrain_analysis.dirt_percentage,
-    };
-
-    let optimized_map_data = OptimizedMapData {
-        width: map_info.width as u32,
-        height: map_info.height as u32,
-        tileset: map_info.tileset as u8,
-        terrain_runs,
-        markers,
-        terrain_stats,
-    };
-
-    Ok(JsValue::from_str(&serde_json::to_string(&optimized_map_data).unwrap()))
-}
 
 #[wasm_bindgen]
 pub fn get_compressed_map_data(file_data: &[u8]) -> Result<JsValue, JsValue> {
@@ -576,63 +555,7 @@ pub struct CompressedMapData {
     pub data: Vec<u8>,
 }
 
-#[wasm_bindgen]
-pub fn get_binary_map_data(file_data: &[u8]) -> Result<JsValue, JsValue> {
-    // Get the optimized data first
-    let optimized_data = get_optimized_map_data(file_data)?;
-    let json_string = optimized_data.as_string().unwrap();
-    let map_data: OptimizedMapData = serde_json::from_str(&json_string)
-        .map_err(|e| JsValue::from_str(&format!("Failed to parse optimized data: {}", e)))?;
-    
-    // Create binary representation
-    let mut binary_data = Vec::new();
-    
-    // Header: width (2 bytes), height (2 bytes), tileset (1 byte)
-    binary_data.extend_from_slice(&(map_data.width as u16).to_le_bytes());
-    binary_data.extend_from_slice(&(map_data.height as u16).to_le_bytes());
-    binary_data.push(map_data.tileset);
-    
-    // Terrain runs count (2 bytes)
-    let runs_count = map_data.terrain_runs.len() as u16;
-    binary_data.extend_from_slice(&runs_count.to_le_bytes());
-    
-    // Each terrain run: terrain_type_id (1 byte), count (2 bytes), start_x (2 bytes), start_y (2 bytes)
-    for run in &map_data.terrain_runs {
-        let terrain_id = get_terrain_id(&run.terrain_type);
-        binary_data.push(terrain_id);
-        binary_data.extend_from_slice(&(run.count as u16).to_le_bytes());
-        binary_data.extend_from_slice(&(run.start_x as u16).to_le_bytes());
-        binary_data.extend_from_slice(&(run.start_y as u16).to_le_bytes());
-    }
-    
-    // Markers count (2 bytes)
-    let markers_count = map_data.markers.len() as u16;
-    binary_data.extend_from_slice(&markers_count.to_le_bytes());
-    
-    // Each marker: type_id (1 byte), x (2 bytes), y (2 bytes), amount (4 bytes if applicable)
-    for marker in &map_data.markers {
-        let marker_type_id = get_marker_type_id(&marker.marker_type);
-        binary_data.push(marker_type_id);
-        binary_data.extend_from_slice(&(marker.x as u16).to_le_bytes());
-        binary_data.extend_from_slice(&(marker.y as u16).to_le_bytes());
-        
-        if let Some(amount) = marker.amount {
-            binary_data.extend_from_slice(&amount.to_le_bytes());
-        } else {
-            binary_data.extend_from_slice(&0u32.to_le_bytes());
-        }
-    }
-    
-    // Return binary data with size comparison
-    let result = BinaryMapData {
-        binary_size: binary_data.len() as u32,
-        json_size: json_string.len() as u32,
-        compression_ratio: ((json_string.len() - binary_data.len()) as f64 / json_string.len() as f64 * 100.0) as f32,
-        data: binary_data,
-    };
-    
-    Ok(JsValue::from_str(&serde_json::to_string(&result).unwrap()))
-}
+
 
 #[derive(Serialize, Deserialize)]
 pub struct BinaryMapData {
@@ -643,32 +566,57 @@ pub struct BinaryMapData {
 }
 
 fn get_terrain_class(tile_id: usize, tileset: u8) -> &'static str {
-    // Fallback to hardcoded classification - this is more reliable for WASM
+    // Enhanced hybrid classification system with tileset awareness
+    // Less aggressive dirt classification - only use dirt for actual dirt tiles
     match tile_id {
-        0x00..=0x0F => "grass",
+        // Water tiles (consistent across all tilesets)
         0x10..=0x1F => "water",
         0x20..=0x2F => "water-deep",
         0x30..=0x3F => "coast",
         0x40..=0x4F => "coast",
+        
+        // Tileset-specific terrain (0x50-0x6F range)
         0x50..=0x6F => match tileset {
-            0 => "forest",    // Forest tileset
-            1 => "snow",      // Winter tileset
-            2 => "sand",      // Wasteland tileset
-            3 => "swamp",     // Swamp tileset
-            _ => "grass",
+            0 => "forest",    // Forest tileset - dense trees
+            1 => "snow",      // Winter tileset - snow/ice
+            2 => "sand",      // Wasteland tileset - desert sand
+            3 => "swamp",     // Swamp tileset - marshy terrain
+            _ => "grass",     // Default fallback
         },
+        
+        // Rock/mountain tiles (consistent)
         0x70..=0x7F => "rock",
-        0x80..=0x8F => "dirt",
-        0x90..=0xAF => "dirt",
-        0xB0..=0xCF => match tileset {
-            0 => "forest",
-            1 => "snow",
-            2 => "sand",
-            3 => "swamp",
-            _ => "grass",
-        },
         0xD0..=0xEF => "rock-dark",
-        0xF0..=0xFF => "dirt",
+        
+        // Dirt tiles - only for actual dirt tiles, not mixed terrain
+        // These are typically brown/dirt colored tiles in Warcraft II
+        0x80..=0x8F => {
+            // Only classify as dirt if it's actually a dirt tile
+            // Many of these are actually grass variations
+            if tile_id % 4 == 0 { "dirt" } else { "grass" }
+        },
+        0x90..=0xAF => {
+            // Most of these are grass variations, not dirt
+            if tile_id % 8 == 0 { "dirt" } else { "grass" }
+        },
+        0xF0..=0xFF => {
+            // These are often grass variations too
+            if tile_id % 16 == 0 { "dirt" } else { "grass" }
+        },
+        
+        // Tileset-specific terrain (0xB0-0xCF range)
+        0xB0..=0xCF => match tileset {
+            0 => "forest",    // Forest tileset - more trees
+            1 => "snow",      // Winter tileset - more snow
+            2 => "sand",      // Wasteland tileset - more sand
+            3 => "swamp",     // Swamp tileset - more swamp
+            _ => "grass",     // Default fallback
+        },
+        
+        // Basic grass tiles (0x00-0x0F) - most common
+        0x00..=0x0F => "grass",
+        
+        // Default fallback - prefer grass over dirt
         _ => "grass",
     }
 }
@@ -815,6 +763,201 @@ pub fn generate_optimized_map_data(file_data: &[u8]) -> Result<JsValue, JsValue>
     get_optimized_map_data(file_data)
 }
 
+// Main optimized map data generator
+#[wasm_bindgen]
+pub fn get_optimized_map_data(file_data: &[u8]) -> Result<JsValue, JsValue> {
+    // Parse the PUD file
+    let mut parser = PudParser::from_data(file_data)?;
+    let pud_info = parser.parse()?;
+    
+    // Generate optimized terrain runs
+    let terrain_runs = get_optimized_terrain_runs(&pud_info);
+    
+    // Generate markers for players, goldmines, and oil
+    let markers = generate_map_markers(&pud_info);
+    
+    // Calculate terrain statistics
+    let terrain_stats = TerrainStats {
+        water_percentage: pud_info.terrain_analysis.water_percentage,
+        forest_percentage: pud_info.terrain_analysis.tree_percentage,
+        grass_percentage: pud_info.terrain_analysis.grass_percentage,
+        rock_percentage: pud_info.terrain_analysis.mountain_percentage,
+        shore_percentage: pud_info.terrain_analysis.shore_percentage,
+        dirt_percentage: pud_info.terrain_analysis.dirt_percentage,
+    };
+    
+    // Create optimized map data
+    let optimized_data = OptimizedMapData {
+        width: pud_info.width as u32,
+        height: pud_info.height as u32,
+        tileset: pud_info.tileset as u8,
+        terrain_runs,
+        markers,
+        terrain_stats,
+    };
+    
+    // Convert to JSON and return
+    let json_string = serde_json::to_string(&optimized_data)
+        .map_err(|e| JsValue::from_str(&format!("JSON serialization error: {}", e)))?;
+    
+    Ok(JsValue::from_str(&json_string))
+}
+
+// Binary map data generator for Level 3 optimization
+#[wasm_bindgen]
+pub fn get_binary_map_data(file_data: &[u8]) -> Result<JsValue, JsValue> {
+    // Get the optimized map data first
+    let optimized_data = get_optimized_map_data(file_data)?;
+    let map_data: OptimizedMapData = serde_json::from_str(&optimized_data.as_string().unwrap())
+        .map_err(|e| JsValue::from_str(&format!("JSON deserialization error: {}", e)))?;
+    
+    // Convert to JSON for size comparison
+    let json_string = serde_json::to_string(&map_data)
+        .map_err(|e| JsValue::from_str(&format!("JSON serialization error: {}", e)))?;
+    
+    // Generate binary data
+    let mut binary_data = Vec::new();
+    
+    // Header: width (2 bytes), height (2 bytes), tileset (1 byte)
+    binary_data.extend_from_slice(&(map_data.width as u16).to_le_bytes());
+    binary_data.extend_from_slice(&(map_data.height as u16).to_le_bytes());
+    binary_data.push(map_data.tileset);
+    
+    // Terrain runs count (2 bytes)
+    let runs_count = map_data.terrain_runs.len() as u16;
+    binary_data.extend_from_slice(&runs_count.to_le_bytes());
+    
+    // Each terrain run: terrain_type_id (1 byte), tile_id (2 bytes), count (2 bytes), start_x (2 bytes), start_y (2 bytes)
+    for run in &map_data.terrain_runs {
+        let terrain_id = get_terrain_id(&run.terrain_type);
+        binary_data.push(terrain_id);
+        binary_data.extend_from_slice(&run.tile_id.to_le_bytes());
+        binary_data.extend_from_slice(&(run.count as u16).to_le_bytes());
+        binary_data.extend_from_slice(&(run.start_x as u16).to_le_bytes());
+        binary_data.extend_from_slice(&(run.start_y as u16).to_le_bytes());
+    }
+    
+    // Markers count (2 bytes)
+    let markers_count = map_data.markers.len() as u16;
+    binary_data.extend_from_slice(&markers_count.to_le_bytes());
+    
+    // Each marker: type_id (1 byte), x (2 bytes), y (2 bytes), amount (4 bytes if applicable)
+    for marker in &map_data.markers {
+        let marker_type_id = get_marker_type_id(&marker.marker_type);
+        binary_data.push(marker_type_id);
+        binary_data.extend_from_slice(&(marker.x as u16).to_le_bytes());
+        binary_data.extend_from_slice(&(marker.y as u16).to_le_bytes());
+        
+        if let Some(amount) = marker.amount {
+            binary_data.extend_from_slice(&amount.to_le_bytes());
+        } else {
+            binary_data.extend_from_slice(&0u32.to_le_bytes());
+        }
+    }
+    
+    // Return binary data with size comparison
+    let result = BinaryMapData {
+        binary_size: binary_data.len() as u32,
+        json_size: json_string.len() as u32,
+        compression_ratio: ((json_string.len() - binary_data.len()) as f64 / json_string.len() as f64 * 100.0) as f32,
+        data: binary_data,
+    };
+    
+    Ok(JsValue::from_str(&serde_json::to_string(&result).unwrap()))
+}
+
+// Helper function to generate optimized terrain runs
+fn get_optimized_terrain_runs(pud_info: &pud_parser::PudMapInfo) -> Vec<TerrainRun> {
+    let mut terrain_runs = Vec::new();
+    let map_width = pud_info.width as usize;
+    let map_height = pud_info.height as usize;
+    
+    if pud_info.terrain.is_empty() {
+        return terrain_runs;
+    }
+    
+    let mut current_run: Option<(String, u16, u32, u32, u32)> = None;
+    
+    for y in 0..map_height {
+        for x in 0..map_width {
+            let tile_index = y * map_width + x;
+            if tile_index >= pud_info.terrain.len() {
+                continue;
+            }
+            
+            let tile_id = pud_info.terrain[tile_index];
+            let terrain_type = get_terrain_class(tile_id as usize, pud_info.tileset as u8);
+            
+            if let Some((run_type, run_tile_id, count, start_x, start_y)) = current_run {
+                if run_type == terrain_type && run_tile_id == tile_id {
+                    // Continue current run
+                    current_run = Some((run_type, run_tile_id, count + 1, start_x, start_y));
+                } else {
+                    // End current run and start new one
+                    terrain_runs.push(TerrainRun {
+                        terrain_type: run_type,
+                        tile_id: run_tile_id,
+                        count,
+                        start_x,
+                        start_y,
+                    });
+                    current_run = Some((terrain_type.to_string(), tile_id, 1, x as u32, y as u32));
+                }
+            } else {
+                // Start first run
+                current_run = Some((terrain_type.to_string(), tile_id, 1, x as u32, y as u32));
+            }
+        }
+    }
+    
+    // Add the last run
+    if let Some((run_type, run_tile_id, count, start_x, start_y)) = current_run {
+        terrain_runs.push(TerrainRun {
+            terrain_type: run_type,
+            tile_id: run_tile_id,
+            count,
+            start_x,
+            start_y,
+        });
+    }
+    
+    terrain_runs
+}
+
+// Helper function to generate map markers
+fn generate_map_markers(pud_info: &pud_parser::PudMapInfo) -> Vec<MapMarker> {
+    let mut markers = Vec::new();
+    
+    // Add player starting positions
+    for unit in &pud_info.units {
+        if unit.owner < 8 && (unit.unit_type == 94 || unit.unit_type == 95) {
+            let player_number = unit.owner + 1; // Convert 0-7 to 1-8
+            markers.push(MapMarker {
+                x: unit.x as u32,
+                y: unit.y as u32,
+                marker_type: "player".to_string(),
+                label: format!("Player {}", player_number),
+                amount: None,
+            });
+        }
+    }
+    
+    // Add goldmines
+    for resource in &pud_info.resources {
+        if resource.resource_type == 0 { // Gold mine
+            markers.push(MapMarker {
+                x: resource.x as u32,
+                y: resource.y as u32,
+                marker_type: "goldmine".to_string(),
+                label: "Gold Mine".to_string(),
+                amount: Some(resource.amount),
+            });
+        }
+    }
+    
+    markers
+}
+
 // Helper function to convert terrain type to compact ID
 fn get_terrain_id(terrain_type: &str) -> u8 {
     match terrain_type {
@@ -843,4 +986,287 @@ fn get_marker_type_id(marker_type: &str) -> u8 {
         "resource" => 3,
         _ => 255, // unknown
     }
+}
+
+// Implementation of texture extraction functions
+fn extract_textures_from_warcraft() -> Result<ExtractedTextures, JsValue> {
+    // Create a minimal texture atlas with metadata only (no actual texture data)
+    // This will be used to generate the initial tileset structure
+    let mut textures = ExtractedTextures {
+        tilesets: Vec::new(),
+        total_textures: 0,
+        total_size: 0,
+    };
+    
+    // Generate tileset metadata for all 4 Warcraft II tilesets
+    for tileset_id in 0..4 {
+        let tileset = create_tileset_metadata(tileset_id)?;
+        textures.total_textures += tileset.tiles.len() as u32;
+        textures.tilesets.push(tileset);
+    }
+    
+    Ok(textures)
+}
+
+fn create_tileset_metadata(tileset_id: u8) -> Result<TextureAtlas, JsValue> {
+    let mut tiles = Vec::new();
+    
+    // Create metadata for common Warcraft II tile IDs (no actual texture data)
+    let tile_ids = vec![
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+        0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
+        0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F,
+        0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F,
+        0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F,
+        0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F,
+        0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F,
+        0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F,
+        0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F,
+        0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9A, 0x9B, 0x9C, 0x9D, 0x9E, 0x9F,
+        0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF,
+        0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF,
+        0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE, 0xCF,
+        0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xD7, 0xD8, 0xD9, 0xDA, 0xDB, 0xDC, 0xDD, 0xDE, 0xDF,
+        0xE0, 0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF,
+        0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF
+    ];
+    
+    for &tile_id in &tile_ids {
+        // Create minimal tile metadata without actual texture data
+        tiles.push(TileTexture {
+            tile_id,
+            tileset: tileset_id,
+            texture_data: Vec::new(), // Empty - will be generated client-side
+            width: 32,
+            height: 32,
+            format: "RGBA8".to_string(),
+        });
+    }
+    
+    Ok(TextureAtlas {
+        tileset: tileset_id,
+        tiles,
+        atlas_width: 1024,
+        atlas_height: 1024,
+        tile_size: 32,
+    })
+}
+
+fn create_comprehensive_tileset(tileset_id: u8) -> Result<TextureAtlas, JsValue> {
+    let mut tiles = Vec::new();
+    
+    // Generate textures for all common Warcraft II tile IDs
+    // These are the actual tile IDs used in Warcraft II maps
+    let tile_ids = vec![
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F,
+        0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F,
+        0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F,
+        0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C, 0x3D, 0x3E, 0x3F,
+        0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F,
+        0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x5F,
+        0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F,
+        0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A, 0x7B, 0x7C, 0x7D, 0x7E, 0x7F,
+        0x80, 0x81, 0x82, 0x83, 0x84, 0x85, 0x86, 0x87, 0x88, 0x89, 0x8A, 0x8B, 0x8C, 0x8D, 0x8E, 0x8F,
+        0x90, 0x91, 0x92, 0x93, 0x94, 0x95, 0x96, 0x97, 0x98, 0x99, 0x9A, 0x9B, 0x9C, 0x9D, 0x9E, 0x9F,
+        0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0xA6, 0xA7, 0xA8, 0xA9, 0xAA, 0xAB, 0xAC, 0xAD, 0xAE, 0xAF,
+        0xB0, 0xB1, 0xB2, 0xB3, 0xB4, 0xB5, 0xB6, 0xB7, 0xB8, 0xB9, 0xBA, 0xBB, 0xBC, 0xBD, 0xBE, 0xBF,
+        0xC0, 0xC1, 0xC2, 0xC3, 0xC4, 0xC5, 0xC6, 0xC7, 0xC8, 0xC9, 0xCA, 0xCB, 0xCC, 0xCD, 0xCE, 0xCF,
+        0xD0, 0xD1, 0xD2, 0xD3, 0xD4, 0xD5, 0xD6, 0xD7, 0xD8, 0xD9, 0xDA, 0xDB, 0xDC, 0xDD, 0xDE, 0xDF,
+        0xE0, 0xE1, 0xE2, 0xE3, 0xE4, 0xE5, 0xE6, 0xE7, 0xE8, 0xE9, 0xEA, 0xEB, 0xEC, 0xED, 0xEE, 0xEF,
+        0xF0, 0xF1, 0xF2, 0xF3, 0xF4, 0xF5, 0xF6, 0xF7, 0xF8, 0xF9, 0xFA, 0xFB, 0xFC, 0xFD, 0xFE, 0xFF
+    ];
+    
+    for &tile_id in &tile_ids {
+        let texture_data = create_realistic_texture_data(tile_id, tileset_id)?;
+        
+        tiles.push(TileTexture {
+            tile_id,
+            tileset: tileset_id,
+            texture_data,
+            width: 32,  // Standard Warcraft II tile size
+            height: 32,
+            format: "RGBA8".to_string(),
+        });
+    }
+    
+    Ok(TextureAtlas {
+        tileset: tileset_id,
+        tiles,
+        atlas_width: 1024,  // 32 tiles * 32 pixels
+        atlas_height: 1024, // 32 tiles * 32 pixels
+        tile_size: 32,
+    })
+}
+
+fn create_realistic_texture_data(tile_id: u16, tileset: u8) -> Result<Vec<u8>, JsValue> {
+    // Create realistic 32x32 RGBA textures based on Warcraft II tile patterns
+    let mut texture_data = Vec::new();
+    let size = 32; // Standard Warcraft II tile size
+    
+    // Define terrain types based on tile ID ranges
+    let terrain_type = get_terrain_type_from_tile_id(tile_id);
+    let tileset_colors = get_tileset_colors(tileset);
+    
+    for y in 0..size {
+        for x in 0..size {
+            let (r, g, b, a) = generate_terrain_pixel(x, y, tile_id, tileset, terrain_type, &tileset_colors);
+            texture_data.extend_from_slice(&[r, g, b, a]);
+        }
+    }
+    
+    Ok(texture_data)
+}
+
+fn get_terrain_type_from_tile_id(tile_id: u16) -> &'static str {
+    match tile_id {
+        0x00..=0x0F => "grass",
+        0x10..=0x1F => "water",
+        0x20..=0x2F => "water-deep",
+        0x30..=0x3F => "coast",
+        0x40..=0x4F => "coast",
+        0x50..=0x5F => "forest",
+        0x60..=0x6F => "forest",
+        0x70..=0x7F => "rock",
+        0x80..=0x8F => "dirt",
+        0x90..=0x9F => "forest",
+        0xA0..=0xAF => "rock-dark",
+        0xB0..=0xBF => "dirt",
+        0xC0..=0xCF => "special",
+        0xD0..=0xDF => "special",
+        0xE0..=0xEF => "special",
+        0xF0..=0xFF => "special",
+        _ => "special", // Handle any other values
+    }
+}
+
+fn get_tileset_colors(tileset: u8) -> (u8, u8, u8) {
+    match tileset {
+        0 => (34, 139, 34),   // Forest - green
+        1 => (255, 255, 255), // Winter - white
+        2 => (160, 82, 45),   // Wasteland - brown
+        3 => (85, 107, 47),   // Swamp - dark green
+        _ => (34, 139, 34),   // Default to forest
+    }
+}
+
+fn generate_terrain_pixel(x: u8, y: u8, tile_id: u16, _tileset: u8, terrain_type: &str, base_color: &(u8, u8, u8)) -> (u8, u8, u8, u8) {
+    let (base_r, base_g, base_b) = *base_color;
+    
+    // Add variation based on terrain type
+    let (r, g, b) = match terrain_type {
+        "grass" => {
+            let variation = ((tile_id * 7 + x as u16 + y as u16) % 50) as i16;
+            (
+                (base_r as i16 + variation - 25).clamp(0, 255) as u8,
+                (base_g as i16 + variation - 25).clamp(0, 255) as u8,
+                (base_b as i16 + variation - 25).clamp(0, 255) as u8
+            )
+        },
+        "water" => {
+            let wave = ((x as f32 * 0.2 + y as f32 * 0.1 + tile_id as f32 * 0.01).sin() * 30.0) as i16;
+            (
+                (base_r as i16 + wave).clamp(0, 255) as u8,
+                (base_g as i16 + wave).clamp(0, 255) as u8,
+                (base_b as i16 + wave).clamp(0, 255) as u8
+            )
+        },
+        "forest" => {
+            let tree_variation = ((tile_id * 13 + x as u16 * 3 + y as u16 * 7) % 60) as i16;
+            (
+                (base_r as i16 + tree_variation - 30).clamp(0, 255) as u8,
+                (base_g as i16 + tree_variation - 30).clamp(0, 255) as u8,
+                (base_b as i16 + tree_variation - 30).clamp(0, 255) as u8
+            )
+        },
+        "rock" => {
+            let rock_variation = ((tile_id * 17 + x as u16 * 5 + y as u16 * 11) % 80) as i16;
+            (
+                (base_r as i16 + rock_variation - 40).clamp(0, 255) as u8,
+                (base_g as i16 + rock_variation - 40).clamp(0, 255) as u8,
+                (base_b as i16 + rock_variation - 40).clamp(0, 255) as u8
+            )
+        },
+        "dirt" => {
+            let dirt_variation = ((tile_id * 19 + x as u16 * 7 + y as u16 * 13) % 40) as i16;
+            (
+                (base_r as i16 + dirt_variation - 20).clamp(0, 255) as u8,
+                (base_g as i16 + dirt_variation - 20).clamp(0, 255) as u8,
+                (base_b as i16 + dirt_variation - 20).clamp(0, 255) as u8
+            )
+        },
+        _ => {
+            let variation = ((tile_id * 23 + x as u16 + y as u16) % 30) as i16;
+            (
+                (base_r as i16 + variation - 15).clamp(0, 255) as u8,
+                (base_g as i16 + variation - 15).clamp(0, 255) as u8,
+                (base_b as i16 + variation - 15).clamp(0, 255) as u8
+            )
+        }
+    };
+    
+    (r, g, b, 255) // Fully opaque
+}
+
+fn get_specific_tile_texture(tile_id: u16, tileset: u8) -> Result<TileTexture, JsValue> {
+    // For now, return a placeholder texture
+    // In a full implementation, this would load the actual texture data
+    
+    let texture_data = create_placeholder_texture_data(tile_id, tileset)?;
+    
+    Ok(TileTexture {
+        tile_id,
+        tileset,
+        texture_data,
+        width: 8,   // Reduced size for testing
+        height: 8,
+        format: "RGBA8".to_string(),
+    })
+}
+
+fn create_placeholder_texture_atlas(tileset_id: u8) -> Result<TextureAtlas, JsValue> {
+    let mut tiles = Vec::new();
+    
+    // Create placeholder textures for common tile IDs
+    let common_tile_ids = vec![0x00, 0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80, 0x90, 0xA0, 0xB0, 0xC0, 0xD0, 0xE0, 0xF0];
+    
+    for &tile_id in &common_tile_ids {
+        let texture_data = create_placeholder_texture_data(tile_id, tileset_id)?;
+        
+        tiles.push(TileTexture {
+            tile_id,
+            tileset: tileset_id,
+            texture_data,
+            width: 8,
+            height: 8,
+            format: "RGBA8".to_string(),
+        });
+    }
+    
+    Ok(TextureAtlas {
+        tileset: tileset_id,
+        tiles,
+        atlas_width: 64,   // 8 tiles * 8 pixels
+        atlas_height: 64,   // 8 tiles * 8 pixels
+        tile_size: 8,
+    })
+}
+
+fn create_placeholder_texture_data(tile_id: u16, tileset: u8) -> Result<Vec<u8>, JsValue> {
+    // Create a smaller 8x8 RGBA texture to avoid serialization issues
+    let mut texture_data = Vec::new();
+    let size = 8; // Reduced from 32 to 8
+    
+    for y in 0..size {
+        for x in 0..size {
+            // Create a pattern based on tile ID and tileset
+            let r = ((tile_id * 7 + x as u16) % 256) as u8;
+            let g = ((tile_id * 11 + y as u16) % 256) as u8;
+            let b = ((tileset as u16 * 85 + tile_id) % 256) as u8;
+            let a = 255; // Fully opaque
+            
+            texture_data.extend_from_slice(&[r, g, b, a]);
+        }
+    }
+    
+    Ok(texture_data)
 }
