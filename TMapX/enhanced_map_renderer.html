@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Enhanced Warcraft II Map Renderer - Texture-Based</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin: 10px 0;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .control-group {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .control-group h3 {
+            margin: 0 0 10px 0;
+            color: #FFD700;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .file-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .map-container {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .map-visualization {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid #FFD700;
+        }
+
+        .map-canvas {
+            border: 2px solid #333;
+            background: #333;
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px solid #FFD700;
+        }
+
+        .zoom-controls {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .zoom-slider {
+            width: 100%;
+            margin: 10px 0;
+        }
+
+        .zoom-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .texture-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .texture-info h4 {
+            margin: 0 0 10px 0;
+            color: #FFD700;
+        }
+
+        .texture-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .stat-item {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 8px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .status.loading {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid #FFC107;
+            color: #FFC107;
+        }
+
+        .status.success {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4CAF50;
+            color: #4CAF50;
+        }
+
+        .status.error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid #F44336;
+            color: #F44336;
+        }
+
+        .overlay-controls {
+            margin: 20px 0;
+        }
+
+        .overlay-toggle {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .overlay-toggle input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .tooltip {
+            position: fixed;
+            background: rgba(0, 0, 0, 0.95);
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            pointer-events: none;
+            z-index: 1000;
+            border: 2px solid #4169E1;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+            min-width: 220px;
+            max-width: 280px;
+        }
+
+        .tooltip-header {
+            color: #FFD700;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .tooltip-content {
+            line-height: 1.4;
+        }
+        
+        .tooltip-marker {
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 3px solid #FFD700;
+            border-radius: 4px;
+        }
+
+        @media (max-width: 1200px) {
+            .map-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Enhanced Warcraft II Map Renderer</h1>
+            <p>Texture-Based Rendering with Authentic Warcraft II Visuals</p>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <h3>📁 Map File</h3>
+                <input type="file" id="mapFile" class="file-input" accept=".pud">
+                <label for="mapFile" class="file-label">Choose PUD File</label>
+            </div>
+
+            <div class="control-group">
+                <h3>🎨 Rendering Mode</h3>
+                <button id="textureMode" class="btn">🖼️ Texture Mode</button>
+                <button id="colorMode" class="btn">🎨 Color Mode</button>
+                <button id="hybridMode" class="btn">🔄 Hybrid Mode</button>
+            </div>
+
+            <div class="control-group">
+                <h3>⚙️ System</h3>
+                <button id="extractTextures" class="btn">🔍 Extract Textures</button>
+                <button id="clearCache" class="btn">🗑️ Clear Cache</button>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div class="map-visualization">
+                <canvas id="mapCanvas" class="map-canvas" width="800" height="600"></canvas>
+                
+                <div class="zoom-controls">
+                    <div class="zoom-value" id="zoomValue">1x</div>
+                    <input type="range" id="zoomSlider" class="zoom-slider" min="1" max="8" value="1" step="1">
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <div class="texture-info">
+                    <h4>🎨 Texture System Status</h4>
+                    <div class="texture-stats">
+                        <div class="stat-item">
+                            <div class="stat-value" id="textureStatus">❌</div>
+                            <div class="stat-label">Status</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="cachedTextures">0</div>
+                            <div class="stat-label">Cached</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalTextures">0</div>
+                            <div class="stat-label">Total</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalSize">0 KB</div>
+                            <div class="stat-label">Size</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overlay-controls">
+                    <h4>🎯 Overlays</h4>
+                    <div class="overlay-toggle">
+                        <input type="checkbox" id="showResources" checked>
+                        <label for="showResources">💰 Resources</label>
+                    </div>
+                    <div class="overlay-toggle">
+                        <input type="checkbox" id="showUnits" checked>
+                        <label for="showUnits">⚔️ Units</label>
+                    </div>
+                    <div class="overlay-toggle">
+                        <input type="checkbox" id="showPlayers" checked>
+                        <label for="showPlayers">👤 Players</label>
+                    </div>
+                </div>
+
+                <div id="status" class="status"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tooltip" class="tooltip" style="display: none;"></div>
+
+    <script src="binary_parser_fixed.js"></script>
+    <script type="module">
+        import { TextureManager } from './texture_manager.js';
+
+        let textureManager = null;
+        let mapRenderer = null;
+        let currentMapData = null;
+
+        // Initialize the application
+        async function initializeApp() {
+            try {
+                showStatus('Initializing system...', 'loading');
+                
+                // Check if FixedBinaryParser is loaded
+                if (typeof FixedBinaryParser === 'undefined') {
+                    throw new Error('FixedBinaryParser not loaded! Check if binary_parser_fixed.js is accessible.');
+                }
+                console.log('✅ FixedBinaryParser loaded successfully:', FixedBinaryParser);
+                
+                // Initialize texture manager (no WASM needed)
+                textureManager = new TextureManager();
+                await textureManager.initializeWithoutWasm();
+                
+                // Initialize map renderer
+                mapRenderer = new EnhancedMapRenderer('mapCanvas', textureManager);
+                
+                showStatus('System ready!', 'success');
+                updateTextureStats();
+                
+                // Set up event listeners
+                setupEventListeners();
+                
+            } catch (error) {
+                console.error('❌ Initialization failed:', error);
+                showStatus('Initialization failed: ' + error.message, 'error');
+            }
+        }
+
+        // Enhanced Map Renderer Class
+        class EnhancedMapRenderer {
+            constructor(canvasId, textureManager) {
+                this.canvas = document.getElementById(canvasId);
+                this.ctx = this.canvas.getContext('2d');
+                this.textureManager = textureManager;
+                this.zoomLevel = 8;
+                this.tileSize = 12;
+                this.overlays = {
+                    resources: true,
+                    units: true,
+                    players: true
+                };
+                
+                this.setupCanvas();
+            }
+
+            setupCanvas() {
+                this.canvas.addEventListener('mousemove', this.handleMouseMove.bind(this));
+                this.canvas.addEventListener('mouseleave', this.hideTooltip.bind(this));
+            }
+
+            setZoom(level) {
+                this.zoomLevel = level;
+                this.redraw();
+            }
+
+            setOverlays(overlays) {
+                this.overlays = { ...this.overlays, ...overlays };
+                // Only redraw overlays, not the entire map
+                this.redrawOverlays();
+            }
+            
+            redrawOverlays() {
+                if (!currentMapData) return;
+                
+                // Just redraw the entire map to ensure overlays are visible
+                console.log('🎨 Redrawing entire map to ensure overlays are visible');
+                this.redraw();
+            }
+
+            async renderMap(mapData) {
+                currentMapData = mapData;
+                this.redraw();
+            }
+
+            redraw() {
+                if (!currentMapData) return;
+                
+                const displaySize = this.tileSize * this.zoomLevel;
+                const newWidth = currentMapData.width * displaySize;
+                const newHeight = currentMapData.height * displaySize;
+                
+                // Only resize canvas if dimensions actually changed
+                if (this.canvas.width !== newWidth || this.canvas.height !== newHeight) {
+                    this.canvas.width = newWidth;
+                    this.canvas.height = newHeight;
+                }
+                
+                // Clear canvas
+                this.ctx.fillStyle = '#333';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Render terrain
+                this.renderTerrain(displaySize);
+                
+                // ALWAYS render overlays after terrain - don't check overlay settings here
+                // This ensures overlays are always drawn and visible
+                console.log('🎨 Rendering ALL overlays after terrain');
+                this.renderResources(displaySize);
+                this.renderUnits(displaySize);
+                this.renderPlayers(displaySize);
+            }
+
+            renderTerrain(displaySize) {
+                if (!currentMapData.terrain_runs) return;
+                
+                // Create a 2D array to store terrain data
+                const terrainGrid = [];
+                for (let y = 0; y < currentMapData.height; y++) {
+                    terrainGrid[y] = [];
+                    for (let x = 0; x < currentMapData.width; x++) {
+                        terrainGrid[y][x] = { tile_id: 0, terrain_type: 'grass' };
+                    }
+                }
+                
+                // Fill the terrain grid from runs
+                let currentTile = 0;
+                for (const run of currentMapData.terrain_runs) {
+                    for (let i = 0; i < run.count; i++) {
+                        const tileIndex = currentTile + i;
+                        const x = tileIndex % currentMapData.width;
+                        const y = Math.floor(tileIndex / currentMapData.width);
+                        
+                        if (y < currentMapData.height && x < currentMapData.width) {
+                            terrainGrid[y][x] = {
+                                tile_id: run.tile_id,
+                                terrain_type: run.terrain_type
+                            };
+                        }
+                    }
+                    currentTile += run.count;
+                }
+                
+                // Render the terrain grid
+                for (let y = 0; y < currentMapData.height; y++) {
+                    for (let x = 0; x < currentMapData.width; x++) {
+                        const tile = terrainGrid[y][x];
+                        const renderX = x * displaySize;
+                        const renderY = y * displaySize;
+                        
+                        // Use texture manager to render tile with pre-determined terrain type
+                        this.textureManager.renderTileWithTerrainType(
+                            this.ctx,
+                            tile.tile_id,
+                            tile.terrain_type,
+                            currentMapData.tileset,
+                            renderX,
+                            renderY,
+                            displaySize
+                        );
+                    }
+                }
+            }
+
+            renderResources(displaySize) {
+                console.log('🎨 renderResources called, markers:', currentMapData.markers);
+                if (!currentMapData.markers) {
+                    console.log('🎨 No markers found in currentMapData for resources');
+                    return;
+                }
+                
+                console.log(`🎨 Found ${currentMapData.markers.length} markers to check for resources`);
+                for (const marker of currentMapData.markers) {
+                    console.log('🎨 Checking marker for resources:', marker);
+                    if (marker.marker_type === 'goldmine') {
+                        const x = marker.x * displaySize;
+                        const y = marker.y * displaySize;
+                        
+                        // Goldmine marker - larger, more visible
+                        const radius = Math.max(displaySize * 0.4, 4);
+                        
+                        // Outer glow effect
+                        this.ctx.shadowColor = '#FFD700';
+                        this.ctx.shadowBlur = 8;
+                        
+                        // Main goldmine circle
+                        this.ctx.fillStyle = '#FFD700';
+                        this.ctx.beginPath();
+                        this.ctx.arc(x + displaySize/2, y + displaySize/2, radius, 0, Math.PI * 2);
+                        this.ctx.fill();
+                        
+                        // Border
+                        this.ctx.shadowBlur = 0;
+                        this.ctx.strokeStyle = '#B8860B';
+                        this.ctx.lineWidth = 2;
+                        this.ctx.stroke();
+                        
+                        // Inner highlight
+                        this.ctx.fillStyle = '#FFF8DC';
+                        this.ctx.beginPath();
+                        this.ctx.arc(x + displaySize/2, y + displaySize/2, radius * 0.6, 0, Math.PI * 2);
+                        this.ctx.fill();
+                        
+                        // Gold amount text
+                        if (displaySize >= 8) {
+                            this.ctx.fillStyle = '#000';
+                            this.ctx.font = `bold ${Math.max(8, displaySize * 0.3)}px Arial`;
+                            this.ctx.textAlign = 'center';
+                            this.ctx.textBaseline = 'middle';
+                            const amount = marker.amount ? marker.amount.toString() : '?';
+                            this.ctx.fillText(amount, x + displaySize/2, y + displaySize/2);
+                        }
+                        
+                    } else if (marker.marker_type === 'oil') {
+                        const x = marker.x * displaySize;
+                        const y = marker.y * displaySize;
+                        
+                        // Oil platform marker
+                        const size = Math.max(displaySize * 0.6, 6);
+                        
+                        // Outer glow
+                        this.ctx.shadowColor = '#000080';
+                        this.ctx.shadowBlur = 6;
+                        
+                        // Main oil platform (dark blue square)
+                        this.ctx.fillStyle = '#000080';
+                        this.ctx.fillRect(x + displaySize/2 - size/2, y + displaySize/2 - size/2, size, size);
+                        
+                        // Border
+                        this.ctx.shadowBlur = 0;
+                        this.ctx.strokeStyle = '#4169E1';
+                        this.ctx.lineWidth = 2;
+                        this.ctx.strokeRect(x + displaySize/2 - size/2, y + displaySize/2 - size/2, size, size);
+                        
+                        // Oil amount text
+                        if (displaySize >= 8) {
+                            this.ctx.fillStyle = '#FFF';
+                            this.ctx.font = `bold ${Math.max(8, displaySize * 0.3)}px Arial`;
+                            this.ctx.textAlign = 'center';
+                            this.ctx.textBaseline = 'middle';
+                            const amount = marker.amount ? marker.amount.toString() : '?';
+                            this.ctx.fillText(amount, x + displaySize/2, y + displaySize/2);
+                        }
+                    }
+                }
+            }
+
+            renderUnits(displaySize) {
+                // Unit rendering logic
+            }
+
+            renderPlayers(displaySize) {
+                console.log('🎨 renderPlayers called, markers:', currentMapData.markers);
+                if (!currentMapData.markers) {
+                    console.log('🎨 No markers found in currentMapData');
+                    return;
+                }
+                
+                // Force draw a test pattern to verify canvas is working
+                console.log('🧪 TEST: Drawing test pattern in renderPlayers');
+                this.ctx.fillStyle = '#FF0000';
+                this.ctx.fillRect(10, 10, 100, 100);
+                console.log('✅ TEST: Red test square drawn at (10,10)');
+                
+                // Test canvas context
+                console.log('🧪 TEST: Canvas context info:', {
+                    canvas: this.canvas,
+                    ctx: this.ctx,
+                    canvasWidth: this.canvas.width,
+                    canvasHeight: this.canvas.height,
+                    displaySize: displaySize
+                });
+                
+                // Test basic drawing
+                console.log('🧪 TEST: Drawing test pattern');
+                this.ctx.fillStyle = '#00FF00';
+                this.ctx.fillRect(0, 0, 50, 50);
+                console.log('✅ TEST: Green square drawn at (0,0)');
+                
+                console.log(`🎨 Found ${currentMapData.markers.length} markers to render`);
+                for (const marker of currentMapData.markers) {
+                    console.log('🎨 Processing marker:', marker);
+                    if (marker.marker_type === 'player') {
+                        const x = marker.x * displaySize;
+                        const y = marker.y * displaySize;
+                        console.log(`🎨 Rendering player marker at pixel position (${x}, ${y}) from tile position (${marker.x}, ${marker.y}) with displaySize ${displaySize}`);
+                        
+                        // Player starting position marker - make it much larger
+                        const size = Math.max(displaySize * 2.5, 30);
+                        
+                        // Player color (different colors for different players)
+                        const playerColors = [
+                            '#FF0000', // Red
+                            '#0000FF', // Blue  
+                            '#00FF00', // Green
+                            '#FFFF00', // Yellow
+                            '#FF00FF', // Magenta
+                            '#00FFFF', // Cyan
+                            '#FFA500', // Orange
+                            '#800080'  // Purple
+                        ];
+                        
+                        const playerColor = playerColors[marker.player % playerColors.length];
+                        
+                        // Outer glow
+                        this.ctx.shadowColor = playerColor;
+                        this.ctx.shadowBlur = 10;
+                        
+                        // Calculate center position first
+                        const centerX = x + displaySize/2;
+                        const centerY = y + displaySize/2;
+                        const outerRadius = size/2;
+                        const innerRadius = size/4;
+                        
+                        // Test: Draw a simple red square to see if canvas drawing works at all
+                        console.log(`🧪 TEST: Drawing simple red square at (${x}, ${y})`);
+                        this.ctx.fillStyle = '#FF0000';
+                        this.ctx.fillRect(x, y, size, size);
+                        console.log(`✅ TEST: Red square drawn`);
+                        
+                        // Draw HUGE letter P for Player - impossible to miss!
+                        console.log(`🎯 DRAWING HUGE LETTER P at (${x}, ${y})`);
+                        this.ctx.fillStyle = '#FF00FF'; // Bright magenta
+                        this.ctx.font = `bold ${displaySize * 3}px Arial`; // 3x tile size = 72px
+                        this.ctx.textAlign = 'center';
+                        this.ctx.textBaseline = 'middle';
+                        this.ctx.fillText('P', centerX, centerY);
+                        console.log(`✅ HUGE LETTER P DRAWN`);
+                        
+                        // Main player marker (star shape)
+                        // Add bright background for visibility
+                        console.log(`🎨 Drawing white background circle at (${centerX}, ${centerY}) with radius ${size/2 + 2}`);
+                        this.ctx.fillStyle = '#FFFFFF';
+                        this.ctx.beginPath();
+                        this.ctx.arc(centerX, centerY, size/2 + 2, 0, Math.PI * 2);
+                        this.ctx.fill();
+                        console.log(`✅ White background circle drawn`);
+                        
+                        this.ctx.fillStyle = playerColor;
+                        this.ctx.beginPath();
+                        
+                        // Draw star shape
+                        console.log(`🎨 Drawing star shape with color ${playerColor}`);
+                        for (let i = 0; i < 10; i++) {
+                            const angle = (i * Math.PI) / 5;
+                            const radius = i % 2 === 0 ? outerRadius : innerRadius;
+                            const starX = centerX + Math.cos(angle) * radius;
+                            const starY = centerY + Math.sin(angle) * radius;
+                            
+                            if (i === 0) {
+                                this.ctx.moveTo(starX, starY);
+                            } else {
+                                this.ctx.lineTo(starX, starY);
+                            }
+                        }
+                        this.ctx.closePath();
+                        this.ctx.fill();
+                        console.log(`✅ Star shape filled`);
+                        
+                        // Border
+                        console.log(`🎨 Drawing white border`);
+                        this.ctx.shadowBlur = 0;
+                        this.ctx.strokeStyle = '#FFF';
+                        this.ctx.lineWidth = 2;
+                        this.ctx.stroke();
+                        console.log(`✅ White border drawn`);
+                        
+                        // Player number and race
+                        if (displaySize >= 10) {
+                            this.ctx.fillStyle = '#FFF';
+                            this.ctx.font = `bold ${Math.max(10, displaySize * 0.4)}px Arial`;
+                            this.ctx.textAlign = 'center';
+                            this.ctx.textBaseline = 'middle';
+                            
+                            // Player number
+                            const playerNum = (marker.player + 1).toString();
+                            this.ctx.fillText(playerNum, centerX, centerY);
+                            
+                            // Race indicator (small text below)
+                            if (displaySize >= 16 && marker.race) {
+                                this.ctx.font = `${Math.max(6, displaySize * 0.2)}px Arial`;
+                                this.ctx.fillStyle = '#FFF';
+                                const raceText = marker.race === 'Human' ? 'H' : 'O';
+                                this.ctx.fillText(raceText, centerX, centerY + size/2 + 8);
+                            }
+                        }
+                    }
+                }
+            }
+
+            handleMouseMove(event) {
+                const rect = this.canvas.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+                const displaySize = this.tileSize * this.zoomLevel;
+                
+                const tileX = Math.floor(x / displaySize);
+                const tileY = Math.floor(y / displaySize);
+                
+                this.showTileTooltip(tileX, tileY, event.clientX, event.clientY);
+            }
+
+            showTileTooltip(tileX, tileY, clientX, clientY) {
+                if (!currentMapData) return;
+                
+                const tooltip = document.getElementById('tooltip');
+                
+                // Get the actual tile ID from the terrain data
+                const tileIndex = tileY * currentMapData.width + tileX;
+                const tileId = currentMapData.terrain ? currentMapData.terrain[tileIndex] : 'N/A';
+                const terrainType = this.textureManager.getTerrainType(tileId, currentMapData.tileset);
+                
+                                 // Check for markers at this position (more precise matching)
+                 const marker = currentMapData.markers ? currentMapData.markers.find(m => 
+                     m.x === tileX && m.y === tileY
+                 ) : null;
+                
+                let markerInfo = '';
+                if (marker) {
+                    markerInfo = `
+                        <div class="tooltip-marker">
+                            <strong>🎯 ${marker.marker_type.toUpperCase()}:</strong><br>
+                            <strong>Label:</strong> ${marker.label}<br>
+                            ${marker.description ? `<strong>Description:</strong> ${marker.description}<br>` : ''}
+                            ${marker.amount ? `<strong>Amount:</strong> ${marker.amount.toLocaleString()}<br>` : ''}
+                            ${marker.race ? `<strong>Race:</strong> ${marker.race}<br>` : ''}
+                            ${marker.player !== undefined ? `<strong>Player:</strong> ${marker.player + 1}<br>` : ''}
+                        </div>
+                    `;
+                }
+                
+                tooltip.innerHTML = `
+                    <div class="tooltip-header">🔍 Tile Debug Info</div>
+                    <div class="tooltip-content">
+                        <strong>Position:</strong> (${tileX}, ${tileY})<br>
+                        <strong>Tile ID:</strong> ${tileId} (${tileId !== 'N/A' ? '0x' + parseInt(tileId).toString(16).toUpperCase() : 'N/A'})<br>
+                        <strong>Tileset:</strong> ${currentMapData.tileset} (${this.getTilesetName(currentMapData.tileset)})<br>
+                        <strong>Terrain:</strong> ${terrainType}<br>
+                        <strong>Color:</strong> <span style="color: ${this.textureManager.getFallbackColorForTerrainType(terrainType)}">${this.textureManager.getFallbackColorForTerrainType(terrainType)}</span><br>
+                        <strong>Range:</strong> ${this.getTileRange(tileId)}<br>
+                        ${markerInfo}
+                    </div>
+                `;
+                
+                // Position tooltip closer to cursor and ensure it stays within viewport
+                const tooltipWidth = 250;
+                const tooltipHeight = 140;
+                const padding = 10;
+                
+                let left = clientX + 15;
+                let top = clientY + 15;
+                
+                // Adjust if tooltip would go off the right edge
+                if (left + tooltipWidth > window.innerWidth) {
+                    left = clientX - tooltipWidth - 15;
+                }
+                
+                // Adjust if tooltip would go off the bottom edge
+                if (top + tooltipHeight > window.innerHeight) {
+                    top = clientY - tooltipHeight - 15;
+                }
+                
+                // Ensure tooltip doesn't go off the left or top edges
+                left = Math.max(padding, left);
+                top = Math.max(padding, top);
+                
+                tooltip.style.left = left + 'px';
+                tooltip.style.top = top + 'px';
+                tooltip.style.display = 'block';
+            }
+
+            hideTooltip() {
+                document.getElementById('tooltip').style.display = 'none';
+            }
+
+            /**
+             * Get tileset name from ID (based on war2tools specifications)
+             */
+            getTilesetName(tilesetId) {
+                const tilesets = {
+                    0: 'Forest',
+                    1: 'Winter', 
+                    2: 'Wasteland',
+                    3: 'Swamp'
+                };
+                return tilesets[tilesetId] || 'Unknown';
+            }
+
+            /**
+             * Get tile range description (based on war2tools tile mapping)
+             */
+            getTileRange(tileId) {
+                if (tileId === 'N/A') return 'Unknown';
+                
+                if (tileId >= 0 && tileId <= 15) return 'Basic Grass (0x00-0x0F)';
+                if (tileId >= 16 && tileId <= 47) return 'Water (0x10-0x2F)';
+                if (tileId >= 48 && tileId <= 79) return 'Coast (0x30-0x4F)';
+                if (tileId >= 80 && tileId <= 95) return 'Ground Variations (0x50-0x5F)';
+                if (tileId >= 96 && tileId <= 111) return 'Rock/Mountain (0x60-0x6F)';
+                if (tileId >= 112 && tileId <= 127) return 'Forest/Trees (0x70-0x7F)';
+                if (tileId >= 128) return 'Extended Variations (0x80+)';
+                
+                return 'Unknown Range';
+            }
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            // File input
+            document.getElementById('mapFile').addEventListener('change', handleFileSelect);
+            
+            // Rendering mode buttons
+            document.getElementById('textureMode').addEventListener('click', () => setRenderingMode('texture'));
+            document.getElementById('colorMode').addEventListener('click', () => setRenderingMode('color'));
+            document.getElementById('hybridMode').addEventListener('click', () => setRenderingMode('hybrid'));
+            
+            // System buttons
+            document.getElementById('extractTextures').addEventListener('click', extractTextures);
+            document.getElementById('clearCache').addEventListener('click', clearCache);
+            
+            // Zoom slider
+            document.getElementById('zoomSlider').addEventListener('input', (e) => {
+                const zoom = parseInt(e.target.value);
+                document.getElementById('zoomValue').textContent = zoom + 'x';
+                if (mapRenderer) mapRenderer.setZoom(zoom);
+            });
+            
+            // Overlay toggles
+            document.getElementById('showResources').addEventListener('change', (e) => {
+                if (mapRenderer) mapRenderer.setOverlays({ resources: e.target.checked });
+            });
+            
+            document.getElementById('showUnits').addEventListener('change', (e) => {
+                if (mapRenderer) mapRenderer.setOverlays({ units: e.target.checked });
+            });
+            
+            document.getElementById('showPlayers').addEventListener('change', (e) => {
+                if (mapRenderer) mapRenderer.setOverlays({ players: e.target.checked });
+            });
+        }
+
+        // File handling
+        async function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            try {
+                showStatus('Loading map file...', 'loading');
+                
+                // Read the PUD file
+                const arrayBuffer = await file.arrayBuffer();
+                const fileData = new Uint8Array(arrayBuffer);
+                
+                // Parse PUD file using JavaScript parser
+                console.log('🔧 Creating FixedBinaryParser instance...');
+                const binaryParser = new FixedBinaryParser(); // Use the fixed parser
+                console.log('✅ FixedBinaryParser instance created:', binaryParser);
+                
+                console.log('🔧 Starting PUD file parsing...');
+                const mapData = binaryParser.parsePudFile(fileData);
+                console.log('✅ PUD file parsing completed');
+                
+                console.log('Parsed map data:', mapData);
+                                 console.log('Map dimensions:', mapData.width, 'x', mapData.height);
+                 console.log('Terrain runs:', mapData.terrain_runs?.length || 0);
+                 console.log('Markers:', mapData.markers?.length || 0);
+                 console.log('Tileset:', mapData.tileset);
+                 
+                 // Debug: Show all markers found
+                 if (mapData.markers && mapData.markers.length > 0) {
+                     console.log('🔍 All markers found:');
+                     mapData.markers.forEach((marker, index) => {
+                         console.log(`  ${index + 1}. ${marker.marker_type} at (${marker.x}, ${marker.y}) - ${marker.label}`);
+                     });
+                 } else {
+                     console.log('⚠️ No markers found in map');
+                 }
+                
+                // Render the map
+                await mapRenderer.renderMap(mapData);
+                
+                showStatus('Map loaded successfully!', 'success');
+                
+            } catch (error) {
+                console.error('❌ Failed to load map:', error);
+                showStatus('Failed to load map: ' + error.message, 'error');
+            }
+        }
+
+        // Rendering mode functions
+        function setRenderingMode(mode) {
+            console.log(`🎨 Setting rendering mode to: ${mode}`);
+            // Implementation would switch between texture, color, and hybrid modes
+        }
+
+        // Texture extraction
+        async function extractTextures() {
+            try {
+                showStatus('Extracting textures...', 'loading');
+                
+                if (textureManager) {
+                    await textureManager.initializeWithoutWasm();
+                    updateTextureStats();
+                    showStatus('Color-based textures ready!', 'success');
+                }
+                
+            } catch (error) {
+                console.error('❌ Texture extraction failed:', error);
+                showStatus('Texture extraction failed: ' + error.message, 'error');
+            }
+        }
+
+        // Cache management
+        function clearCache() {
+            if (textureManager) {
+                textureManager.clearCache();
+                updateTextureStats();
+                showStatus('Cache cleared!', 'success');
+            }
+        }
+
+        // Utility functions
+        function showStatus(message, type) {
+            const status = document.getElementById('status');
+            status.textContent = message;
+            status.className = `status ${type}`;
+        }
+
+        function updateTextureStats() {
+            if (textureManager) {
+                const stats = textureManager.getStats();
+                document.getElementById('textureStatus').textContent = stats.isLoaded ? '✅' : '❌';
+                document.getElementById('cachedTextures').textContent = stats.cachedTextures;
+                document.getElementById('totalTextures').textContent = stats.totalTextures;
+                document.getElementById('totalSize').textContent = Math.round(stats.totalSize / 1024) + ' KB';
+            }
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', initializeApp);
+    </script>
+</body>
+</html>

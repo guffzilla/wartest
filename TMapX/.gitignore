@@ -1,1 +1,42 @@
-*
+# Build outputs and dependencies
+node_modules/
+pkg/
+dist/
+build/
+target/
+
+# Generated files
+*.wasm
+*.wasm.d.ts
+*.d.ts
+*.js.map
+
+# Test and temporary files
+test_*.html
+debug_*.html
+performance_test.html
+enhanced_performance_test.html
+test-wasm.html
+test_terrain_mapping.html
+
+# Large generated files
+map_visualization.html
+
+# Configuration files that might contain sensitive data
+*.json
+!package.json
+!tsconfig.json
+!vite.config.ts
+
+# IDE and editor files
+.vscode/
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
