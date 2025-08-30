@@ -133,19 +133,91 @@
         }
 
         .zoom-controls {
-            margin: 20px 0;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            color: white;
+            z-index: 1000;
+            min-width: 200px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             text-align: center;
         }
-
+        
+        .zoom-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .zoom-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #4ECDC4;
+        }
+        
+        .zoom-level {
+            font-size: 12px;
+            opacity: 0.8;
+            color: #FFD700;
+        }
+        
+        .zoom-buttons {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+            justify-content: center;
+        }
+        
+        .zoom-btn {
+            background: #2C3E50;
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+        
+        .zoom-btn:hover {
+            background: #34495E;
+            transform: scale(1.1);
+        }
+        
+        .zoom-btn:active {
+            transform: scale(0.95);
+        }
+        
         .zoom-slider {
             width: 100%;
-            margin: 10px 0;
+            margin-bottom: 8px;
         }
-
-        .zoom-value {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #FFD700;
+        
+        .zoom-lod-info {
+            font-size: 11px;
+            text-align: center;
+            opacity: 0.7;
+            color: #87CEEB;
+        }
+        
+        /* Tileset selector styling */
+        #tilesetSelector {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        #tilesetSelector:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(65, 105, 225, 0.3);
+        }
+        
+        #tilesetSelector:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(65, 105, 225, 0.5);
         }
 
         .texture-info {
@@ -385,6 +457,12 @@
                 ✨ SUPER ENHANCED GRAPHICS LOADED ✨<br>
                 🎯 Chess Piece Players | 💎 Multi-Layer Goldmines | 🛢️ Bubbling Oil Patches
             </div>
+            
+            <div id="performanceMonitor" style="background: #2C3E50; color: #ECF0F1; padding: 8px; border-radius: 6px; margin-top: 10px; text-align: center; font-family: monospace; font-size: 12px;">
+                <strong>Performance Monitor:</strong> FPS: <span id="fpsDisplay">--</span> | 
+                Redraws: <span id="redrawCount">--</span> | 
+                Status: <span id="performanceStatus">Monitoring...</span>
+            </div>
         </div>
 
         <div class="controls">
@@ -408,14 +486,13 @@
             </div>
 
             <div class="control-group">
-                <h3>🎨 Tileset Preview</h3>
+                <h3>🎨 Tileset Selection</h3>
                 <select id="tilesetSelector" class="btn" style="background: #4169E1;">
                     <option value="0">🌲 Forest</option>
                     <option value="1">❄️ Winter</option>
                     <option value="2">🏜️ Wasteland</option>
                     <option value="3">🌿 Swamp</option>
                 </select>
-                <button id="previewTileset" class="btn">👁️ Preview</button>
             </div>
         </div>
 
@@ -424,8 +501,17 @@
                 <canvas id="mapCanvas" class="map-canvas" width="800" height="600"></canvas>
                 
                 <div class="zoom-controls">
-                    <div class="zoom-value" id="zoomValue">1x</div>
-                    <input type="range" id="zoomSlider" class="zoom-slider" min="1" max="8" value="1" step="1">
+                    <div class="zoom-info">
+                        <div class="zoom-value" id="zoomValue">8x</div>
+                        <div class="zoom-level" id="zoomLevel">Level 8</div>
+                    </div>
+                    <div class="zoom-buttons">
+                        <button id="zoomOut" class="zoom-btn" title="Zoom Out">➖</button>
+                        <button id="zoomReset" class="zoom-btn" title="Reset Zoom">🔄</button>
+                        <button id="zoomIn" class="zoom-btn" title="Zoom In">➕</button>
+                    </div>
+                    <input type="range" id="zoomSlider" class="zoom-slider" min="4" max="32" value="8" step="2">
+                    <div class="zoom-lod-info" id="zoomLodInfo">LOD: Cached</div>
                 </div>
             </div>
 
@@ -529,6 +615,9 @@
                 // Set up event listeners
                 setupEventListeners();
                 
+                // Start performance monitoring
+                setInterval(updatePerformanceMonitor, 1000);
+                
             } catch (error) {
                 console.error('❌ Initialization failed:', error);
                 showStatus('Initialization failed: ' + error.message, 'error');
@@ -549,17 +638,229 @@
                     players: true
                 };
                 
+                // Performance control flags
+                this.isAnimating = false;
+                this.animationFrameId = null;
+                this.lastRedrawTime = 0;
+                this.redrawThrottle = 16; // ~60fps max
+                
+                // Performance monitoring
+                this.frameCount = 0;
+                this.lastFpsTime = performance.now();
+                this.fps = 0;
+                
+                // Animation batching for performance
+                this.pendingAnimations = new Set();
+                this.animationBatchId = null;
+                
+                // LAYERED CANVASES - HIGHEST IMPACT CHANGE
+                this.setupLayeredCanvases();
+                
+                // Pre-rendered markers cache
+                this.markerCache = new Map();
+                this.markerScales = [0.5, 1.0, 2.0, 4.0]; // Common zoom levels
+                
+                // ZOOM CACHING + LOD SYSTEM
+                this.zoomCache = new Map(); // Cache terrain at different zoom levels
+                this.zoomLevels = [4, 6, 8, 12, 16, 24, 32]; // Supported zoom levels
+                this.currentZoomIndex = 3; // Start at zoom level 8
+                this.zoomDebounceTimer = null;
+                this.isZooming = false;
+                
                 this.setupCanvas();
             }
 
             setupCanvas() {
                 this.canvas.addEventListener('mousemove', this.handleMouseMove.bind(this));
                 this.canvas.addEventListener('mouseleave', this.hideTooltip.bind(this));
+                
+                // Canvas performance optimizations
+                this.ctx.imageSmoothingEnabled = false; // Disable anti-aliasing for better performance
+                this.ctx.imageSmoothingQuality = 'low'; // Use low quality for speed
+                
+                // Enable hardware acceleration hints
+                this.canvas.style.willChange = 'transform';
+                this.canvas.style.transform = 'translateZ(0)';
+            }
+            
+            setupLayeredCanvases() {
+                // Create separate canvases for each layer - HIGHEST IMPACT
+                this.terrainCanvas = document.createElement('canvas');
+                this.markersCanvas = document.createElement('canvas');
+                this.fxCanvas = document.createElement('canvas');
+                this.uiCanvas = document.createElement('canvas');
+                
+                // Get contexts for each layer
+                this.terrainCtx = this.terrainCanvas.getContext('2d');
+                this.markersCtx = this.markersCanvas.getContext('2d');
+                this.fxCtx = this.fxCanvas.getContext('2d');
+                this.uiCtx = this.uiCanvas.getContext('2d');
+                
+                // Optimize all contexts
+                [this.terrainCtx, this.markersCtx, this.fxCtx, this.uiCtx].forEach(ctx => {
+                    ctx.imageSmoothingEnabled = false;
+                    ctx.imageSmoothingQuality = 'low';
+                });
+                
+                // Set initial sizes
+                this.resizeLayeredCanvases();
+                
+                console.log('🎨 Layered canvases created for terrain, markers, FX, and UI');
+            }
+            
+            resizeLayeredCanvases() {
+                const displaySize = this.tileSize * this.zoomLevel;
+                const width = currentMapData ? currentMapData.width * displaySize : 800;
+                const height = currentMapData ? currentMapData.height * displaySize : 600;
+                
+                [this.terrainCanvas, this.markersCanvas, this.fxCanvas, this.uiCanvas].forEach(canvas => {
+                    canvas.width = width;
+                    canvas.height = height;
+                });
+                
+                console.log(`📏 Layered canvases resized to ${width}x${height}`);
             }
 
             setZoom(level) {
-                this.zoomLevel = level;
-                this.redraw();
+                // DEBOUNCED ZOOM with LOD support
+                if (this.zoomDebounceTimer) {
+                    clearTimeout(this.zoomDebounceTimer);
+                }
+                
+                this.zoomDebounceTimer = setTimeout(() => {
+                    this.performZoom(level);
+                }, 100); // 100ms debounce for smooth zooming
+            }
+            
+            performZoom(level) {
+                console.log(`🔍 Zooming from ${this.zoomLevel} to ${level}`);
+                
+                // Find closest supported zoom level
+                const targetIndex = this.findClosestZoomIndex(level);
+                const targetZoom = this.zoomLevels[targetIndex];
+                
+                if (targetZoom === this.zoomLevel) {
+                    console.log(`🔍 Already at zoom level ${targetZoom}`);
+                    return;
+                }
+                
+                this.isZooming = true;
+                this.zoomLevel = targetZoom;
+                this.currentZoomIndex = targetIndex;
+                
+                // Resize all layered canvases for new zoom
+                this.resizeLayeredCanvases();
+                
+                // Check if we have cached terrain for this zoom level
+                if (this.zoomCache.has(targetZoom)) {
+                    console.log(`🔍 Using cached terrain for zoom ${targetZoom}`);
+                    this.useCachedTerrain(targetZoom);
+                } else {
+                    console.log(`🔍 Rendering new terrain for zoom ${targetZoom}`);
+                    this.cacheTerrainAtZoom(targetZoom);
+                }
+                
+                // Update markers for new zoom level
+                this.updateMarkersForZoom();
+                
+                // Composite all layers
+                this.compositeLayers();
+                
+                this.isZooming = false;
+                console.log(`✅ Zoom complete: ${targetZoom}`);
+            }
+            
+            findClosestZoomIndex(targetZoom) {
+                let closestIndex = 0;
+                let closestDiff = Math.abs(this.zoomLevels[0] - targetZoom);
+                
+                for (let i = 1; i < this.zoomLevels.length; i++) {
+                    const diff = Math.abs(this.zoomLevels[i] - targetZoom);
+                    if (diff < closestDiff) {
+                        closestDiff = diff;
+                        closestIndex = i;
+                    }
+                }
+                
+                return closestIndex;
+            }
+            
+            cacheTerrainAtZoom(zoomLevel) {
+                if (!currentMapData || !currentMapData.terrain_runs) return;
+                
+                console.log(`🎨 Caching terrain at zoom level ${zoomLevel}`);
+                
+                // Create temporary canvas for this zoom level
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                
+                const displaySize = this.tileSize * zoomLevel;
+                const width = currentMapData.width * displaySize;
+                const height = currentMapData.height * displaySize;
+                
+                tempCanvas.width = width;
+                tempCanvas.height = height;
+                
+                // Render terrain at this zoom level
+                this.renderTerrain(displaySize, tempCtx);
+                
+                // Cache the rendered terrain
+                this.zoomCache.set(zoomLevel, tempCanvas);
+                
+                console.log(`✅ Terrain cached for zoom ${zoomLevel} (${width}x${height})`);
+            }
+            
+            useCachedTerrain(zoomLevel) {
+                const cachedTerrain = this.zoomCache.get(zoomLevel);
+                if (!cachedTerrain) return;
+                
+                // Copy cached terrain to terrain layer
+                const ctx = this.terrainCtx;
+                ctx.clearRect(0, 0, this.terrainCanvas.width, this.terrainCanvas.height);
+                ctx.drawImage(cachedTerrain, 0, 0);
+                
+                console.log(`🎨 Using cached terrain for zoom ${zoomLevel}`);
+            }
+            
+            updateMarkersForZoom() {
+                // Update marker cache for new zoom level
+                const displaySize = this.tileSize * this.zoomLevel;
+                const scale = this.getMarkerScale(displaySize);
+                
+                console.log(`🎨 Updating markers for zoom ${this.zoomLevel}, scale ${scale}`);
+                
+                // Re-render markers layer with new scale
+                this.renderMarkersLayer();
+                
+                // Update zoom UI display
+                this.updateZoomUI();
+            }
+            
+            updateZoomUI() {
+                // Update zoom display elements
+                const zoomValue = document.getElementById('zoomValue');
+                const zoomLevel = document.getElementById('zoomLevel');
+                const zoomLodInfo = document.getElementById('zoomLodInfo');
+                
+                if (zoomValue) zoomValue.textContent = this.zoomLevel + 'x';
+                if (zoomLevel) zoomLevel.textContent = `Level ${this.zoomLevel}`;
+                
+                // Show LOD status
+                if (zoomLodInfo) {
+                    if (this.zoomCache.has(this.zoomLevel)) {
+                        zoomLodInfo.textContent = 'LOD: Cached';
+                        zoomLodInfo.style.color = '#4CAF50'; // Green for cached
+                    } else {
+                        zoomLodInfo.textContent = 'LOD: Rendering...';
+                        zoomLodInfo.style.color = '#FF9800'; // Orange for rendering
+                    }
+                }
+                
+                // Update zoom slider
+                const zoomSlider = document.getElementById('zoomSlider');
+                if (zoomSlider) {
+                    zoomSlider.value = this.zoomLevel;
+                }
             }
 
             setOverlays(overlays) {
@@ -578,11 +879,182 @@
 
             async renderMap(mapData) {
                 currentMapData = mapData;
-                this.redraw();
+                
+                // Initialize zoom system for new map
+                this.initializeZoomSystem();
+                
+                // Resize layered canvases for new map
+                this.resizeLayeredCanvases();
+                
+                // Pre-render all markers at different scales - HIGH IMPACT
+                await this.preRenderMarkers();
+                
+                // Render terrain once (static) at current zoom
+                this.renderTerrainLayer();
+                
+                // Start animations
+                this.startAnimations();
+                
+                // Composite all layers
+                this.compositeLayers();
+                
+                // Update zoom UI
+                this.updateZoomUI();
+            }
+            
+            initializeZoomSystem() {
+                // Clear previous zoom cache
+                this.zoomCache.clear();
+                
+                // Cache terrain at current zoom level
+                this.cacheTerrainAtZoom(this.zoomLevel);
+                
+                console.log(`🔍 Zoom system initialized for map ${currentMapData.width}x${currentMapData.height}`);
+            }
+            
+            startAnimations() {
+                this.isAnimating = true;
+                
+                // Start batched animation system
+                this.startBatchedAnimations();
+            }
+            
+            startBatchedAnimations() {
+                if (this.animationBatchId) return;
+                
+                // EVENT-DRIVEN RAF - Only animate when needed
+                this.animationBatchId = requestAnimationFrame(() => this.processAnimations());
+            }
+            
+            processAnimations() {
+                if (!this.isAnimating || this.pendingAnimations.size === 0) {
+                    this.animationBatchId = null;
+                    return;
+                }
+                
+                // Process all pending animations
+                this.pendingAnimations.forEach(marker => {
+                    if (marker.isAnimating) {
+                        this.updateMarkerAnimation(marker);
+                    }
+                });
+                
+                // Only update FX layer - NO FULL REDRAW
+                this.updateFXLayer();
+                
+                // 30 FPS FX CAP for performance - continue only if needed
+                if (this.pendingAnimations.size > 0) {
+                    // Cap at 30fps for FX updates (33ms intervals)
+                    setTimeout(() => {
+                        if (this.isAnimating) {
+                            this.animationBatchId = requestAnimationFrame(() => this.processAnimations());
+                        }
+                    }, 33);
+                } else {
+                    this.animationBatchId = null;
+                }
+            }
+            
+            updateMarkerAnimation(marker) {
+                const elapsed = Date.now() - marker.animationStartTime;
+                const animationDuration = 2000; // 2 seconds
+                const progress = (elapsed % animationDuration) / animationDuration;
+                
+                // Update animation properties with FULL VISUAL IMPACT
+                marker.animationProgress = progress;
+                marker.animationAngle = progress * Math.PI * 2;
+                marker.animationScale = 1 + Math.sin(progress * Math.PI * 4) * 0.1;
+                marker.animationRotation = progress * Math.PI * 0.5;
+                marker.animationGlow = 0.8 + Math.sin(progress * Math.PI * 3) * 0.2;
+            }
+            
+            async preRenderMarkers() {
+                console.log('🎨 Pre-rendering markers at multiple scales...');
+                
+                // Clear marker cache
+                this.markerCache.clear();
+                
+                if (!currentMapData || !currentMapData.markers) return;
+                
+                // Pre-render each marker type at different scales
+                for (const scale of this.markerScales) {
+                    for (const marker of currentMapData.markers) {
+                        const cacheKey = `${marker.marker_type}_${marker.player || 'neutral'}_${scale}`;
+                        
+                        if (!this.markerCache.has(cacheKey)) {
+                            const markerCanvas = document.createElement('canvas');
+                            const markerCtx = markerCanvas.getContext('2d');
+                            
+                            // Set size based on scale
+                            const baseSize = 60; // Base marker size
+                            const scaledSize = baseSize * scale;
+                            markerCanvas.width = scaledSize * 2; // Extra space for glow effects
+                            markerCanvas.height = scaledSize * 2;
+                            
+                            // Center the marker
+                            markerCtx.translate(scaledSize, scaledSize);
+                            
+                            // Render marker based on type
+                            if (marker.marker_type === 'player') {
+                                this.renderPlayerMarker(markerCtx, scaledSize, marker, false);
+                            } else if (marker.marker_type === 'goldmine') {
+                                this.renderGoldmineMarker(markerCtx, scaledSize, marker, false);
+                            } else if (marker.marker_type === 'oil') {
+                                this.renderOilMarker(markerCtx, scaledSize, marker, false);
+                            }
+                            
+                            // Convert to ImageBitmap for GPU acceleration
+                            try {
+                                const imageBitmap = await createImageBitmap(markerCanvas);
+                                this.markerCache.set(cacheKey, imageBitmap);
+                                console.log(`✅ Pre-rendered ${cacheKey}`);
+                            } catch (error) {
+                                console.warn(`⚠️ Failed to create ImageBitmap for ${cacheKey}:`, error);
+                                // Fallback to canvas
+                                this.markerCache.set(cacheKey, markerCanvas);
+                            }
+                        }
+                    }
+                }
+                
+                console.log(`🎨 Pre-rendered ${this.markerCache.size} marker variants`);
+            }
+            
+            stopAnimations() {
+                this.isAnimating = false;
+                
+                // Stop individual marker animations
+                if (this.animationFrameId) {
+                    cancelAnimationFrame(this.animationFrameId);
+                    this.animationFrameId = null;
+                }
+                
+                // Stop batched animations
+                if (this.animationBatchId) {
+                    cancelAnimationFrame(this.animationBatchId);
+                    this.animationBatchId = null;
+                }
+                
+                // Clear pending animations
+                this.pendingAnimations.clear();
             }
 
             redraw() {
                 if (!currentMapData) return;
+                
+                // FPS monitoring
+                const now = performance.now();
+                this.frameCount++;
+                if (now - this.lastFpsTime >= 1000) { // Update FPS every second
+                    this.fps = this.frameCount;
+                    this.frameCount = 0;
+                    this.lastFpsTime = now;
+                    
+                    // Log performance warnings
+                    if (this.fps < 30) {
+                        console.warn(`⚠️ Performance Warning: Low FPS detected: ${this.fps}`);
+                    }
+                }
                 
                 const displaySize = this.tileSize * this.zoomLevel;
                 const newWidth = currentMapData.width * displaySize;
@@ -593,6 +1065,9 @@
                     this.canvas.width = newWidth;
                     this.canvas.height = newHeight;
                 }
+                
+                // Performance optimization: Batch canvas operations
+                this.ctx.save();
                 
                 // Clear canvas
                 this.ctx.fillStyle = '#333';
@@ -607,9 +1082,232 @@
                 this.renderResources(displaySize);
                 this.renderUnits(displaySize);
                 this.renderPlayers(displaySize);
+                
+                // Restore canvas context
+                this.ctx.restore();
+            }
+            
+            renderTerrainLayer() {
+                // Render terrain ONCE to terrain canvas (static)
+                if (!currentMapData || !currentMapData.terrain_runs) return;
+                
+                const displaySize = this.tileSize * this.zoomLevel;
+                const ctx = this.terrainCtx;
+                
+                // Clear terrain layer
+                ctx.clearRect(0, 0, this.terrainCanvas.width, this.terrainCanvas.height);
+                
+                // Render terrain using existing logic
+                this.renderTerrain(displaySize, ctx);
+                
+                console.log('🎨 Terrain layer rendered (static)');
+            }
+            
+            renderMarkersLayer() {
+                // Render markers ONCE to markers canvas (static)
+                if (!currentMapData || !currentMapData.markers) return;
+                
+                const displaySize = this.tileSize * this.zoomLevel;
+                const ctx = this.markersCtx;
+                
+                // Clear markers layer
+                ctx.clearRect(0, 0, this.markersCanvas.width, this.markersCanvas.height);
+                
+                // Render markers using pre-rendered cache
+                this.renderMarkersFromCache(displaySize, ctx);
+                
+                console.log('🎨 Markers layer rendered (static)');
+            }
+            
+            updateFXLayer() {
+                // Update only FX layer (animations, hover effects)
+                if (!currentMapData || !currentMapData.markers) return;
+                
+                const ctx = this.fxCtx;
+                
+                // Clear FX layer
+                ctx.clearRect(0, 0, this.fxCanvas.width, this.fxCanvas.height);
+                
+                // Render only animated/hover effects
+                this.renderFXEffects(ctx);
+                
+                // Composite FX layer to main canvas
+                this.compositeFXLayer();
+            }
+            
+            compositeLayers() {
+                // Composite all layers to main canvas
+                const ctx = this.ctx;
+                
+                // Clear main canvas
+                ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Draw terrain layer (static)
+                ctx.drawImage(this.terrainCanvas, 0, 0);
+                
+                // Draw markers layer (static)
+                ctx.drawImage(this.markersCanvas, 0, 0);
+                
+                // Draw FX layer (dynamic)
+                ctx.drawImage(this.fxCanvas, 0, 0);
+                
+                // Draw UI layer (if any)
+                ctx.drawImage(this.uiCanvas, 0, 0);
+                
+                console.log('🎨 All layers composited to main canvas');
+            }
+            
+            renderMarkersFromCache(displaySize, ctx) {
+                // Render markers using pre-rendered cache
+                if (!currentMapData || !currentMapData.markers) return;
+                
+                for (const marker of currentMapData.markers) {
+                    const x = marker.x * displaySize;
+                    const y = marker.y * displaySize;
+                    
+                    // Find appropriate cached marker
+                    const scale = this.getMarkerScale(displaySize);
+                    const cacheKey = `${marker.marker_type}_${marker.player || 'neutral'}_${scale}`;
+                    const cachedMarker = this.markerCache.get(cacheKey);
+                    
+                    if (cachedMarker) {
+                        // Draw pre-rendered marker
+                        const markerSize = 60 * scale;
+                        ctx.drawImage(cachedMarker, 
+                            x + displaySize/2 - markerSize, 
+                            y + displaySize/2 - markerSize,
+                            markerSize * 2, markerSize * 2);
+                    } else {
+                        // Fallback to direct rendering
+                        if (marker.marker_type === 'player') {
+                            this.renderPlayerMarker(ctx, 60, marker, false);
+                        } else if (marker.marker_type === 'goldmine') {
+                            this.renderGoldmineMarker(ctx, 60, marker, false);
+                        } else if (marker.marker_type === 'oil') {
+                            this.renderOilMarker(ctx, 60, marker, false);
+                        }
+                    }
+                }
+            }
+            
+            getMarkerScale(displaySize) {
+                // Find appropriate scale for current zoom level
+                const baseSize = 12; // Base tile size
+                const currentScale = displaySize / baseSize;
+                
+                // Find closest pre-rendered scale
+                let bestScale = this.markerScales[0];
+                let bestDiff = Math.abs(currentScale - bestScale);
+                
+                for (const scale of this.markerScales) {
+                    const diff = Math.abs(currentScale - scale);
+                    if (diff < bestDiff) {
+                        bestDiff = diff;
+                        bestScale = scale;
+                    }
+                }
+                
+                return bestScale;
+            }
+            
+            renderFXEffects(ctx) {
+                // Render only animated/hover effects
+                if (!currentMapData || !currentMapData.markers) return;
+                
+                for (const marker of currentMapData.markers) {
+                    if (marker.isAnimating || marker === this.hoveredMarker) {
+                        // Render enhanced effects for animated/hovered markers
+                        const displaySize = this.tileSize * this.zoomLevel;
+                        const x = marker.x * displaySize;
+                        const y = marker.y * displaySize;
+                        
+                        if (marker.marker_type === 'player') {
+                            this.renderPlayerMarker(ctx, 60, marker, true);
+                        } else if (marker.marker_type === 'goldmine') {
+                            this.renderGoldmineMarker(ctx, 60, marker, true);
+                        } else if (marker.marker_type === 'oil') {
+                            this.renderOilMarker(ctx, 60, marker, true);
+                        }
+                    }
+                }
+            }
+            
+            // Pre-rendering helper methods
+            renderPlayerMarker(ctx, size, marker, enhanced = false) {
+                // Simplified version for pre-rendering
+                const centerX = 0; // Pre-rendered markers are centered
+                const centerY = 0;
+                
+                // Basic chess piece shape
+                ctx.fillStyle = enhanced ? '#FFD700' : '#8B4513';
+                ctx.beginPath();
+                ctx.arc(centerX, centerY, size/2, 0, Math.PI * 2);
+                ctx.fill();
+                
+                if (enhanced) {
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+            }
+            
+            renderGoldmineMarker(ctx, size, marker, enhanced = false) {
+                // Simplified version for pre-rendering
+                const centerX = 0;
+                const centerY = 0;
+                
+                // Basic hexagonal shape
+                ctx.fillStyle = enhanced ? '#FFD700' : '#B8860B';
+                ctx.beginPath();
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i * Math.PI) / 3;
+                    const x = centerX + Math.cos(angle) * size/2;
+                    const y = centerY + Math.sin(angle) * size/2;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.fill();
+                
+                if (enhanced) {
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+            }
+            
+            renderOilMarker(ctx, size, marker, enhanced = false) {
+                // Simplified version for pre-rendering
+                const centerX = 0;
+                const centerY = 0;
+                
+                // Basic octagonal shape
+                ctx.fillStyle = enhanced ? '#1E90FF' : '#000080';
+                ctx.beginPath();
+                for (let i = 0; i < 8; i++) {
+                    const angle = (i * Math.PI) / 4;
+                    const x = centerX + Math.cos(angle) * size/2;
+                    const y = centerY + Math.sin(angle) * size/2;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.fill();
+                
+                if (enhanced) {
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
+            }
+            
+            compositeFXLayer() {
+                // Composite FX layer to main canvas (for animations)
+                const ctx = this.ctx;
+                ctx.drawImage(this.fxCanvas, 0, 0);
             }
 
-            renderTerrain(displaySize) {
+            renderTerrain(displaySize, ctx = this.ctx) {
                 if (!currentMapData.terrain_runs) return;
                 
                 // Create a 2D array to store terrain data
@@ -648,7 +1346,7 @@
                         
                         // Use texture manager to render tile with tileset support
                         this.textureManager.renderFallbackTileWithTerrainType(
-                            this.ctx,
+                            ctx,
                             tile.terrain_type,
                             renderX,
                             renderY,
@@ -658,86 +1356,10 @@
                     }
                 }
                 
-                // Add big blue "G" in the center of the map to show advanced graphics are working
-                this.drawCenterIndicator(displaySize);
+                // Center indicator removed for performance optimization
             }
             
-            drawCenterIndicator(displaySize) {
-                const centerX = (currentMapData.width / 2) * displaySize;
-                const centerY = (currentMapData.height / 2) * displaySize;
-                
-                // Draw a large blue "G" in the center with continuous animation
-                this.ctx.save();
-                
-                // Add animated glow effect
-                const time = Date.now() * 0.001;
-                const glowIntensity = 15 + Math.sin(time * 3) * 10;
-                this.ctx.shadowColor = '#0066FF';
-                this.ctx.shadowBlur = glowIntensity;
-                
-                // Draw background circle - DOUBLE SIZE with animation
-                this.ctx.beginPath();
-                this.ctx.arc(centerX, centerY, displaySize * 4, 0, Math.PI * 2);
-                this.ctx.fillStyle = 'rgba(0, 102, 255, 0.1)';
-                this.ctx.fill();
-                
-                // Draw the big blue "G" - DOUBLE SIZE with rotation animation
-                this.ctx.save();
-                this.ctx.translate(centerX, centerY);
-                this.ctx.rotate(Math.sin(time * 2) * 0.1); // Gentle rotation
-                this.ctx.fillStyle = '#0066FF';
-                this.ctx.font = `bold ${displaySize * 6}px Arial`;
-                this.ctx.textAlign = 'center';
-                this.ctx.textBaseline = 'middle';
-                this.ctx.fillText('G', 0, 0);
-                this.ctx.restore();
-                
-                // Add border - DOUBLE SIZE with pulsing
-                const borderWidth = 8 + Math.sin(time * 4) * 2;
-                this.ctx.strokeStyle = '#0033CC';
-                this.ctx.lineWidth = borderWidth;
-                this.ctx.stroke();
-                
-                // Add animated sparkles around it - DOUBLE SIZE
-                this.ctx.fillStyle = '#FFFFFF';
-                this.ctx.globalAlpha = 0.8;
-                for (let i = 0; i < 6; i++) {
-                    const angle = (i * Math.PI * 2) / 6 + time * 2; // Rotating sparkles
-                    const radius = displaySize * 5 + Math.sin(time * 3 + i) * 10; // Pulsing radius
-                    const sparkleX = centerX + Math.cos(angle) * radius;
-                    const sparkleY = centerY + Math.sin(angle) * radius;
-                    
-                    // Animated sparkle size
-                    const sparkleSize = 6 + Math.sin(time * 5 + i) * 3;
-                    
-                    this.ctx.beginPath();
-                    this.ctx.arc(sparkleX, sparkleY, sparkleSize, 0, Math.PI * 2);
-                    this.ctx.fill();
-                }
-                this.ctx.globalAlpha = 1.0;
-                
-                // Add floating particles around the G
-                this.ctx.fillStyle = '#87CEEB';
-                this.ctx.globalAlpha = 0.6;
-                for (let i = 0; i < 8; i++) {
-                    const particleAngle = time * 1.5 + i * Math.PI / 4;
-                    const particleRadius = displaySize * 3 + Math.sin(time * 2 + i) * 20;
-                    const particleX = centerX + Math.cos(particleAngle) * particleRadius;
-                    const particleY = centerY + Math.sin(particleAngle) * particleRadius;
-                    
-                    this.ctx.beginPath();
-                    this.ctx.arc(particleX, particleY, 2, 0, Math.PI * 2);
-                    this.ctx.fill();
-                }
-                this.ctx.globalAlpha = 1.0;
-                
-                this.ctx.restore();
-                
-                // Continue animation loop
-                requestAnimationFrame(() => this.drawCenterIndicator(displaySize));
-                
-                console.log('🎯 Center indicator "G" drawn at:', centerX, centerY, 'with animations');
-            }
+            // drawCenterIndicator method completely removed for performance optimization
 
             renderResources(displaySize) {
                 console.log('🎨 renderResources called, markers:', currentMapData.markers);
@@ -753,8 +1375,8 @@
                         const x = marker.x * displaySize;
                         const y = marker.y * displaySize;
                         
-                        // Enhanced goldmine marker - DOUBLE SIZE golden shining mine
-                        const radius = Math.max(displaySize * 0.8, 8); // Doubled from 0.4 to 0.8
+                        // Enhanced goldmine marker - SAME SIZE as players for consistency
+                        const size = Math.max(displaySize * 5, 60); // Same as players
                         const centerX = x + displaySize/2;
                         const centerY = y + displaySize/2;
                         
@@ -766,69 +1388,83 @@
                             this.hoveredMarker.y === marker.y && 
                             this.hoveredMarker.marker_type === 'goldmine';
                         
+                        // Advanced goldmine design - hexagonal mine entrance with depth
+                        this.ctx.save();
+                        
+                        // Apply animation scaling if this marker is animating
+                        if (marker.isAnimating && marker.animationScale) {
+                            this.ctx.translate(centerX, centerY);
+                            this.ctx.scale(marker.animationScale, marker.animationScale);
+                            this.ctx.translate(-centerX, -centerY);
+                        }
+                        
                         // Multiple layered glow effects for golden shine
                         this.ctx.shadowColor = '#FFD700';
                         this.ctx.shadowBlur = isHovered ? 25 : 15;
                         
-                        // Outer golden ring with texture
+                        // Draw hexagonal mine entrance (outer shape)
                         this.ctx.beginPath();
-                        this.ctx.arc(centerX, centerY, radius + 2, 0, Math.PI * 2);
+                        for (let i = 0; i < 6; i++) {
+                            const angle = (i * Math.PI) / 3;
+                            const x = centerX + Math.cos(angle) * size/2;
+                            const y = centerY + Math.sin(angle) * size/2;
+                            if (i === 0) this.ctx.moveTo(x, y);
+                            else this.ctx.lineTo(x, y);
+                        }
+                        this.ctx.closePath();
                         this.ctx.fillStyle = '#FFD700';
                         this.ctx.fill();
                         
-                        // Add outer ring texture (small dots)
-                        this.ctx.fillStyle = '#B8860B';
-                        for (let i = 0; i < 8; i++) {
-                            const angle = (i * Math.PI * 2) / 8;
-                            const dotX = centerX + Math.cos(angle) * (radius + 1);
-                            const dotY = centerY + Math.sin(angle) * (radius + 1);
-                            this.ctx.beginPath();
-                            this.ctx.arc(dotX, dotY, 1, 0, Math.PI * 2);
-                            this.ctx.fill();
-                        }
-                        
-                        // Middle ring with darker gold and inner texture
-                        this.ctx.shadowBlur = 8;
+                        // Inner hexagonal layer (mine depth)
                         this.ctx.beginPath();
-                        this.ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+                        for (let i = 0; i < 6; i++) {
+                            const angle = (i * Math.PI) / 3;
+                            const x = centerX + Math.cos(angle) * size/2.5;
+                            const y = centerY + Math.sin(angle) * size/2.5;
+                            if (i === 0) this.ctx.moveTo(x, y);
+                            else this.ctx.lineTo(x, y);
+                        }
+                        this.ctx.closePath();
                         this.ctx.fillStyle = '#B8860B';
                         this.ctx.fill();
                         
-                        // Inner texture pattern
-                        this.ctx.fillStyle = '#8B6914';
-                        for (let i = 0; i < 6; i++) {
-                            const angle = (i * Math.PI * 2) / 6;
-                            const dotX = centerX + Math.cos(angle) * (radius * 0.8);
-                            const dotY = centerY + Math.sin(angle) * (radius * 0.8);
-                            this.ctx.beginPath();
-                            this.ctx.arc(dotX, dotY, 1.5, 0, Math.PI * 2);
-                            this.ctx.fill();
-                        }
-                        
-                        // Inner core with bright gold and gem-like center
-                        this.ctx.shadowBlur = 0;
+                        // Core hexagonal layer (treasure chamber)
                         this.ctx.beginPath();
-                        this.ctx.arc(centerX, centerY, radius * 0.7, 0, Math.PI * 2);
+                        for (let i = 0; i < 6; i++) {
+                            const angle = (i * Math.PI) / 3;
+                            const x = centerX + Math.cos(angle) * size/3;
+                            const y = centerY + Math.sin(angle) * size/3;
+                            if (i === 0) this.ctx.moveTo(x, y);
+                            else this.ctx.lineTo(x, y);
+                        }
+                        this.ctx.closePath();
                         this.ctx.fillStyle = '#FFF8DC';
                         this.ctx.fill();
                         
-                        // Gem-like center with facets
+                        // Mine entrance highlight (top edge)
                         this.ctx.beginPath();
-                        this.ctx.arc(centerX, centerY, radius * 0.4, 0, Math.PI * 2);
-                        this.ctx.fillStyle = '#FFFFFF';
-                        this.ctx.fill();
+                        this.ctx.moveTo(centerX - size/2, centerY - size/2);
+                        this.ctx.lineTo(centerX + size/2, centerY - size/2);
+                        this.ctx.strokeStyle = '#FFFF00';
+                        this.ctx.lineWidth = 3;
+                        this.ctx.stroke();
                         
-                        // Center highlight
-                        this.ctx.beginPath();
-                        this.ctx.arc(centerX - radius * 0.1, centerY - radius * 0.1, radius * 0.15, 0, Math.PI * 2);
-                        this.ctx.fillStyle = '#FFFFE0';
-                        this.ctx.fill();
+                        // Add rock texture details
+                        this.ctx.fillStyle = '#8B6914';
+                        for (let i = 0; i < 8; i++) {
+                            const angle = (i * Math.PI * 2) / 8;
+                            const dotX = centerX + Math.cos(angle) * (size/2.2);
+                            const dotY = centerY + Math.sin(angle) * (size/2.2);
+                            this.ctx.beginPath();
+                            this.ctx.arc(dotX, dotY, 2, 0, Math.PI * 2);
+                            this.ctx.fill();
+                        }
                         
                         // Add detailed sparkle effect with particles
                         const sparkleCount = isHovered ? 8 : 5; // More sparkles when hovered
                         for (let i = 0; i < sparkleCount; i++) {
                             const sparkleAngle = (i * Math.PI * 2) / sparkleCount;
-                            const sparkleRadius = radius * (isHovered ? 0.6 : 0.4); // Larger sparkle radius when hovered
+                            const sparkleRadius = size * (isHovered ? 0.6 : 0.4); // Larger sparkle radius when hovered
                             const sparkleX = centerX + Math.cos(sparkleAngle) * sparkleRadius;
                             const sparkleY = centerY + Math.sin(sparkleAngle) * sparkleRadius;
                             
@@ -856,7 +1492,7 @@
                             this.ctx.globalAlpha = 0.6;
                             for (let i = 0; i < 6; i++) {
                                 const particleAngle = (i * Math.PI * 2) / 6 + Date.now() * 0.001;
-                                const particleRadius = radius * 0.8;
+                                const particleRadius = size * 0.8;
                                 const particleX = centerX + Math.cos(particleAngle) * particleRadius;
                                 const particleY = centerY + Math.sin(particleAngle) * particleRadius;
                                 
@@ -879,14 +1515,19 @@
                             this.ctx.fillText(amount, centerX, centerY);
                         }
                         
+                        // Restore animation transformations
+                        if (marker.isAnimating && marker.animationScale) {
+                            this.ctx.restore();
+                        }
+                        
                         this.ctx.restore();
                         
                     } else if (marker.marker_type === 'oil') {
                         const x = marker.x * displaySize;
                         const y = marker.y * displaySize;
                         
-                        // Enhanced oil platform marker - DOUBLE SIZE bubbling oil patch
-                        const size = Math.max(displaySize * 1.2, 12); // Doubled from 0.6 to 1.2
+                        // Enhanced oil platform marker - SAME SIZE as players and goldmines
+                        const size = Math.max(displaySize * 5, 60); // Same as players and goldmines
                         const centerX = x + displaySize/2;
                         const centerY = y + displaySize/2;
                         
@@ -898,33 +1539,62 @@
                             this.hoveredMarker.y === marker.y && 
                             this.hoveredMarker.marker_type === 'oil';
                         
+                        // Advanced oil well design - octagonal platform with depth
+                        this.ctx.save();
+                        
+                        // Apply animation scaling if this marker is animating
+                        if (marker.isAnimating && marker.animationScale) {
+                            this.ctx.translate(centerX, centerY);
+                            this.ctx.scale(marker.animationScale, marker.animationScale);
+                            this.ctx.translate(-centerX, -centerY);
+                        }
+                        
                         // Dark oil base with glow and texture
                         this.ctx.shadowColor = '#000080';
                         this.ctx.shadowBlur = isHovered ? 15 : 8;
                         this.ctx.fillStyle = '#000080';
-                        this.ctx.fillRect(centerX - size/2, centerY - size/2, size, size);
                         
-                        // Oil surface texture (ripples)
-                        this.ctx.fillStyle = '#1E3A8A';
-                        for (let i = 0; i < 3; i++) {
-                            const rippleSize = size * (0.3 + i * 0.2);
+                        // Draw octagonal oil platform
+                        this.ctx.beginPath();
+                        for (let i = 0; i < 8; i++) {
+                            const angle = (i * Math.PI) / 4;
+                            const x = centerX + Math.cos(angle) * size/2;
+                            const y = centerY + Math.sin(angle) * size/2;
+                            if (i === 0) this.ctx.moveTo(x, y);
+                            else this.ctx.lineTo(x, y);
+                        }
+                        this.ctx.closePath();
+                        this.ctx.fill();
+                        
+                        // Oil surface texture (concentric ripples)
+                        this.ctx.strokeStyle = '#1E3A8A';
+                        this.ctx.lineWidth = 2;
+                        for (let i = 1; i <= 4; i++) {
+                            const rippleSize = size * (0.2 + i * 0.15);
                             this.ctx.beginPath();
                             this.ctx.arc(centerX, centerY, rippleSize, 0, Math.PI * 2);
-                            this.ctx.strokeStyle = '#1E3A8A';
-                            this.ctx.lineWidth = 1;
                             this.ctx.stroke();
                         }
                         
-                        // Oil border with depth
+                        // Oil platform border with depth
                         this.ctx.shadowBlur = 0;
                         this.ctx.strokeStyle = '#4169E1';
-                        this.ctx.lineWidth = 2;
-                        this.ctx.strokeRect(centerX - size/2, centerY - size/2, size, size);
+                        this.ctx.lineWidth = 3;
+                        this.ctx.stroke();
                         
-                        // Inner border for depth
+                        // Inner octagonal border for depth
                         this.ctx.strokeStyle = '#1E40AF';
-                        this.ctx.lineWidth = 1;
-                        this.ctx.strokeRect(centerX - size/2 + 1, centerY - size/2 + 1, size - 2, size - 2);
+                        this.ctx.lineWidth = 2;
+                        this.ctx.beginPath();
+                        for (let i = 0; i < 8; i++) {
+                            const angle = (i * Math.PI) / 4;
+                            const x = centerX + Math.cos(angle) * (size/2 - 3);
+                            const y = centerY + Math.sin(angle) * (size/2 - 3);
+                            if (i === 0) this.ctx.moveTo(x, y);
+                            else this.ctx.lineTo(x, y);
+                        }
+                        this.ctx.closePath();
+                        this.ctx.stroke();
                         
                         // Add detailed bubbling oil effect
                         const bubbleCount = isHovered ? 8 : 6; // More bubbles when hovered
@@ -972,6 +1642,11 @@
                             this.ctx.textBaseline = 'middle';
                             const amount = marker.amount ? marker.amount.toString() : '?';
                             this.ctx.fillText(amount, centerX, centerY);
+                        }
+                        
+                        // Restore animation transformations
+                        if (marker.isAnimating && marker.animationScale) {
+                            this.ctx.restore();
                         }
                         
                         this.ctx.restore();
@@ -1040,16 +1715,39 @@
                             this.ctx.translate(-centerX, -centerY);
                         }
                         
-                        // Draw detailed 3D chess piece base (pedestal) with enhanced detail
+                        // Draw advanced 3D chess piece base (pedestal) with enhanced detail
                         this.ctx.beginPath();
-                        // Main base rectangle with rounded corners effect
-                        this.ctx.rect(centerX - size/3, centerY + size/3, size * 2/3, size/6);
+                        
+                        // Create rounded rectangle base using path
+                        const baseWidth = size * 2/3;
+                        const baseHeight = size/6;
+                        const baseX = centerX - baseWidth/2;
+                        const baseY = centerY + size/3;
+                        const cornerRadius = 4;
+                        
+                        // Rounded rectangle path
+                        this.ctx.moveTo(baseX + cornerRadius, baseY);
+                        this.ctx.lineTo(baseX + baseWidth - cornerRadius, baseY);
+                        this.ctx.quadraticCurveTo(baseX + baseWidth, baseY, baseX + baseWidth, baseY + cornerRadius);
+                        this.ctx.lineTo(baseX + baseWidth, baseY + baseHeight - cornerRadius);
+                        this.ctx.quadraticCurveTo(baseX + baseWidth, baseY + baseHeight, baseX + baseWidth - cornerRadius, baseY + baseHeight);
+                        this.ctx.lineTo(baseX + cornerRadius, baseY + baseHeight);
+                        this.ctx.quadraticCurveTo(baseX, baseY + baseHeight, baseX, baseY + baseHeight - cornerRadius);
+                        this.ctx.lineTo(baseX, baseY + cornerRadius);
+                        this.ctx.quadraticCurveTo(baseX, baseY, baseX + cornerRadius, baseY);
+                        this.ctx.closePath();
+                        
+                        // Main base with gradient-like effect
                         this.ctx.fillStyle = '#8B4513'; // Brown base
                         this.ctx.fill();
                         
-                        // Base shadow/highlight for 3D effect
+                        // Base shadow/highlight for 3D effect (left side darker, right side lighter)
                         this.ctx.beginPath();
-                        this.ctx.rect(centerX - size/3 + 2, centerY + size/3 + 1, size * 2/3 - 4, size/6 - 2);
+                        this.ctx.moveTo(baseX + 2, baseY + 1);
+                        this.ctx.lineTo(baseX + baseWidth - 2, baseY + 1);
+                        this.ctx.lineTo(baseX + baseWidth - 2, baseY + baseHeight - 1);
+                        this.ctx.lineTo(baseX + 2, baseY + baseHeight - 1);
+                        this.ctx.closePath();
                         this.ctx.fillStyle = '#A0522D'; // Lighter brown highlight
                         this.ctx.fill();
                         
@@ -1058,39 +1756,63 @@
                         this.ctx.lineWidth = 2;
                         this.ctx.stroke();
                         
-                        // Add base texture (wood grain effect)
+                        // Add base texture (wood grain effect with curves)
                         this.ctx.strokeStyle = '#654321';
                         this.ctx.lineWidth = 1;
                         for (let i = 0; i < 3; i++) {
-                            const lineY = centerY + size/3 + 2 + i * 2;
+                            const lineY = baseY + 2 + i * 2;
                             this.ctx.beginPath();
-                            this.ctx.moveTo(centerX - size/3 + 4, lineY);
-                            this.ctx.lineTo(centerX + size/3 - 4, lineY);
+                            this.ctx.moveTo(baseX + 4, lineY);
+                            // Curved wood grain line
+                            this.ctx.quadraticCurveTo(centerX, lineY + 1, baseX + baseWidth - 4, lineY);
                             this.ctx.stroke();
                         }
                         
-                        // Draw detailed chess piece body (tiered design)
-                        // Bottom tier (wider)
+                        // Draw advanced chess piece body with sophisticated tiered design
+                        // Bottom tier (wider) - using path for more control
                         this.ctx.beginPath();
                         this.ctx.ellipse(centerX, centerY + size/6, size/2.2, size/3, 0, 0, Math.PI * 2);
                         this.ctx.fillStyle = playerColor;
                         this.ctx.fill();
                         
-                        // Middle tier
+                        // Bottom tier highlight (right side)
+                        this.ctx.beginPath();
+                        this.ctx.ellipse(centerX + size/8, centerY + size/6, size/2.4, size/3.2, 0, 0, Math.PI * 2);
+                        this.ctx.fillStyle = this.lightenColor(playerColor, 0.3);
+                        this.ctx.fill();
+                        
+                        // Middle tier with enhanced shading
                         this.ctx.beginPath();
                         this.ctx.ellipse(centerX, centerY - size/8, size/1.8, size/2.5, 0, 0, Math.PI * 2);
                         this.ctx.fillStyle = this.lightenColor(playerColor, 0.2);
                         this.ctx.fill();
                         
-                        // Top tier (narrower)
+                        // Middle tier highlight
+                        this.ctx.beginPath();
+                        this.ctx.ellipse(centerX + size/10, centerY - size/8, size/1.9, size/2.6, 0, 0, Math.PI * 2);
+                        this.ctx.fillStyle = this.lightenColor(playerColor, 0.4);
+                        this.ctx.fill();
+                        
+                        // Top tier (narrower) with peak
                         this.ctx.beginPath();
                         this.ctx.ellipse(centerX, centerY - size/3, size/1.4, size/2, 0, 0, Math.PI * 2);
                         this.ctx.fillStyle = this.lightenColor(playerColor, 0.4);
                         this.ctx.fill();
                         
-                        // Body borders with depth
+                        // Top tier highlight
+                        this.ctx.beginPath();
+                        this.ctx.ellipse(centerX + size/12, centerY - size/3, size/1.5, size/2.1, 0, 0, Math.PI * 2);
+                        this.ctx.fillStyle = this.lightenColor(playerColor, 0.6);
+                        this.ctx.fill();
+                        
+                        // Body borders with enhanced depth and shading
                         this.ctx.strokeStyle = '#000000';
                         this.ctx.lineWidth = 2;
+                        this.ctx.stroke();
+                        
+                        // Add subtle inner borders for depth
+                        this.ctx.strokeStyle = this.lightenColor(playerColor, 0.8);
+                        this.ctx.lineWidth = 1;
                         this.ctx.stroke();
                         
                         // Draw detailed crown with jewels and enhanced detail
@@ -1140,8 +1862,20 @@
                 const rect = this.canvas.getBoundingClientRect();
                 const x = event.clientX - rect.left;
                 const y = event.clientY - rect.top;
-                const displaySize = this.tileSize * this.zoomLevel;
                 
+                // Check if mouse has moved enough to warrant tooltip update
+                const deltaX = Math.abs(x - this.lastMouseX);
+                const deltaY = Math.abs(y - this.lastMouseY);
+                
+                if (deltaX < this.mouseMoveThreshold && deltaY < this.mouseMoveThreshold) {
+                    return; // Mouse hasn't moved enough, skip tooltip update
+                }
+                
+                // Update last mouse position
+                this.lastMouseX = x;
+                this.lastMouseY = y;
+                
+                const displaySize = this.tileSize * this.zoomLevel;
                 const tileX = Math.floor(x / displaySize);
                 const tileY = Math.floor(y / displaySize);
                 
@@ -1151,8 +1885,19 @@
                 const canvasX = x * scaleX;
                 const canvasY = y * scaleY;
                 
-                // Pass scaled canvas coordinates for marker detection, client coordinates for tooltip positioning
-                this.showTileTooltip(tileX, tileY, canvasX, canvasY, event.clientX, event.clientY);
+                // Debounce tooltip display for performance improvement
+                this.debounceTooltip(() => {
+                    this.showTileTooltip(tileX, tileY, canvasX, canvasY, event.clientX, event.clientY);
+                });
+            }
+            
+            // Cleanup method for performance
+            cleanup() {
+                this.stopAnimations();
+                if (this.tooltipTimeout) {
+                    clearTimeout(this.tooltipTimeout);
+                    this.tooltipTimeout = null;
+                }
             }
 
             showTileTooltip(tileX, tileY, canvasX, canvasY, clientX, clientY) {
@@ -1172,21 +1917,25 @@
                     console.log(`🔍 Tooltip: Checking pixel-based marker detection. Canvas: (${canvasX}, ${canvasY}), DisplaySize: ${displaySize}`);
                     
                     marker = currentMapData.markers.find(m => {
-                        // Calculate the actual rendered bounds for this marker type
+                        // FAST CIRCLE COLLISION DETECTION using new simple bounds
                         const markerBounds = this.getMarkerRenderBounds(m, displaySize);
                         
-                        const isWithinBounds = (canvasX >= markerBounds.x && canvasX <= markerBounds.x + markerBounds.width &&
-                                              canvasY >= markerBounds.y && canvasY <= markerBounds.y + markerBounds.height);
+                        // Calculate distance from mouse to marker center
+                        const dx = canvasX - markerBounds.centerX;
+                        const dy = canvasY - markerBounds.centerY;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        const isWithinBounds = distance <= markerBounds.radius;
                         
                         // Debug: Show what we're checking
-                        console.log(`🔍 Checking marker ${m.marker_type} at tile (${m.x}, ${m.y}) → bounds: x=${markerBounds.x}, y=${markerBounds.y}, w=${markerBounds.width}, h=${markerBounds.height}`);
-                        console.log(`🔍 Mouse at canvas (${canvasX}, ${canvasY}) - Within bounds: ${isWithinBounds}`);
+                        console.log(`🔍 Checking marker ${m.marker_type} at tile (${m.x}, ${m.y}) → center: (${markerBounds.centerX}, ${markerBounds.centerY}), radius: ${markerBounds.radius}`);
+                        console.log(`🔍 Mouse at canvas (${canvasX}, ${canvasY}) - Distance: ${distance.toFixed(1)}, Within bounds: ${isWithinBounds}`);
                         
                         if (isWithinBounds) {
-                            console.log(`🎯 Tooltip: Found marker via pixel detection:`, m);
+                            console.log(`🎯 Tooltip: Found marker via circle detection:`, m);
                         }
                         
-                        // Check if mouse is within the marker's rendered bounds
+                        // Check if mouse is within the marker's circle bounds
                         return isWithinBounds;
                     });
                 }
@@ -1287,9 +2036,17 @@
             }
 
             hideTooltip() {
+                // Clear any pending tooltip timeout
+                if (this.tooltipTimeout) {
+                    clearTimeout(this.tooltipTimeout);
+                    this.tooltipTimeout = null;
+                }
+                
                 const tooltip = document.getElementById('tooltip');
-                tooltip.classList.remove('show');
-                tooltip.style.display = 'none';
+                if (tooltip) {
+                    tooltip.classList.remove('show');
+                    tooltip.style.display = 'none';
+                }
                 
                 // Remove hover effects from all markers
                 this.removeMarkerHoverEffects();
@@ -1303,31 +2060,14 @@
                 marker.animationStartTime = Date.now();
                 marker.isAnimating = true;
                 
-                // Start animation loop for this marker
-                this.startMarkerAnimation(marker);
+                // Add to batched animation system
+                this.pendingAnimations.add(marker);
                 
                 // Trigger a redraw to show enhanced effects
                 this.redraw();
             }
             
-            startMarkerAnimation(marker) {
-                if (!marker.isAnimating) return;
-                
-                const elapsed = Date.now() - marker.animationStartTime;
-                const animationDuration = 2000; // 2 seconds
-                const progress = (elapsed % animationDuration) / animationDuration;
-                
-                // Update animation properties
-                marker.animationProgress = progress;
-                marker.animationAngle = progress * Math.PI * 2;
-                marker.animationScale = 1 + Math.sin(progress * Math.PI * 4) * 0.1;
-                
-                // Continue animation
-                requestAnimationFrame(() => this.startMarkerAnimation(marker));
-                
-                // Trigger redraw for smooth animation
-                this.redraw();
-            }
+            // Individual marker animation method removed - now using batched system for performance
             
             removeMarkerHoverEffects() {
                 // Stop all marker animations
@@ -1336,8 +2076,13 @@
                         marker.isAnimating = false;
                         marker.animationProgress = 0;
                         marker.animationScale = 1;
+                        marker.animationRotation = 0;
+                        marker.animationGlow = 1;
                     });
                 }
+                
+                // Clear pending animations
+                this.pendingAnimations.clear();
                 
                 // Clear the hovered marker
                 this.hoveredMarker = null;
@@ -1345,6 +2090,27 @@
                 // Trigger a redraw to remove enhanced effects
                 this.redraw();
             }
+            
+            /**
+             * Debounce tooltip display for performance improvement
+             * Prevents excessive tooltip updates during rapid mouse movement
+             */
+            debounceTooltip(callback) {
+                // Clear existing timeout
+                if (this.tooltipTimeout) {
+                    clearTimeout(this.tooltipTimeout);
+                }
+                
+                // Set new timeout with slight delay for performance
+                this.tooltipTimeout = setTimeout(() => {
+                    callback();
+                }, 150); // 150ms delay - slight but noticeable performance improvement
+            }
+            
+            // Track last mouse position to prevent excessive tooltip updates
+            lastMouseX = 0;
+            lastMouseY = 0;
+            mouseMoveThreshold = 3; // Minimum pixels moved before updating tooltip
             
             // Helper function to lighten colors for 3D effects
             lightenColor(color, factor) {
@@ -1367,53 +2133,27 @@
              * Calculate the actual rendered bounds for a marker based on its type and display size
              */
             getMarkerRenderBounds(marker, displaySize) {
+                // SIMPLE CIRCLE BOUNDS - Much faster than complex path detection
                 const baseX = marker.x * displaySize;
                 const baseY = marker.y * displaySize;
+                const centerX = baseX + displaySize/2;
+                const centerY = baseY + displaySize/2;
                 
-                if (marker.marker_type === 'player') {
-                    // Player markers are rendered with size = displaySize * 2.5
-                    const size = Math.max(displaySize * 2.5, 30);
-                    // The white background circle has radius = size/2 + 2
-                    const backgroundRadius = size/2 + 2;
-                    // The actual rendered area includes the background circle
-                    const actualSize = backgroundRadius * 2;
-                    
-                    return {
-                        x: baseX + displaySize/2 - backgroundRadius,
-                        y: baseY + displaySize/2 - backgroundRadius,
-                        width: actualSize,
-                        height: actualSize
-                    };
-                } else if (marker.marker_type === 'goldmine') {
-                    // Goldmine markers have radius = displaySize * 0.4
-                    const radius = Math.max(displaySize * 0.4, 4);
-                    const actualSize = radius * 2;
-                    
-                    return {
-                        x: baseX + displaySize/2 - radius,
-                        y: baseY + displaySize/2 - radius,
-                        width: actualSize,
-                        height: actualSize
-                    };
-                } else if (marker.marker_type === 'oil') {
-                    // Oil markers have size = displaySize * 0.6
-                    const size = Math.max(displaySize * 0.6, 6);
-                    
-                    return {
-                        x: baseX + displaySize/2 - size/2,
-                        y: baseY + displaySize/2 - size/2,
-                        width: size,
-                        height: size
-                    };
-                } else {
-                    // Default fallback - use tile size
-                    return {
-                        x: baseX,
-                        y: baseY,
-                        width: displaySize,
-                        height: displaySize
-                    };
-                }
+                // All markers now use consistent size for performance
+                const radius = Math.max(displaySize * 2.5, 30); // Optimized size
+                
+                return {
+                    centerX: centerX,
+                    centerY: centerY,
+                    radius: radius,
+                    // Simple circle bounds for fast collision detection
+                    bounds: {
+                        x: centerX - radius,
+                        y: centerY - radius,
+                        width: radius * 2,
+                        height: radius * 2
+                    }
+                };
             }
 
             /**
@@ -1461,11 +2201,43 @@
             document.getElementById('extractTextures').addEventListener('click', extractTextures);
             document.getElementById('clearCache').addEventListener('click', clearCache);
             
-            // Zoom slider
+            // Zoom slider with LOD support
             document.getElementById('zoomSlider').addEventListener('input', (e) => {
                 const zoom = parseInt(e.target.value);
                 document.getElementById('zoomValue').textContent = zoom + 'x';
-                if (mapRenderer) mapRenderer.setZoom(zoom);
+                if (mapRenderer) {
+                    mapRenderer.setZoom(zoom);
+                }
+            });
+            
+            // Zoom buttons for quick access
+            document.getElementById('zoomIn').addEventListener('click', () => {
+                if (mapRenderer) {
+                    const currentZoom = mapRenderer.zoomLevel;
+                    const nextZoom = Math.min(32, currentZoom + 2);
+                    mapRenderer.setZoom(nextZoom);
+                    document.getElementById('zoomSlider').value = nextZoom;
+                    document.getElementById('zoomValue').textContent = nextZoom + 'x';
+                }
+            });
+            
+            document.getElementById('zoomOut').addEventListener('click', () => {
+                if (mapRenderer) {
+                    const currentZoom = mapRenderer.zoomLevel;
+                    const prevZoom = Math.max(4, currentZoom - 2);
+                    mapRenderer.setZoom(prevZoom);
+                    document.getElementById('zoomSlider').value = prevZoom;
+                    document.getElementById('zoomValue').textContent = prevZoom + 'x';
+                }
+            });
+            
+            // Zoom reset button
+            document.getElementById('zoomReset').addEventListener('click', () => {
+                if (mapRenderer) {
+                    mapRenderer.setZoom(8);
+                    document.getElementById('zoomSlider').value = 8;
+                    document.getElementById('zoomValue').textContent = '8x';
+                }
             });
             
             // Overlay toggles
@@ -1481,8 +2253,26 @@
                 if (mapRenderer) mapRenderer.setOverlays({ players: e.target.checked });
             });
             
-            // Tileset preview
-            document.getElementById('previewTileset').addEventListener('click', previewSelectedTileset);
+            // Tileset selection - change immediately when selected
+            document.getElementById('tilesetSelector').addEventListener('change', (e) => {
+                const selectedTileset = parseInt(e.target.value);
+                if (currentMapData && mapRenderer) {
+                    // Update the map data with new tileset
+                    currentMapData.tileset = selectedTileset;
+                    
+                    // Re-render the map with new tileset
+                    mapRenderer.renderMap(currentMapData);
+                    
+                    // Update map information display
+                    updateMapInfo(currentMapData);
+                    
+                    // Show status
+                    const tilesetName = textureManager.getTilesetName(selectedTileset);
+                    showStatus(`Tileset changed to ${tilesetName}!`, 'success');
+                    
+                    console.log(`🎨 Tileset changed to ${selectedTileset} (${tilesetName})`);
+                }
+            });
         }
 
         // File handling
@@ -1590,6 +2380,26 @@
                 document.getElementById('totalSize').textContent = Math.round(stats.totalSize / 1024) + ' KB';
             }
         }
+        
+        function updatePerformanceMonitor() {
+            if (mapRenderer) {
+                document.getElementById('fpsDisplay').textContent = mapRenderer.fps || '--';
+                document.getElementById('redrawCount').textContent = mapRenderer.frameCount || '--';
+                
+                // Update performance status
+                const statusElement = document.getElementById('performanceStatus');
+                if (mapRenderer.fps >= 55) {
+                    statusElement.textContent = 'Excellent';
+                    statusElement.style.color = '#2ECC71';
+                } else if (mapRenderer.fps >= 30) {
+                    statusElement.textContent = 'Good';
+                    statusElement.style.color = '#F39C12';
+                } else {
+                    statusElement.textContent = 'Poor';
+                    statusElement.style.color = '#E74C3C';
+                }
+            }
+        }
 
         function updateMapInfo(mapData) {
             if (mapData) {
@@ -1604,30 +2414,7 @@
             }
         }
 
-        function previewSelectedTileset() {
-            if (!currentMapData) {
-                showStatus('No map loaded! Load a map first.', 'error');
-                return;
-            }
-            
-            const selectedTileset = parseInt(document.getElementById('tilesetSelector').value);
-            const tilesetName = textureManager.getTilesetName(selectedTileset);
-            
-            // Create a copy of the map data with the selected tileset
-            const previewMapData = {
-                ...currentMapData,
-                tileset: selectedTileset
-            };
-            
-            // Re-render the map with the new tileset
-            mapRenderer.renderMap(previewMapData);
-            
-            // Update the display
-            updateMapInfo(previewMapData);
-            
-            showStatus(`Previewing ${tilesetName} tileset!`, 'success');
-            console.log(`🎨 Previewing ${tilesetName} tileset (${selectedTileset})`);
-        }
+        // previewSelectedTileset function removed - tileset changes immediately on selection
 
         function formatBytes(bytes) {
             if (bytes === 0) return '0 B';
